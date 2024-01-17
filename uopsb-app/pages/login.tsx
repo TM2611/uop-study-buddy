@@ -1,16 +1,34 @@
+// login.tsx
+import { useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { GoogleLogin } from '@react-oauth/google';
 
 const LoginPage = () => {
-  const handleSuccess = (credentialResponse: any) => {
-    console.log(credentialResponse);
+  const [error, setError] = useState(null);
 
-    // Decode the ID token and extract the user's email
+  const handleSuccess = async (credentialResponse: any) => {
     const decodedToken = jwtDecode(credentialResponse.credential);
-    // const userEmail = decodedToken.email;
-    // console.log('User email:', userEmail);
-    console.log(decodedToken);
-    
+
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(decodedToken),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log(data.message);
+      } else {
+        console.error(data.message);
+        setError(data.message);
+      }
+    } catch (error) {
+      console.error('An error occurred while logging in:', error);
+    }
   };
 
   const handleError = () => {
@@ -19,8 +37,8 @@ const LoginPage = () => {
 
   return (
     <div>
-      {/* Other login components */}
       <div>Login Test</div>
+      {error && <div className="error">{error}</div>}
       <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
     </div>
   );
