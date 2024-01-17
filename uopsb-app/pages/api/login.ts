@@ -4,7 +4,7 @@ import { getUserByEmail } from "../../server/database";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   if (req.method === "POST") {
@@ -13,7 +13,10 @@ export default async function handler(
       const user = await getUserByEmail(creds.email);
       if (user) {
         // User already exists
-        res.status(200).json({ message: "User already exists, logged in successfully", user });
+        res.status(200).json({
+          message: "User already exists, logged in successfully",
+          user,
+        });
       } else {
         // Create user
         const response = await createUser(creds);

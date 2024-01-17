@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../app/AuthContext";
