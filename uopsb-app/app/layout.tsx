@@ -4,14 +4,29 @@ import "../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const metadata = {
+  title: "UOP Study Buddy",
+  description: "Author: Taylor McFarlane",
+};
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-        <div className={inter.className}>{children}</div>
-      </GoogleOAuthProvider>
+    <html lang="en">
+      <head>
+        <title>{metadata.title}</title>
+        <meta name="description" content={metadata.description} />
+      </head>
+      <body>
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+        >
+          <div className={inter.className}>{children}</div>
+        </GoogleOAuthProvider>
+      </body>
+    </html>
   );
 }
