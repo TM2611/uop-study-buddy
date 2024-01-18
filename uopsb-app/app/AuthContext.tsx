@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 
 interface AuthContextValue {
   isLoggedIn: boolean;
+  user: any | null;
   login: (credentialResponse: any) => void;
   logout: () => void;
 }
@@ -14,6 +15,7 @@ interface AuthProviderProps {
 
 const AuthContext = createContext<AuthContextValue>({
   isLoggedIn: false,
+  user: null,
   login: () => {},
   logout: () => {},
 });
@@ -24,6 +26,7 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   const loginUser = async (decodedToken: any) => {
     try {
@@ -40,7 +43,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Catch errors between client and server
       if (response.ok) {
         console.log(data.message);
+        console.log(data.user);
         setIsLoggedIn(true);
+        setUser(data.user)
       } else {
         console.error(data.message);
       }
@@ -50,18 +55,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async (credentialResponse: any) => {
-    console.log("Attempting to login:", credentialResponse);
     const decodedToken = jwtDecode(credentialResponse.credential);
     await loginUser(decodedToken);
   };
 
   const logout = () => {
     setIsLoggedIn(false);
+    setUser(null);
     console.log("Logout");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
