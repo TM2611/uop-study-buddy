@@ -1,3 +1,4 @@
+import "../styles/globals.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./AuthContext";
 import { Inter } from "next/font/google";

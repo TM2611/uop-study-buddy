@@ -40,12 +40,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const data = await response.json();
 
-      // Catch errors between client and server
       if (response.ok) {
-        console.log(data.message);
-        console.log(data.user);
-        setIsLoggedIn(true);
-        setUser(data.user)
+          console.log(data.message);
+          console.log(data.user);
+          setIsLoggedIn(true);
+          setUser(data.user)
+          // Catch errors between client and server
       } else {
         console.error(data.message);
       }
