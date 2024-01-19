@@ -1,7 +1,7 @@
 "use client";
 
 import { GoogleLogin } from "@react-oauth/google";
-import { useAuth } from "../app/AuthContext";
+import { useAuth } from "../AuthContext";
 import { useEffect, useState } from "react";
 
 export default function Nav() {
@@ -21,7 +21,10 @@ export default function Nav() {
   };
 
   const handleDocumentClick = (event: MouseEvent) => {
-    if (!(event.target instanceof Element) || !event.target.closest(".dropdown-container")) {
+    if (
+      !(event.target instanceof Element) ||
+      !event.target.closest(".dropdown-container")
+    ) {
       closeDropdown();
     }
   };

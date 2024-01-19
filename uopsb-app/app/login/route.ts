@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createUser, getUserByEmail } from "../../../server/database";
+import { createUser, getUserByEmail } from "../../server/database";
 
 export async function POST(request: { json: () => any }) {
   try {
