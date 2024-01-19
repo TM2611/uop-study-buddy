@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 interface AuthContextValue {
   isLoggedIn: boolean;
   user: any | null;
-  login: (credentialResponse: any) => void;
+  newLogin: (credentialResponse: any) => void;
   logout: () => void;
 }
 
@@ -16,7 +16,7 @@ interface AuthProviderProps {
 const AuthContext = createContext<AuthContextValue>({
   isLoggedIn: false,
   user: null,
-  login: () => {},
+  newLogin: () => {},
   logout: () => {},
 });
 
@@ -28,24 +28,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
 
-  const loginUser = async (decodedToken: any) => {
+  useEffect(() => {
+    const userToken = localStorage.getItem("userToken");
+    if (userToken) {
+      login(userToken);
+    }
+  }, []);
+
+  const newLogin = async (credentialResponse: any) => {
+    const userToken = credentialResponse.credential;
+    login(userToken);
+  };
+
+  const login = async (userToken: any) => {
+    const decodedUser = jwtDecode(userToken);
     try {
       const response = await fetch("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
         },
-        body: JSON.stringify(decodedToken),
+        body: JSON.stringify(decodedUser),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-          console.log(data.message);
-          console.log(data.user);
-          setIsLoggedIn(true);
-          setUser(data.user)
-          // Catch errors between client and server
+        setIsLoggedIn(true);
+        setUser(data.user);
+        localStorage.setItem("userToken", userToken);
       } else {
         console.error(data.message);
       }
@@ -54,19 +66,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (credentialResponse: any) => {
-    const decodedToken = jwtDecode(credentialResponse.credential);
-    await loginUser(decodedToken);
-  };
-
   const logout = () => {
     setIsLoggedIn(false);
     setUser(null);
-    console.log("Logout");
+    localStorage.removeItem("userToken");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, newLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );
