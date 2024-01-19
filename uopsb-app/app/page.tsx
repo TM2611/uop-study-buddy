@@ -4,13 +4,13 @@ import { useAuth } from "../app/AuthContext";
 import UserProfileCard from "./_components/UserProfileCard";
 
 export default function Home() {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user} = useAuth();
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <Nav />
       {isLoggedIn ? (
         <div className="flex flex-col justify-center items-center">
-          <UserProfileCard/>
+          <UserProfileCard fname={user.fname} lname={user.lname} picture={user.picture} email={user.email} />
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center">
