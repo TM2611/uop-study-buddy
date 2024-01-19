@@ -1,6 +1,7 @@
 "use client";
 import Nav from "./_components/Nav";
 import { useAuth } from "../app/AuthContext";
+import UserProfileCard from "./_components/UserProfileCard";
 
 export default function Home() {
   const { isLoggedIn, user } = useAuth();
@@ -9,11 +10,11 @@ export default function Home() {
       <Nav />
       {isLoggedIn ? (
         <div className="flex flex-col justify-center items-center">
-          <h1 className="text-4xl font-bold">Welcome {user.fname}</h1>
+          <UserProfileCard/>
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center">
-          <h1 className="text-4xl font-bold">Welcome to UOPSB</h1>
+          <h1 className="text-4xl font-bold">Sign up to UOPSB</h1>
         </div>
       )}
     </main>
