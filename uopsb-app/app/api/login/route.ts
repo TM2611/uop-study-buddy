@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
-import { createUser, getUserByEmail } from "../../server/database";
+import { getUserByEmail } from "../../../server/database";
+import { redirect } from "next/navigation";
+import type { NextRequest } from "next/server";
 
 export async function POST(request: { json: () => any }) {
   try {
+    console.log("in login/route.ts");
     const creds = await request.json();
     const user = await getUserByEmail(creds.email);
-
     if (user) {
       // User already exists
+      console.log("user already exists, logging in");
       return new NextResponse(
         JSON.stringify({
           message: "User already exists, logged in successfully",
@@ -16,13 +19,9 @@ export async function POST(request: { json: () => any }) {
         { status: 200 }
       );
     } else {
-      // Create user
-      const response = await createUser(creds);
-      if (!response) throw new Error("Could not create user");
       return new NextResponse(
         JSON.stringify({
-          message: "User created successfully",
-          user: creds,
+          message: "User does not exist",
         }),
         { status: 200 }
       );
@@ -31,7 +30,7 @@ export async function POST(request: { json: () => any }) {
     console.error(error);
     return new NextResponse(
       JSON.stringify({
-        message: "An error occurred while logging in the user",
+        message: "An error occurred while logging in",
       }),
       { status: 500 }
     );
