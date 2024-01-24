@@ -5,7 +5,7 @@ import { useAuth } from "../AuthContext";
 import { useEffect, useState } from "react";
 
 export default function Nav() {
-  const { isLoggedIn, newLogin, logout } = useAuth();
+  const { isLoggedIn, googleLogin, logout } = useAuth();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const onLoginError = () => {
@@ -80,7 +80,7 @@ export default function Nav() {
             )}
           </>
         ) : (
-          <GoogleLogin onSuccess={newLogin} onError={onLoginError} />
+          <GoogleLogin onSuccess={googleLogin} onError={onLoginError} />
         )}
       </div>
     </nav>
