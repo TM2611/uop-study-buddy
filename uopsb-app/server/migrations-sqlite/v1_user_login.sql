@@ -18,4 +18,4 @@ CREATE TABLE IF NOT EXISTS course (
     department VARCHAR(50) NOT NULL
 );
 
-INSERT INTO course (code, name, department) VALUES ('U0968PYC', 'Software Engineering', 'School of Computing');
+INSERT OR IGNORE INTO course (code, name, department) VALUES ('U0968PYC', 'Software Engineering', 'School of Computing');
