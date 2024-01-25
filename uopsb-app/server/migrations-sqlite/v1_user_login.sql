@@ -1,3 +1,12 @@
+CREATE TABLE IF NOT EXISTS course (
+    code VARCHAR(12) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    department VARCHAR(50) NOT NULL
+);
+
+INSERT OR IGNORE INTO course (code, name, department) VALUES ('U0968PYC', 'Software Engineering', 'School of Computing');
+
+
 CREATE TABLE IF NOT EXISTS student (
   id VARCHAR(36) PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
@@ -12,10 +21,4 @@ CREATE TABLE IF NOT EXISTS student (
   FOREIGN KEY (course_code) REFERENCES course(code)
 );
 
-CREATE TABLE IF NOT EXISTS course (
-    code VARCHAR(12) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    department VARCHAR(50) NOT NULL
-);
 
-INSERT OR IGNORE INTO course (code, name, department) VALUES ('U0968PYC', 'Software Engineering', 'School of Computing');
