@@ -4,6 +4,7 @@ import { Course, FormPopulation } from "@/app/types";
 import { useAuth } from "@/app/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const handleSubmit = async (
   values: any,
@@ -36,7 +37,7 @@ const handleSubmit = async (
 export function SetupForm(formPopulation: FormPopulation) {
   const { token, setIsLoggedIn } = useAuth();
   const router = useRouter();
-  const user = jwtDecode(token as string);
+  const user = token ? jwtDecode(token as string) : null;
   const formik = useFormik({
     initialValues: {
       year: "",
@@ -44,6 +45,12 @@ export function SetupForm(formPopulation: FormPopulation) {
     },
     onSubmit: (values) => handleSubmit(values, user, router, setIsLoggedIn),
   });
+  //Redirect to home if user isn't logged in
+  useEffect(() => {
+    if (!token) {
+      router.push("/");
+    }
+  }, [token]); // Runs on initial page load and when the value of 'token' changes
 
   return (
     <form
