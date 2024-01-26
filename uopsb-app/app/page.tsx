@@ -10,12 +10,7 @@ export default function Home() {
       <Nav />
       {isLoggedIn && user ? (
         <div className="flex flex-col justify-center items-center">
-          <UserProfileCard
-            fname={user.fname}
-            lname={user.lname}
-            picture={user.picture}
-            email={user.email}
-          />
+          <UserProfileCard user={user} />
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center">
