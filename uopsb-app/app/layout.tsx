@@ -1,22 +1,36 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import '../styles/globals.css'
+import "../styles/globals.css";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AuthProvider } from "./AuthContext";
+import { Inter } from "next/font/google";
+import "../styles/globals.css";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: 'UOP Study Buddy',
-  description: 'Author: Taylor McFarlane',
-}
+const metadata = {
+  title: "UOP Study Buddy",
+  description: "Author: Taylor McFarlane",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <title>{metadata.title}</title>
+        <meta name="description" content={metadata.description} />
+      </head>
+      <body>
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+        >
+          <AuthProvider>
+            <div className={inter.className}>{children}</div>
+          </AuthProvider>
+        </GoogleOAuthProvider>
+      </body>
     </html>
-  )
+  );
 }
