@@ -4,7 +4,15 @@ CREATE TABLE IF NOT EXISTS course (
     department VARCHAR(50) NOT NULL
 );
 
-INSERT OR IGNORE INTO course (code, name, department) VALUES ('U0968PYC', 'Software Engineering', 'School of Computing');
+INSERT OR IGNORE INTO course (code, name, department) VALUES
+('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', 'Computer Science'),
+('U2365PYC', 'Computer Networks', 'Computer Science'),
+('U0056PYC', 'Computer Science (BSc)', 'Computer Science'),
+('U2515PYC', 'Computer Science (MEng)', 'Computer Science'),
+('U0580PYC', 'Computing', 'Computer Science'),
+('U2753PYC', 'Cyber Security and Forensic Computing', 'Computer Science'),
+('C3559FTC', 'Data Science and Analytics', 'Computer Science'),
+('U0968PYC', 'Software Engineering', 'School of Computing');
 
 
 CREATE TABLE IF NOT EXISTS student (
