@@ -38,25 +38,24 @@ export default function Nav() {
   }, []);
 
   return (
-    <nav className="flex flex-row justify-between items-center w-full h-16 bg-white text-black border-b-2 border-gray-200">
-      <div className="flex flex-row justify-start items-center">
-        <div className="flex flex-row justify-start items-center ml-8">
+    <nav className="flex flex-col justify-between items-center w-full h-auto sm:h-16 bg-white text-black border-b-2 border-gray-200 sm:flex-row">
+      <div className="flex flex-col justify-center items-center sm:flex-row sm:justify-start">
+        <div className="flex flex-row justify-start items-center mt-2 sm:mt-0 ml-8">
           <img src="/uop.svg" alt="logo" className="scale-50" />
-          <h1 className="text-xl font-bold ml-2">UOPSB</h1>
         </div>
-        <div className="flex flex-row justify-start items-center ml-8">
-          <a href="#" className="text-lg font-bold">
+        <div className="flex flex-col space-y-2 sm:flex-row sm:justify-start sm:items-center sm:space-y-0 sm:ml-8 mt-4 sm:mt-0">
+          <a href="#" className="text-lg font-bold sm:ml-8">
             Home
           </a>
-          <a href="#" className="text-lg font-bold ml-8">
+          <a href="#" className="text-lg font-bold sm:ml-8">
             About
           </a>
-          <a href="#" className="text-lg font-bold ml-8">
+          <a href="#" className="text-lg font-bold sm:ml-8">
             Dashboard
           </a>
         </div>
       </div>
-      <div className="flex flex-row justify-end items-center mr-8 relative dropdown-container">
+      <div className="flex flex-row justify-center items-center mt-4 sm:mt-0 sm:justify-end mr-8 relative dropdown-container sm:mr-8">
         {isLoggedIn ? (
           <>
             <img
