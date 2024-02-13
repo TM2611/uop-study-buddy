@@ -50,7 +50,7 @@ export default function Nav() {
           <a href="#" className="text-lg font-bold sm:ml-8">
             About
           </a>
-          <a href="#" className="text-lg font-bold sm:ml-8">
+          <a href="/dashboard" className="text-lg font-bold sm:ml-8">
             Dashboard
           </a>
         </div>
