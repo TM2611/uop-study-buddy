@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./AuthContext";
 import { Inter } from "next/font/google";
+import Nav from "./_components/Nav";
 import "../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,6 +28,7 @@ export default function RootLayout({
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
         >
           <AuthProvider>
+            <Nav />
             <div className={inter.className}>{children}</div>
           </AuthProvider>
         </GoogleOAuthProvider>
