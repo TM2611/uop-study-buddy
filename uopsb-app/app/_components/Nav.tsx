@@ -44,13 +44,13 @@ export default function Nav() {
           <img src="/uop.svg" alt="logo" className="scale-50" />
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:justify-start sm:items-center sm:space-y-0 sm:ml-8 mt-4 sm:mt-0">
-          <a href="#" className="text-lg font-bold sm:ml-8">
+          <a href="/" className="text-lg font-bold sm:ml-8">
             Home
           </a>
-          <a href="#" className="text-lg font-bold sm:ml-8">
+          <a href="/about" className="text-lg font-bold sm:ml-8">
             About
           </a>
-          <a href="#" className="text-lg font-bold sm:ml-8">
+          <a href="/dashboard" className="text-lg font-bold sm:ml-8">
             Dashboard
           </a>
         </div>
