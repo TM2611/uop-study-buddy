@@ -1,7 +1,7 @@
 import BetterSqlite3 from "better-sqlite3";
 import fs from "fs";
 import path from "path";
-import { Course, FormPopulation, CreateUserType } from "@/app/types";
+import { Course, FormPopulation, UserType } from "@/app/types";
 
 // Connecting to or creating a new SQLite database file
 function init() {
@@ -10,7 +10,7 @@ function init() {
     process.cwd(),
     "server",
     "migrations-sqlite",
-    "v1_user_login.sql"
+    "v2_dummy_users.sql"
   );
   const migrationSql = fs.readFileSync(migrationFile, "utf8");
 
@@ -19,22 +19,31 @@ function init() {
 }
 const dbConn = init();
 
-export async function createUser(creds: CreateUserType) {
+export async function createUser(creds: UserType) {
   const db = await dbConn;
   console.log(creds);
   const email = creds.email;
   const upNum = creds.email.match(/\d+/); // Extract the UP number email
-  const fname = creds.given_name;
-  const lname = creds.family_name;
+  const given_name = creds.given_name;
+  const family_name = creds.family_name;
   const picture = creds.picture;
   const year = creds.year;
   const courseCode = creds.course;
   const gender = creds.gender;
   const stmnt = await db
     .prepare(
-      `INSERT INTO student (id, email, fname, lname, picture, year, course_code, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .run(upNum, email, fname, lname, picture, year, courseCode, gender);
+    .run(
+      upNum,
+      email,
+      given_name,
+      family_name,
+      picture,
+      year,
+      courseCode,
+      gender
+    );
   if (stmnt.changes !== 1) throw new Error("Could not create user");
   return true;
 }
@@ -45,6 +54,14 @@ export async function getUserByEmail(email: string) {
     .prepare("SELECT * FROM student WHERE email = ?")
     .get(email);
   return user;
+}
+
+export async function getUsersByCourse(courseCode: string) {
+  const db = await dbConn;
+  const users = await db
+    .prepare("SELECT * FROM student WHERE course_code = ?")
+    .all(courseCode);
+  return users;
 }
 
 export async function getFormPopulation() {
