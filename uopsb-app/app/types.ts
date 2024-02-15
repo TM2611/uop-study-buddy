@@ -7,12 +7,12 @@ export interface FormPopulation {
   courses: Course[];
 }
 
-export interface CreateUserType {
+export interface UserType {
   email: string;
   family_name: string;
   given_name: string;
   picture: string;
   year: number;
-  course: string;
+  course_code: string;
   gender: string;
 }
