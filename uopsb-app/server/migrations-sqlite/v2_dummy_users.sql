@@ -18,8 +18,8 @@ INSERT OR IGNORE INTO course (code, name, department) VALUES
 CREATE TABLE IF NOT EXISTS student (
   id VARCHAR(36) PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
-  fname VARCHAR(255) NOT NULL,
-  lname VARCHAR(255) NOT NULL,
+  given_name VARCHAR(255) NOT NULL,
+  family_name VARCHAR(255) NOT NULL,
   picture VARCHAR(255),
   course_code VARCHAR(12) NOT NULL,
   gender TEXT CHECK( gender IN ('Male', 'Female', 'Other', 'Prefer not to say') ) NOT NULL, -- enum psql
@@ -30,8 +30,10 @@ CREATE TABLE IF NOT EXISTS student (
 );
 
 
-INSERT OR IGNORE INTO student (id, email, fname, lname, picture, course_code, gender, year) VALUES
-('932756', 'up932756@,myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api', 'U0056PYC', 'Male', 1),
-('932757', 'up932757@,myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api', 'U0056PYC', 'Female', 1),
-('932758', 'up932758@,myport.ac.uk', 'Zack', 'Smith', 'https://randomuser.me/api', 'U0968PYC', 'Male', 3),
-('932759', 'up932759@,myport.ac.uk', 'Jenny', 'Smith', 'https://randomuser.me/api', 'U0968PYC', 'Female', 3);
+INSERT OR IGNORE INTO student 
+    (id, email, given_name, family_name, picture, course_code, gender, year) 
+VALUES
+    ('932756', 'up932756@myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api/portraits/men/0.jpg', 'U0056PYC', 'Male', 1),
+    ('932757', 'up932757@myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api/portraits/women/0.jpg', 'U0056PYC', 'Female', 1),
+    ('932758', 'up932758@myport.ac.uk', 'Zack', 'Smith', 'https://randomuser.me/api/portraits/men/1.jpg', 'U0968PYC', 'Male', 3),
+    ('932759', 'up932759@myport.ac.uk', 'Jenny', 'Smith', 'https://randomuser.me/api/portraits/women/2.jpg', 'U0968PYC', 'Female', 3);
