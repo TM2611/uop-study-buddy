@@ -56,11 +56,11 @@ export async function getUserByEmail(email: string) {
   return user;
 }
 
-export async function getUsersByCourse(courseCode: string) {
+export async function getUsersByCourse(email: string, courseCode: string) {
   const db = await dbConn;
   const users = await db
-    .prepare("SELECT * FROM student WHERE course_code = ?")
-    .all(courseCode);
+    .prepare("SELECT * FROM student WHERE course_code = ? AND email != ?")
+    .all(courseCode, email);
   return users;
 }
 

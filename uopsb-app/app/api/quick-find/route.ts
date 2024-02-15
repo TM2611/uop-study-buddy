@@ -5,9 +5,10 @@ import { URL } from "url";
 export async function GET(request: any) {
   try {
     const url = new URL(request.url);
-    const userCourse = url.searchParams.get("userCourse");
+    const email = url.searchParams.get("email");
+    const courseCode = url.searchParams.get("course");
 
-    const courseUsers = await getUsersByCourse(userCourse || "");
+    const courseUsers = await getUsersByCourse(email || "", courseCode || "");
     if (courseUsers.length) {
       console.log(courseUsers.length, " users on course");
       return new NextResponse(

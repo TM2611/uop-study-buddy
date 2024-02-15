@@ -12,7 +12,7 @@ const QuickFind: React.FC<QuickFindProps> = ({ currentUser }) => {
 
   const fetchRandomStudent = async () => {
     const res = await fetch(
-      `/api/quick-find?userCourse=${currentUser.course_code}`
+      `/api/quick-find?email=${currentUser.email}&course=${currentUser.course_code}`
     );
     const quickFind = await res.json();
     const courseUsers = quickFind.courseUsers;
