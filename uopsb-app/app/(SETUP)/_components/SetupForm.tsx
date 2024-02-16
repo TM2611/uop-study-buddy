@@ -1,10 +1,12 @@
 "use client";
-import { useFormik } from "formik";
-import { Course, FormPopulation } from "@/app/types";
 import { useAuth } from "@/app/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+
+import { useFormik } from "formik";
+import { Course, FormPopulation } from "@/app/types";
+import { TimeSlotGrid } from "./TimeSlotGrid";
 
 const handleSubmit = async (
   values: any,
@@ -42,6 +44,9 @@ export function SetupForm(formPopulation: FormPopulation) {
     initialValues: {
       year: "",
       course: "",
+      availability: Array(7)
+        .fill(null)
+        .map(() => Array(24).fill(false)),
     },
     onSubmit: (values) => handleSubmit(values, user, router, setIsLoggedIn),
   });
@@ -118,7 +123,16 @@ export function SetupForm(formPopulation: FormPopulation) {
           <option value="Prefer not to say">Prefer not to say</option>
         </select>
       </div>
-
+      <div className="mb-4">
+        <label className="block text-purple-700 font-bold mb-2">
+          Availability
+        </label>
+        <TimeSlotGrid
+          onChange={(newAvailability) =>
+            formik.setFieldValue("availability", newAvailability)
+          }
+        />
+      </div>
       <button
         type="submit"
         className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"

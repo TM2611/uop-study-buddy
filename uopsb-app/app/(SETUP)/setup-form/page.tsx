@@ -1,4 +1,4 @@
-import SetupForm from "./SetupForm";
+import SetupForm from "../_components/SetupForm";
 import { FormPopulation } from "@/app/types";
 
 async function fetchFormData() {
