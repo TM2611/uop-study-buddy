@@ -18,8 +18,8 @@ INSERT OR IGNORE INTO course (code, name, department) VALUES
 CREATE TABLE IF NOT EXISTS student (
   id VARCHAR(36) PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
-  fname VARCHAR(255) NOT NULL,
-  lname VARCHAR(255) NOT NULL,
+  given_name VARCHAR(255) NOT NULL,
+  family_name VARCHAR(255) NOT NULL,
   picture VARCHAR(255),
   course_code VARCHAR(12) NOT NULL,
   gender TEXT CHECK( gender IN ('Male', 'Female', 'Other', 'Prefer not to say') ) NOT NULL, -- enum psql
