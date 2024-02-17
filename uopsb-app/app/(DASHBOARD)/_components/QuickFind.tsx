@@ -7,10 +7,10 @@ type QuickFindProps = {
 };
 
 const QuickFind: React.FC<QuickFindProps> = ({ currentUser }) => {
-  const [selectedStudent, setSelectedStudent] = useState<UserType | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [showProfileCard, setShowProfileCard] = useState(false);
 
-  const fetchRandomStudent = async () => {
+  const fetchRandomUser = async () => {
     const res = await fetch(
       `/api/quick-find?email=${currentUser.email}&course=${currentUser.course_code}`
     );
@@ -22,9 +22,9 @@ const QuickFind: React.FC<QuickFindProps> = ({ currentUser }) => {
   };
 
   const handleClick = async () => {
-    const randomStudent = await fetchRandomStudent();
-    console.log("Random Student", randomStudent);
-    setSelectedStudent(randomStudent);
+    const randomUser = await fetchRandomUser();
+    console.log("Random user", randomUser);
+    setSelectedUser(randomUser);
     setShowProfileCard(true);
   };
 
@@ -36,8 +36,8 @@ const QuickFind: React.FC<QuickFindProps> = ({ currentUser }) => {
       >
         Quick Find
       </button>
-      {showProfileCard && selectedStudent && (
-        <UserProfileCard user={selectedStudent} />
+      {showProfileCard && selectedUser && (
+        <UserProfileCard user={selectedUser} />
       )}
     </div>
   );
