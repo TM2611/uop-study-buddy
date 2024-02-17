@@ -16,3 +16,20 @@ export interface UserType {
   course_code: string;
   gender: string;
 }
+
+export interface SlotDetails {
+  day: string;
+  start_hour: number;
+  end_hour: number;
+}
+
+export interface UserProfileType extends UserType {
+  slots: [SlotDetails];
+}
+
+export interface SetupFormInitValues {
+  year: string;
+  course_code: string;
+  gender: string;
+  slots: boolean[][];
+}
