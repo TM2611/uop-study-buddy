@@ -5,27 +5,65 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { useFormik } from "formik";
-import { Course, FormPopulation } from "@/app/types";
+import {
+  SlotDetails,
+  Course,
+  FormPopulation,
+  SetupFormInitValues,
+} from "@/app/types";
 import { TimeSlotGrid } from "./TimeSlotGrid";
 
+function convertBooleanSlots(slotsBool: boolean[][]): SlotDetails[] {
+  try {
+    const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+    let slots: SlotDetails[] = [];
+
+    days.forEach((day, dayIndex) => {
+      let startHour: number | null = null;
+
+      slotsBool[dayIndex].forEach((hourAvailable, hourIndex) => {
+        if (hourAvailable && startHour === null) {
+          startHour = hourIndex;
+        }
+
+        if ((!hourAvailable || hourIndex === 23) && startHour !== null) {
+          slots.push({
+            day,
+            start_hour: startHour,
+            end_hour: hourIndex,
+          });
+          startHour = null;
+        }
+      });
+    });
+
+    return slots;
+  } catch (error) {
+    console.error("Error converting Boolean slots to JSON:", error);
+    return [];
+  }
+}
 const handleSubmit = async (
   values: any,
   user: any,
   router: any,
   setIsLoggedIn: any
 ) => {
-  const mergedUserData = {
+  const jsonSlots = convertBooleanSlots(values.slots);
+  values.slots = jsonSlots; // Replace the bool array with JSON array
+
+  const userProfile = {
     ...user,
     ...values,
   };
-  console.log("mergedUserData", mergedUserData);
+  console.log("userProfile", userProfile);
 
   const response = await fetch("/api/create-user", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(mergedUserData),
+    body: JSON.stringify(userProfile),
   });
 
   if (response.ok) {
@@ -40,14 +78,16 @@ export function SetupForm(formPopulation: FormPopulation) {
   const { token, setIsLoggedIn } = useAuth();
   const router = useRouter();
   const user = token ? jwtDecode(token as string) : null;
+  const initialValues: SetupFormInitValues = {
+    year: "",
+    course_code: "",
+    gender: "",
+    slots: Array(7)
+      .fill(null)
+      .map(() => Array(24).fill(false)),
+  };
   const formik = useFormik({
-    initialValues: {
-      year: "",
-      course: "",
-      availability: Array(7)
-        .fill(null)
-        .map(() => Array(24).fill(false)),
-    },
+    initialValues: initialValues,
     onSubmit: (values) => handleSubmit(values, user, router, setIsLoggedIn),
   });
   //Redirect to home if user isn't logged in
@@ -89,8 +129,8 @@ export function SetupForm(formPopulation: FormPopulation) {
         </label>
         <select
           id="course"
-          name="course"
-          value={formik.values.course}
+          name="course_code"
+          value={formik.values.course_code}
           onChange={formik.handleChange}
           className="w-full p-2 border border-purple-300 rounded-md focus:border-purple-500 focus:outline-none"
         >
@@ -113,6 +153,7 @@ export function SetupForm(formPopulation: FormPopulation) {
         <select
           id="gender"
           name="gender"
+          value={formik.values.gender}
           onChange={formik.handleChange}
           className="w-full p-2 border border-purple-300 rounded-md focus:border-purple-500 focus:outline-none"
         >
@@ -129,7 +170,7 @@ export function SetupForm(formPopulation: FormPopulation) {
         </label>
         <TimeSlotGrid
           onChange={(newAvailability) =>
-            formik.setFieldValue("availability", newAvailability)
+            formik.setFieldValue("slots", newAvailability)
           }
         />
       </div>
