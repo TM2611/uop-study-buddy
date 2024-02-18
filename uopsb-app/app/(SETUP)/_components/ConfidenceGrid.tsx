@@ -6,12 +6,22 @@ interface ConfidenceGridProps {
   onConfidenceSelect: (topicConfidence: TopicConfidence[]) => void;
 }
 
+interface TopicConfidenceButton extends TopicConfidence {
+  buttonColor: string;
+}
+
 const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
   topics,
   onConfidenceSelect,
 }) => {
-  const [topicConfidence, setTopicConfidence] = useState<TopicConfidence[]>(
-    topics.map((topic) => ({ topic_id: topic.id, confidence_value: 0 }))
+  const [topicConfidence, setTopicConfidence] = useState<
+    TopicConfidenceButton[]
+  >(
+    topics.map((topic) => ({
+      topic_id: topic.id,
+      confidence_value: 0,
+      buttonColor: "",
+    }))
   );
 
   const handleConfidenceClick = (topicId: number, confidenceValue: number) => {
@@ -21,10 +31,30 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
     );
     if (topicIndex !== -1) {
       newTopicConfidence[topicIndex].confidence_value = confidenceValue;
+
+      switch (confidenceValue) {
+        case 1:
+          newTopicConfidence[topicIndex].buttonColor = "bg-red-500";
+          break;
+        case 2:
+          newTopicConfidence[topicIndex].buttonColor = "bg-orange-400";
+          break;
+        case 3:
+          newTopicConfidence[topicIndex].buttonColor = "bg-yellow-300";
+          break;
+        case 4:
+          newTopicConfidence[topicIndex].buttonColor = "bg-green-300";
+          break;
+        case 5:
+          newTopicConfidence[topicIndex].buttonColor = "bg-green-500";
+          break;
+        default:
+          newTopicConfidence[topicIndex].buttonColor = "";
+      }
     }
+
     setTopicConfidence(newTopicConfidence);
     onConfidenceSelect(newTopicConfidence);
-    console.log(newTopicConfidence)
   };
 
   return (
@@ -38,7 +68,12 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
                 key={confidenceValue}
                 type="button"
                 onClick={() => handleConfidenceClick(topic.id, confidenceValue)}
-                className={`w-full p-2 font-semibold border border-gray-300 rounded-md focus:outline-none`}
+                className={`w-full p-2 font-semibold border border-gray-300 rounded-md focus:outline-none ${
+                  topicConfidence[topicIndex].confidence_value ===
+                  confidenceValue
+                    ? topicConfidence[topicIndex].buttonColor
+                    : ""
+                }`}
               >
                 {confidenceValue}
               </button>
