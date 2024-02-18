@@ -1,10 +1,16 @@
 export interface Course {
-  code: string;
+  course_code: string;
   name: string;
+}
+
+export interface Topic {
+  name: string;
+  id: number;
 }
 
 export interface FormPopulation {
   courses: Course[];
+  topics: Topic[];
 }
 
 export interface UserType {
@@ -25,6 +31,12 @@ export interface SlotDetails {
 
 export interface UserProfileType extends UserType {
   slots: [SlotDetails];
+  topic_confidence: TopicConfidence[];
+}
+
+export interface TopicConfidence {
+  topic_id: number;
+  confidence_value: number;
 }
 
 export interface SetupFormInitValues {
@@ -32,4 +44,5 @@ export interface SetupFormInitValues {
   course_code: string;
   gender: string;
   slots: boolean[][];
+  topic_confidence: TopicConfidence[];
 }

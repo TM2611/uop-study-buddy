@@ -12,6 +12,7 @@ import {
   SetupFormInitValues,
 } from "@/app/types";
 import { TimeSlotGrid } from "./TimeSlotGrid";
+import ConfidenceGrid from "./ConfidenceGrid";
 
 function convertBooleanSlots(slotsBool: boolean[][]): SlotDetails[] {
   try {
@@ -56,7 +57,6 @@ const handleSubmit = async (
     ...user,
     ...values,
   };
-  console.log("userProfile", userProfile);
 
   const response = await fetch("/api/create-user", {
     method: "POST",
@@ -86,6 +86,7 @@ export function SetupForm(formPopulation: FormPopulation) {
     slots: Array(7)
       .fill(null)
       .map(() => Array(24).fill(false)),
+    topic_confidence: [],
   };
   const formik = useFormik({
     initialValues: initialValues,
@@ -141,7 +142,7 @@ export function SetupForm(formPopulation: FormPopulation) {
             >
               <option value="">Select a course</option>
               {formPopulation?.courses?.map((course: Course) => (
-                <option key={course.code} value={course.code}>
+                <option key={course.course_code} value={course.course_code}>
                   {course.name}
                 </option>
               ))}
@@ -170,7 +171,7 @@ export function SetupForm(formPopulation: FormPopulation) {
           </div>
           <button
             type="button"
-            onClick={() => setStep(1)}
+            onClick={() => setStep(step + 1)}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
           >
             Next
@@ -179,6 +180,33 @@ export function SetupForm(formPopulation: FormPopulation) {
       )}
 
       {step === 1 && (
+        <>
+          <ConfidenceGrid
+            topics={formPopulation?.topics}
+            onConfidenceSelect={(updatedConfidence) =>
+              formik.setFieldValue("topic_confidence", updatedConfidence)
+            }
+          />
+          <div className="flex justify-between my-4">
+            <button
+              type="button"
+              onClick={() => setStep(step - 1)}
+              className="w-1/6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+              style={{ marginRight: "4px" }}
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep(step + 1)}
+              className="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </>
+      )}
+      {step === 2 && (
         <>
           <div className="mb-4">
             <label className="block text-purple-700 font-bold mb-2">
@@ -193,7 +221,7 @@ export function SetupForm(formPopulation: FormPopulation) {
             <div className="flex justify-between my-4">
               <button
                 type="button"
-                onClick={() => setStep(0)}
+                onClick={() => setStep(step - 1)}
                 className="w-1/6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
                 style={{ marginRight: "4px" }}
               >
