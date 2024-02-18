@@ -4,6 +4,7 @@ import path from "path";
 import {
   Course,
   FormPopulation,
+  Topic,
   UserType,
   UserProfileType,
   SlotDetails,
@@ -16,7 +17,7 @@ function init() {
     process.cwd(),
     "server",
     "migrations-sqlite",
-    "v3_slots.sql"
+    "v3_setup_form.sql"
   );
   const migrationSql = fs.readFileSync(migrationFile, "utf8");
 
@@ -24,6 +25,21 @@ function init() {
   return dbInit;
 }
 const dbConn = init();
+
+async function insertTopicConfidence(
+  studentId: RegExpMatchArray | null,
+  topicConfidence: { topic_id: number; confidence_value: number }
+) {
+  const db = await dbConn;
+  const { topic_id, confidence_value } = topicConfidence;
+  const stmnt = await db
+    .prepare(
+      `INSERT INTO user_confidence (user_id, topic_id, confidence_value) VALUES (?, ?, ?)`
+    )
+    .run(studentId, topic_id, confidence_value);
+
+  if (stmnt.changes !== 1) throw new Error("Could not insert topic confidence");
+}
 
 async function insertSlots(
   studentId: RegExpMatchArray | null,
@@ -47,10 +63,11 @@ export async function createUser(userProfile: UserProfileType) {
   const given_name = userProfile.given_name;
   const family_name = userProfile.family_name;
   const picture = userProfile.picture;
-  const year = userProfile.year;
+  const year = Number(userProfile.year);
   const courseCode = userProfile.course_code;
   const gender = userProfile.gender;
   const slots = userProfile.slots;
+  const TopicConfidence = userProfile.topic_confidence;
   const stmnt = await db
     .prepare(
       `INSERT INTO user (id, email, given_name, family_name, picture, year, course_code, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
@@ -66,6 +83,10 @@ export async function createUser(userProfile: UserProfileType) {
       gender
     );
   if (stmnt.changes !== 1) throw new Error("Could not create user");
+
+  for (const topicConfidence of TopicConfidence) {
+    await insertTopicConfidence(upNum, topicConfidence);
+  }
 
   // Insert each slot entry into the slot table
   for (const availability of slots) {
@@ -94,8 +115,10 @@ export async function getUsersByCourse(email: string, courseCode: string) {
 export async function getFormPopulation() {
   const db = await dbConn;
   const courses = (await db.prepare("SELECT * FROM course").all()) as Course[];
+  const topics = (await db.prepare("SELECT * FROM topic").all()) as Topic[];
   const formPopulation: FormPopulation = {
     courses,
+    topics,
   };
   return formPopulation;
 }
