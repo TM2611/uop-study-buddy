@@ -1,21 +1,61 @@
-CREATE TABLE IF NOT EXISTS course (
-    code VARCHAR(12) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    department VARCHAR(50) NOT NULL
+
+-- Drop tables if they exist - development phase ONLY
+DROP TABLE IF EXISTS user_confidence;
+DROP TABLE IF EXISTS slot;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS course;
+DROP TABLE IF EXISTS topic;
+DROP TABLE IF EXISTS department;
+
+
+CREATE TABLE department (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL
 );
 
-INSERT OR IGNORE INTO course (code, name, department) VALUES
-('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', 'Computer Science'),
-('U2365PYC', 'Computer Networks', 'Computer Science'),
-('U0056PYC', 'Computer Science (BSc)', 'Computer Science'),
-('U2515PYC', 'Computer Science (MEng)', 'Computer Science'),
-('U0580PYC', 'Computing', 'Computer Science'),
-('U2753PYC', 'Cyber Security and Forensic Computing', 'Computer Science'),
-('C3559FTC', 'Data Science and Analytics', 'Computer Science'),
-('U0968PYC', 'Software Engineering', 'School of Computing');
+INSERT INTO department (name) VALUES
+('School of Computing');
 
 
-CREATE TABLE IF NOT EXISTS user (
+CREATE TABLE topic (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    department_id INT NOT NULL,
+    FOREIGN KEY (department_id) REFERENCES department(id)
+);
+
+INSERT INTO topic (name, department_id) VALUES
+('Data Structures and Algorithms', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Architecture and Operating Systems', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Artificial Intelligence', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Machine Learning and Deep Learning', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Computer Networks and Protocols', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Cybersecurity and Cryptography', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Software Engineering and Design Patterns', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Web Development and Full Stack Development', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Mobile Application Development', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Cloud Computing and Distributed Systems', (SELECT id FROM department WHERE name = 'School of Computing')),
+('Database Management Systems and Big Data', (SELECT id FROM department WHERE name = 'School of Computing'));
+
+CREATE TABLE course (
+    course_code VARCHAR(12) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    department_id INT NOT NULL,
+    FOREIGN KEY (department_id) REFERENCES department(id)
+);
+
+INSERT INTO course (course_code, name, department_id) VALUES
+('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', (SELECT id FROM department WHERE name = 'School of Computing')),
+('U2365PYC', 'Computer Networks', (SELECT id FROM department WHERE name = 'School of Computing')),
+('U0056PYC', 'Computer Science (BSc)', (SELECT id FROM department WHERE name = 'School of Computing')),
+('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing')),
+('U0580PYC', 'Computing', (SELECT id FROM department WHERE name = 'School of Computing')),
+('U2753PYC', 'Cyber Security and Forensic Computing', (SELECT id FROM department WHERE name = 'School of Computing')),
+('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing')),
+('U0968PYC', 'Software Engineering', (SELECT id FROM department WHERE name = 'School of Computing'));
+
+
+CREATE TABLE user (
   id VARCHAR(36) PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
   given_name VARCHAR(255) NOT NULL,
@@ -26,11 +66,11 @@ CREATE TABLE IF NOT EXISTS user (
   year INTEGER NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (course_code) REFERENCES course(code)
+  FOREIGN KEY (course_code) REFERENCES course(course_code)
 );
 
 
-INSERT OR IGNORE INTO user (id, email, given_name, family_name, picture, course_code, gender, year) 
+INSERT INTO user (id, email, given_name, family_name, picture, course_code, gender, year) 
 VALUES 
 ('932756', 'up932756@myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api/portraits/men/0.jpg', 'U0056PYC', 'Male', 1), 
 ('932757', 'up932757@myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api/portraits/women/0.jpg', 'U0056PYC', 'Female', 1), 
@@ -58,7 +98,16 @@ VALUES
 ('932779', 'up932779@myport.ac.uk', 'Amelia', 'Long', 'https://randomuser.me/api/portraits/women/12.jpg', 'U0968PYC', 'Female', 1),
 ('932780', 'up932780@myport.ac.uk', 'Louis', 'Baker', 'https://randomuser.me/api/portraits/men/13.jpg', 'U0968PYC', 'Male', 2);
 
-CREATE TABLE IF NOT EXISTS slot (
+CREATE TABLE user_confidence (
+  user_id VARCHAR(36) NOT NULL,
+  topic_id INTEGER NOT NULL,
+  confidence_value INTEGER NOT NULL CHECK (confidence_value BETWEEN 1 AND 5),
+  PRIMARY KEY (user_id, topic_id),
+  FOREIGN KEY (user_id) REFERENCES user(id),
+  FOREIGN KEY (topic_id) REFERENCES topic(id)
+);
+
+CREATE TABLE slot (
   id SERIAL PRIMARY KEY,
   user_id VARCHAR(36) NOT NULL,
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
