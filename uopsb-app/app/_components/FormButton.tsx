@@ -26,13 +26,13 @@ const FormButton: React.FC<FormButtonProps> = ({
     },
     next: {
       label: "Next",
-      classes:
-        "w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50",
+      classes: `${
+        step ?? 0 > 0 ? "w-1/2" : "w-full" // Full width next buttonn for first step, half width for the rest
+      } bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50`,
     },
     submit: {
       label: "Submit",
-      classes:
-        "w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50",
+      classes: `bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50`,
     },
   };
 
