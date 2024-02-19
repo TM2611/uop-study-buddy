@@ -6,6 +6,27 @@ interface FormProps {
   onSubmit: () => void;
 }
 
+/**
+ * The `Form` component is a higher-order component that wraps the individual form steps and handles the navigation between steps and form submission. It expects the `steps` and `onSubmit` callback as props to manage the form steps.
+ *
+ * @component
+ * @example
+ * import Form from 'path/to/Form';
+ *
+ * const steps = [
+ *   <div>This is step 1</div>,
+ *   <div>This is step 2</div>,
+ *   <div>This is step 3</div>,
+ * ];
+ *
+ * const handleSubmit = () => {
+ *   console.log("Do something on form submit");
+ * };
+ *
+ * return (
+ *   <Form steps={steps} onSubmit={handleSubmit} />
+ * );
+ */
 const Form: React.FC<FormProps> = ({ steps, onSubmit }) => {
   const [activeStep, setActiveStep] = useState(0);
 
