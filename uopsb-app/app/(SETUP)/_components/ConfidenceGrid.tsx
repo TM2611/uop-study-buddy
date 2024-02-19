@@ -68,7 +68,7 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
   return (
     <div className="grid grid-cols-1 gap-4">
       <div className="mb-4">
-        <p>
+        <p className="mb-4">
           Below is a list of topics related to your selected course. Rate your
           confidence in each topic on a scale from 1 to 5:
         </p>
