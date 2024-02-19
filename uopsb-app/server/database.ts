@@ -114,7 +114,9 @@ export async function getUsersByCourse(email: string, courseCode: string) {
 
 export async function getFormPopulation() {
   const db = await dbConn;
-  const courses = (await db.prepare("SELECT * FROM course").all()) as Course[];
+  const courses = (await db
+    .prepare("SELECT * FROM course ORDER BY name")
+    .all()) as Course[];
   const topics = (await db.prepare("SELECT * FROM topic").all()) as Topic[];
   const formPopulation: FormPopulation = {
     courses,
