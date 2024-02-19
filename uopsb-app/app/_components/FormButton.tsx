@@ -6,6 +6,23 @@ interface FormButtonProps {
   type: "back" | "next" | "submit";
 }
 
+/**
+ * The `FormButton` component is a customizable button that can be of three types: "back", "next", and "submit". It enables navigation between form steps or form submission based on the provided type.
+ *
+ * @component
+ * @param {number} [props.step] - The current step of the form.
+ * @param {(step: number) => void} [props.onStepChange] - A function to change the current step of the form.
+ * @param {"back"|"next"|"submit"} props.type - The button type ("back", "next" or "submit").
+ * @example
+ * import FormButton from 'path/to/FormButton';
+ *
+ * return (
+ *   <>
+ *     <FormButton step={0} onStepChange={setStep} type="next" />
+ *     <FormButton type="submit" />
+ *   </>
+ * );
+ */
 const FormButton: React.FC<FormButtonProps> = ({
   step,
   onStepChange,
