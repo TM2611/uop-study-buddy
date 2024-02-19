@@ -14,7 +14,8 @@ CREATE TABLE department (
 );
 
 INSERT INTO department (name) VALUES
-('School of Computing');
+('School of Computing'),
+('School of Energy and Electronic Engineering');
 
 
 CREATE TABLE topic (
@@ -24,6 +25,7 @@ CREATE TABLE topic (
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
+--School of Computing
 INSERT INTO topic (name, department_id) VALUES
 ('Data Structures and Algorithms', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('Architecture and Operating Systems', (SELECT id FROM department WHERE name = 'School of Computing')),
@@ -37,13 +39,27 @@ INSERT INTO topic (name, department_id) VALUES
 ('Cloud Computing and Distributed Systems', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('Database Management Systems and Big Data', (SELECT id FROM department WHERE name = 'School of Computing'));
 
+--School of Energy and Electronic Engineering
+INSERT INTO topic (name, department_id) VALUES
+('Smart Grids and Renewable Energy', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Electrical Power Systems and Distribution', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Control Systems and Automation', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Analog and Digital Electronics', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Signal Processing and Communication', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Embedded Systems and Microcontrollers', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Optoelectronics and Photonics', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Robotics and Mechatronics', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Biomedical Engineering and Biosensors', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Nanotechnology and Advanced Materials', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('Electric Vehicles and Sustainable Transportation', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
+
 CREATE TABLE course (
     course_code VARCHAR(12) PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     department_id INT NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
-
+--School of Computing
 INSERT INTO course (course_code, name, department_id) VALUES
 ('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('U2365PYC', 'Computer Networks', (SELECT id FROM department WHERE name = 'School of Computing')),
@@ -54,6 +70,10 @@ INSERT INTO course (course_code, name, department_id) VALUES
 ('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('U0968PYC', 'Software Engineering', (SELECT id FROM department WHERE name = 'School of Computing'));
 
+--School of Energy and Electronic Engineering
+INSERT INTO course (course_code, name, department_id) VALUES
+('U2194PYC', 'Engineering and Technology (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
+('U2174PYC', 'Electronic Engineering (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
 
 CREATE TABLE user (
   id VARCHAR(36) PRIMARY KEY,
