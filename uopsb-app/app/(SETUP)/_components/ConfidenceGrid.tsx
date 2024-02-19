@@ -1,8 +1,10 @@
-import { Topic, TopicConfidence } from "@/app/types";
+import { Topic, TopicConfidence, Course } from "@/app/types";
 import React, { useState } from "react";
 
 interface ConfidenceGridProps {
   topics: Topic[];
+  courses: Course[];
+  course_code: string;
   onConfidenceSelect: (topicConfidence: TopicConfidence[]) => void;
 }
 
@@ -12,6 +14,8 @@ interface TopicConfidenceButton extends TopicConfidence {
 
 const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
   topics,
+  courses,
+  course_code,
   onConfidenceSelect,
 }) => {
   const [topicConfidence, setTopicConfidence] = useState<
@@ -23,6 +27,8 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
       buttonColor: "",
     }))
   );
+
+const CourseDeptId = courses?.find(x => x.course_code === course_code)?.department_id;
 
   const handleConfidenceClick = (topicId: number, confidenceValue: number) => {
     const newTopicConfidence = [...topicConfidence];
@@ -59,28 +65,32 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
 
   return (
     <div className="grid grid-cols-1 gap-4">
-      {topics.map((topic, topicIndex) => (
-        <div key={topic.id} className="flex flex-col items-start gap-2">
-          <span className="text-lg font-semibold">{topic.name}</span>
-          <div className="grid grid-cols-5 gap-2 text-sm">
-            {[1, 2, 3, 4, 5].map((confidenceValue) => (
-              <button
-                key={confidenceValue}
-                type="button"
-                onClick={() => handleConfidenceClick(topic.id, confidenceValue)}
-                className={`w-full p-2 font-semibold border border-gray-300 rounded-md focus:outline-none ${
-                  topicConfidence[topicIndex].confidence_value ===
-                  confidenceValue
-                    ? topicConfidence[topicIndex].buttonColor
-                    : ""
-                }`}
-              >
-                {confidenceValue}
-              </button>
-            ))}
+      {topics
+        .filter((topic) => topic.department_id === CourseDeptId)
+        .map((topic, topicIndex) => (
+          <div key={topic.id} className="flex flex-col items-start gap-2">
+            <span className="text-lg font-semibold">{topic.name}</span>
+            <div className="grid grid-cols-5 gap-2 text-sm">
+              {[1, 2, 3, 4, 5].map((confidenceValue) => (
+                <button
+                  key={confidenceValue}
+                  type="button"
+                  onClick={() =>
+                    handleConfidenceClick(topic.id, confidenceValue)
+                  }
+                  className={`w-full p-2 font-semibold border border-gray-300 rounded-md focus:outline-none ${
+                    topicConfidence[topicIndex].confidence_value ===
+                    confidenceValue
+                      ? topicConfidence[topicIndex].buttonColor
+                      : ""
+                  }`}
+                >
+                  {confidenceValue}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 };

@@ -1,11 +1,13 @@
 export interface Course {
   course_code: string;
   name: string;
+  department_id: string;
 }
 
 export interface Topic {
   name: string;
   id: number;
+  department_id: String;
 }
 
 export interface FormPopulation {

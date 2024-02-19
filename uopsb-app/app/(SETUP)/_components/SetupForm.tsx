@@ -183,6 +183,8 @@ export function SetupForm(formPopulation: FormPopulation) {
         <>
           <ConfidenceGrid
             topics={formPopulation?.topics}
+            courses={formPopulation?.courses}
+            course_code={formik.values.course_code}
             onConfidenceSelect={(updatedConfidence) =>
               formik.setFieldValue("topic_confidence", updatedConfidence)
             }
