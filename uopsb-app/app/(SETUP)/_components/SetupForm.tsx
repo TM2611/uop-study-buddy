@@ -100,6 +100,7 @@ export function SetupForm(formPopulation: FormPopulation) {
   }, [token]); // Runs on initial page load and when the value of 'token' changes
 
   return (
+    <div className="min-h-screen flex items-center justify-center">
     <form
       onSubmit={formik.handleSubmit}
       className="bg-white p-6 rounded-md shadow-xl"
@@ -240,6 +241,7 @@ export function SetupForm(formPopulation: FormPopulation) {
         </>
       )}
     </form>
+    </div>
   );
 }
 
