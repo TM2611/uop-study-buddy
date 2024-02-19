@@ -28,7 +28,9 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
     }))
   );
 
-const CourseDeptId = courses?.find(x => x.course_code === course_code)?.department_id;
+  const CourseDeptId = courses?.find(
+    (x) => x.course_code === course_code
+  )?.department_id;
 
   const handleConfidenceClick = (topicId: number, confidenceValue: number) => {
     const newTopicConfidence = [...topicConfidence];
@@ -65,6 +67,29 @@ const CourseDeptId = courses?.find(x => x.course_code === course_code)?.departme
 
   return (
     <div className="grid grid-cols-1 gap-4">
+      <div className="mb-4">
+        <p>
+          Below is a list of topics related to your selected course. Rate your
+          confidence in each topic on a scale from 1 to 5:
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm">
+          <div className="w-full text-center shadow py-2 px-2 font-semibold text-red-500 bg-red-200 rounded-md">
+            1: Very Low Confidence
+          </div>
+          <div className="w-full text-center shadow py-2 px-2 font-semibold text-orange-500 bg-orange-200 rounded-md">
+            2: Low Confidence
+          </div>
+          <div className="w-full text-center shadow py-2 px-2 font-semibold text-yellow-500 bg-yellow-200 rounded-md">
+            3: Moderate Confidence
+          </div>
+          <div className="w-full text-center shadow py-2 px-2 font-semibold text-green-500 bg-green-200 rounded-md">
+            4: High Confidence
+          </div>
+          <div className="w-full text-center shadow py-2 px-2 font-semibold text-green-700 bg-green-300 rounded-md">
+            5: Very High Confidence
+          </div>
+        </div>
+      </div>
       {topics
         .filter((topic) => topic.department_id === CourseDeptId)
         .map((topic, topicIndex) => (
