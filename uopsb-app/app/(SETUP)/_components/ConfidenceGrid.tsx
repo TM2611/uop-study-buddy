@@ -18,19 +18,23 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
   course_code,
   onConfidenceSelect,
 }) => {
+  const CourseDeptId = courses?.find(
+    (x) => x.course_code === course_code
+  )?.department_id;
+
+  const filteredTopics = topics.filter(
+    (topic) => topic.department_id === CourseDeptId
+  );
+
   const [topicConfidence, setTopicConfidence] = useState<
     TopicConfidenceButton[]
   >(
-    topics.map((topic) => ({
+    filteredTopics.map((topic) => ({
       topic_id: topic.id,
       confidence_value: 0,
       buttonColor: "",
     }))
   );
-
-  const CourseDeptId = courses?.find(
-    (x) => x.course_code === course_code
-  )?.department_id;
 
   const handleConfidenceClick = (topicId: number, confidenceValue: number) => {
     const newTopicConfidence = [...topicConfidence];
@@ -90,32 +94,28 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
           </div>
         </div>
       </div>
-      {topics
-        .filter((topic) => topic.department_id === CourseDeptId)
-        .map((topic, topicIndex) => (
-          <div key={topic.id} className="flex flex-col items-start gap-2">
-            <span className="text-lg font-semibold">{topic.name}</span>
-            <div className="grid grid-cols-5 gap-2 text-sm">
-              {[1, 2, 3, 4, 5].map((confidenceValue) => (
-                <button
-                  key={confidenceValue}
-                  type="button"
-                  onClick={() =>
-                    handleConfidenceClick(topic.id, confidenceValue)
-                  }
-                  className={`w-full p-2 font-semibold border border-gray-300 rounded-md focus:outline-none ${
-                    topicConfidence[topicIndex].confidence_value ===
-                    confidenceValue
-                      ? topicConfidence[topicIndex].buttonColor
-                      : ""
-                  }`}
-                >
-                  {confidenceValue}
-                </button>
-              ))}
-            </div>
+      {filteredTopics.map((topic, topicIndex) => (
+        <div key={topic.id} className="flex flex-col items-start gap-2">
+          <span className="text-lg font-semibold">{topic.name}</span>
+          <div className="grid grid-cols-5 gap-2 text-sm">
+            {[1, 2, 3, 4, 5].map((confidenceValue) => (
+              <button
+                key={confidenceValue}
+                type="button"
+                onClick={() => handleConfidenceClick(topic.id, confidenceValue)}
+                className={`w-full p-2 font-semibold border border-gray-300 rounded-md focus:outline-none ${
+                  topicConfidence[topicIndex].confidence_value ===
+                  confidenceValue
+                    ? topicConfidence[topicIndex].buttonColor
+                    : ""
+                }`}
+              >
+                {confidenceValue}
+              </button>
+            ))}
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 };
