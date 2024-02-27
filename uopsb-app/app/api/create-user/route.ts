@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { createUser } from "../../../server/database";
-import { UserType } from "@/app/types";
+import { UserProfileType } from "@/app/types";
 
 export async function POST(request: any) {
   try {
     const body = await request.text();
-    const user: UserType = JSON.parse(body);
-    const isCreatedUser = await createUser(user);
+    const userProfile: UserProfileType = JSON.parse(body);
+    const isCreatedUser = await createUser(userProfile);
     if (isCreatedUser) {
       return new NextResponse(
         JSON.stringify({
