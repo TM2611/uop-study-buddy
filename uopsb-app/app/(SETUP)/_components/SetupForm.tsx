@@ -54,7 +54,6 @@ const handleSubmit = async (
 ) => {
   const jsonSlots = convertBooleanSlots(values.slots);
   values.slots = jsonSlots; // Replace the bool array with JSON array
-  debugger
   const userProfile = {
     ...user,
     ...values,
