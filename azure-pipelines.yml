@@ -21,19 +21,19 @@ steps:
   displayName: 'npm install and build'
   workingDirectory: 'uopsb-app'
 
-- script: |
-    sudo apt-get update
-    sudo apt-get install -y postgresql-client
-  displayName: 'Install PostgreSQL tools'
+# - script: |
+#     sudo apt-get update
+#     sudo apt-get install -y postgresql-client
+#   displayName: 'Install PostgreSQL tools'
 
-- script: |
-    # Use pipeline variables for PostgreSQL connection information
-    server_name="$(DB_HOST)"
-    server_admin_login="$(DB_USER)"
-    server_admin_password="$(DB_PASSWORD)"
-    server_fqdn="$(DB_HOST)"
-    database_name="$(DB_NAME)"
+# - script: |
+#     # Use pipeline variables for PostgreSQL connection information
+#     server_name="$(DB_HOST)"
+#     server_admin_login="$(DB_USER)"
+#     server_admin_password="$(DB_PASSWORD)"
+#     server_fqdn="$(DB_HOST)"
+#     database_name="$(DB_NAME)"
 
-    # Connect to the PostgreSQL instance and execute the db.sql file
-    PGPASSWORD=$server_admin_password psql -h $server_fqdn -U $server_admin_login@$server_name -d $database_name -f uopsb-app/lib/db.sql
-  displayName: 'Connect and execute db.sql'
+#     # Connect to the PostgreSQL instance and execute the db.sql file
+#     PGPASSWORD=$server_admin_password psql -h $server_fqdn -U $server_admin_login@$server_name -d $database_name -f uopsb-app/lib/db.sql
+#   displayName: 'Connect and execute db.sql'
