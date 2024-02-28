@@ -1,7 +1,8 @@
-import { getFormPopulation } from "@/server/database";
+import pool from "@/lib/db";
+import { FormPopulation, Course, Topic } from "@/app/types";
 import { NextResponse } from "next/server";
 
-export async function GET(request: { json: () => any }) {
+export async function GET() {
   try {
     console.log("in setup-form/route.ts");
     const formPopulation = await getFormPopulation();
@@ -22,5 +23,27 @@ export async function GET(request: { json: () => any }) {
       }),
       { status: 500 }
     );
+  }
+}
+
+async function getFormPopulation() {
+  const client = await pool.connect();
+
+  try {
+    const coursesResult = await client.query(
+      "SELECT * FROM course ORDER BY name"
+    );
+    const topicsResult = await client.query("SELECT * FROM topic");
+
+    const formPopulation: FormPopulation = {
+      courses: coursesResult.rows as Course[],
+      topics: topicsResult.rows as Topic[],
+    };
+    return formPopulation;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
   }
 }
