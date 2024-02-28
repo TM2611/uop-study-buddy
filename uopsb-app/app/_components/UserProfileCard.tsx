@@ -8,8 +8,8 @@ interface UserProfileCardProp {
 }
 
 const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
-  const [showAvailability, setShowAvailability] = useState(false);
   const [slots, setSlots] = useState<SlotDetails[]>([]);
+  const [showAvailability, setShowAvailability] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,8 +25,10 @@ const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
   ): Promise<SlotDetails[]> {
     return [
       { day: "MON", start_hour: 9, end_hour: 11 },
-      { day: "TUE", start_hour: 14, end_hour: 16 },
-      // ...
+      { day: "TUE", start_hour: 13, end_hour: 15 },
+      { day: "WED", start_hour: 9, end_hour: 11 },
+      { day: "THU", start_hour: 13, end_hour: 15 },
+      { day: "FRI", start_hour: 9, end_hour: 11 },
     ];
   }
 
@@ -37,12 +39,27 @@ const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
         src={user.picture}
         alt={`${user.given_name} ${user.family_name} - Profile`}
       />
+
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">{`${user.given_name} ${user.family_name}`}</div>
         <p className="text-gray-700 text-base">{user.email}</p>
         <p className="text-gray-700 text-base">Year: {user.year}</p>
         <p className="text-gray-700 text-base">Course: {user.course_code}</p>
-        <p className="text-gray-700 text-base">Gender: {user.gender}</p>
+        {/* <p className="text-gray-700 text-base">Gender: {user.gender}</p> */}
+        <button
+          onClick={() => setShowAvailability(true)}
+          className="text-blue-500 underline"
+        >
+          Click here to view availability
+        </button>
+        {showAvailability && (
+          <Overlay onClose={() => setShowAvailability(false)}>
+            <div>
+              <h3 className="text-xl font-bold mb-4">Availability</h3>
+              <AvailabilityList slots={slots} />
+            </div>
+          </Overlay>
+        )}
       </div>
       
       <button
