@@ -20,10 +20,10 @@ steps:
     npm run build
   displayName: 'npm install and build'
 
-- task: UsePostgreSQL@1
-  displayName: 'Install PostgreSQL'
-  inputs:
-    version: '11.x'
+- script: |
+    sudo apt-get update
+    sudo apt-get install -y postgresql-client
+  displayName: 'Install PostgreSQL tools'
 
 - script: |
     # Use pipeline variables for PostgreSQL connection information
