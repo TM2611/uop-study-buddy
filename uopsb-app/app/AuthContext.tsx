@@ -2,13 +2,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import { useLocalStorage } from "./_hooks/useLocalStorage";
 
 interface AuthContextValue {
   isLoggedIn: boolean;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   user: any | null;
-  storageToken: string | null;
+  token: string | null;
   googleLogin: (credentialResponse: any) => void;
   logout: () => void;
 }
@@ -21,7 +20,7 @@ const AuthContext = createContext<AuthContextValue>({
   isLoggedIn: false,
   setIsLoggedIn: () => {},
   user: null,
-  storageToken: "",
+  token: "",
   googleLogin: () => {},
   logout: () => {},
 });
@@ -31,37 +30,26 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState("");
   const router = useRouter();
-
-  const [storageToken, setStorageToken] = useLocalStorage("userToken", "");
-  const [isLoggedIn, setIsLoggedIn] = useState(() => !!storageToken);
-
-  useEffect(() => {
-    if (storageToken && !isLoggedIn) {
-      login(storageToken);
-    } else if (isLoggedIn) {
-      getUserFromAPI(storageToken);
-    }
-  }, [isLoggedIn, storageToken]);
-
-  debugger;
 
   useEffect(() => {
     const userToken = localStorage.getItem("userToken");
-    if (userToken && !isLoggedIn) {
+    if (userToken) {
       login(userToken);
-    } else if (isLoggedIn) {
-      getUserFromAPI(storageToken);
     }
-  }, [isLoggedIn, storageToken]);
+  }, []);
 
   const googleLogin = async (credentialResponse: any) => {
     const userToken = credentialResponse.credential;
     login(userToken);
   };
 
-  const getUserFromAPI = async (userToken: string) => {
+  const login = async (userToken: any) => {
+    setToken(userToken);
+    const decodedUser = jwtDecode(userToken);
     try {
       const loginRes = await fetch("/api/login", {
         method: "POST",
@@ -69,26 +57,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userToken}`,
         },
-        body: JSON.stringify(jwtDecode(userToken)),
+        body: JSON.stringify(decodedUser), //just pass in email?
       });
       if (loginRes.ok) {
         const data = await loginRes.json();
         const user = data.user;
+        if (!user) {
+          router.push("/setup-form");
+        }
+
+        setIsLoggedIn(true);
         setUser(user);
+        localStorage.setItem("userToken", userToken);
       } else {
-        console.error("An error occurred while getting user:", loginRes);
+        console.error("An error occurred while logging in:", loginRes);
       }
     } catch (error) {
-      console.error("An error occurred while getting user:", error);
+      console.error("An error occurred while logging in:", error);
     }
-  };
-
-  const login = async (userToken: any) => {
-    setStorageToken(userToken);
-    setIsLoggedIn(true);
-    localStorage.setItem("userToken", userToken);
-    // Call getUserFromAPI to fetch the user data upon successful login
-    await getUserFromAPI(userToken);
   };
 
   const logout = () => {
@@ -99,14 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        setIsLoggedIn,
-        user,
-        storageToken,
-        googleLogin,
-        logout,
-      }}
+      value={{ isLoggedIn, setIsLoggedIn, user, token, googleLogin, logout }}
     >
       {children}
     </AuthContext.Provider>
