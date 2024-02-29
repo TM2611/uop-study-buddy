@@ -23,13 +23,14 @@ const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
   async function fetchUserAvailability(
     userEmail: string
   ): Promise<SlotDetails[]> {
-    return [
-      { day: "MON", start_hour: 9, end_hour: 11 },
-      { day: "TUE", start_hour: 13, end_hour: 15 },
-      { day: "WED", start_hour: 9, end_hour: 11 },
-      { day: "THU", start_hour: 13, end_hour: 15 },
-      { day: "FRI", start_hour: 9, end_hour: 11 },
-    ];
+
+    const response = await fetch(`/api/availability?email=${userEmail}`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user availability");
+    }
+    const data: SlotDetails[] = await response.json();
+    return data;
   }
 
   return (
