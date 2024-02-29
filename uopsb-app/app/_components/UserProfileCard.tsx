@@ -46,20 +46,6 @@ const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
         <p className="text-gray-700 text-base">Year: {user.year}</p>
         <p className="text-gray-700 text-base">Course: {user.course_code}</p>
         {/* <p className="text-gray-700 text-base">Gender: {user.gender}</p> */}
-        <button
-          onClick={() => setShowAvailability(true)}
-          className="text-blue-500 underline"
-        >
-          Click here to view availability
-        </button>
-        {showAvailability && (
-          <Overlay onClose={() => setShowAvailability(false)}>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Availability</h3>
-              <AvailabilityList slots={slots} />
-            </div>
-          </Overlay>
-        )}
       </div>
       
       <button
