@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "../app/AuthContext";
-import UserProfileCard from "./_components/UserProfileCard";
+import UserMatchCard from "./_components/UserMatchCard";
 
 export default function Home() {
   const { isLoggedIn, user } = useAuth();
@@ -8,7 +8,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       {isLoggedIn && user ? (
         <div className="flex flex-col justify-center items-center">
-          <UserProfileCard user={user} />
+          <UserMatchCard user={user} />
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center">

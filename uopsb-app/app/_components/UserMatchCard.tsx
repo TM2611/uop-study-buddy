@@ -7,7 +7,7 @@ interface UserProfileCardProp {
   user: UserType;
 }
 
-const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
+const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
   const [slots, setSlots] = useState<SlotDetails[]>([]);
   const [showAvailability, setShowAvailability] = useState(false);
 
@@ -23,7 +23,6 @@ const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
   async function fetchUserAvailability(
     userEmail: string
   ): Promise<SlotDetails[]> {
-
     const response = await fetch(`/api/availability?email=${userEmail}`);
 
     if (!response.ok) {
@@ -56,6 +55,12 @@ const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
         >
           Availability
         </button>
+        <button
+          onClick={() => console.log("Study button clicked")}
+          className="text-blue-500 border border-purple-800 block text-center py-2 w-1/3"
+        >
+          Study
+        </button>
       </div>
       {showAvailability && (
         <Overlay onClose={() => setShowAvailability(false)}>
@@ -69,4 +74,4 @@ const UserProfileCard: React.FC<UserProfileCardProp> = ({ user }) => {
   );
 };
 
-export default UserProfileCard;
+export default UserMatchCard;
