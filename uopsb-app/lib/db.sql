@@ -101,6 +101,7 @@ CREATE TABLE student (
 
 INSERT INTO student (id, email, given_name, family_name, picture, course_code, gender, year) 
 VALUES 
+-- School of Computing
 ('932756', 'up932756@myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api/portraits/men/0.jpg', 'U0056PYC', 'Male', 1), 
 ('932757', 'up932757@myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api/portraits/women/0.jpg', 'U0056PYC', 'Female', 1), 
 ('932758', 'up932758@myport.ac.uk', 'Zack', 'Smith', 'https://randomuser.me/api/portraits/men/1.jpg', 'U0968PYC', 'Male', 3),
@@ -135,6 +136,59 @@ CREATE TABLE student_confidence (
   FOREIGN KEY (user_id) REFERENCES student(id),
   FOREIGN KEY (topic_id) REFERENCES topic(id)
 );
+
+INSERT INTO student_confidence VALUES
+-- School of Computing 
+('932756', 1, 5),
+('932756', 2, 4),
+('932756', 3, 3),
+('932756', 4, 2),
+('932756', 5, 1),
+('932756', 6, 5),
+('932756', 7, 4),
+('932756', 8, 3),
+('932756', 9, 2),
+('932756', 10, 1),
+('932757', 1, 5),
+('932757', 2, 4),
+('932757', 3, 3),
+('932757', 4, 2),
+('932757', 5, 1),
+('932757', 6, 5),
+('932757', 7, 4),
+('932757', 8, 3),
+('932757', 9, 2),
+('932757', 10, 1),
+('932758', 1, 5),
+('932758', 2, 4),
+('932758', 3, 3),
+('932758', 4, 2),
+('932758', 5, 1),
+('932758', 6, 5),
+('932758', 7, 4),
+('932758', 8, 3),
+('932758', 9, 2),
+('932758', 10, 1),
+('932759', 1, 5),
+('932759', 2, 4),
+('932759', 3, 3),
+('932759', 4, 2),
+('932759', 5, 1),
+('932759', 6, 5),
+('932759', 7, 4),
+('932759', 8, 3),
+('932759', 9, 2),
+('932759', 10, 1),
+('932760', 1, 5),
+('932760', 2, 4),
+('932760', 3, 3),
+('932760', 4, 2),
+('932760', 5, 1),
+('932760', 6, 5),
+('932760', 7, 4),
+('932760', 8, 3),
+('932760', 9, 2),
+('932760', 10, 1);
 
 CREATE TABLE slot (
   id SERIAL PRIMARY KEY,
