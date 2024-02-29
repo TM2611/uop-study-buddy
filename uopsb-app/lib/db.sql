@@ -79,7 +79,7 @@ CREATE TABLE "user" (
   FOREIGN KEY (course_code) REFERENCES course(course_code)
 );
 
-INSERT INTO user (id, email, given_name, family_name, picture, course_code, gender, year) 
+INSERT INTO student (id, email, given_name, family_name, picture, course_code, gender, year) 
 VALUES 
 ('932756', 'up932756@myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api/portraits/men/0.jpg', 'U0056PYC', 'Male', 1), 
 ('932757', 'up932757@myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api/portraits/women/0.jpg', 'U0056PYC', 'Female', 1), 
@@ -107,12 +107,12 @@ VALUES
 ('932779', 'up932779@myport.ac.uk', 'Amelia', 'Long', 'https://randomuser.me/api/portraits/women/12.jpg', 'U0968PYC', 'Female', 1),
 ('932780', 'up932780@myport.ac.uk', 'Louis', 'Baker', 'https://randomuser.me/api/portraits/men/13.jpg', 'U0968PYC', 'Male', 2);
 
-CREATE TABLE user_confidence (
+CREATE TABLE student_confidence (
   user_id VARCHAR(36) NOT NULL,
   topic_id INTEGER NOT NULL,
   confidence_value INTEGER NOT NULL CHECK (confidence_value BETWEEN 1 AND 5),
   PRIMARY KEY (user_id, topic_id),
-  FOREIGN KEY (user_id) REFERENCES user(id),
+  FOREIGN KEY (user_id) REFERENCES student(id),
   FOREIGN KEY (topic_id) REFERENCES topic(id)
 );
 
@@ -122,7 +122,7 @@ CREATE TABLE slot (
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
   start_hour INTEGER NOT NULL,
   end_hour INTEGER NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES user(id)
+  FOREIGN KEY (user_id) REFERENCES student(id)
 );
 
 INSERT INTO slot (user_id, day, start_hour, end_hour) VALUES

@@ -48,7 +48,7 @@ async function createUser(userProfile: UserProfileType) {
 
   try {
     const stmnt = await client.query(
-      `INSERT INTO user (id, email, given_name, family_name, picture, year, course_code, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
       [upNum, email, given_name, family_name, picture, year, courseCode, gender]
     );
     if (stmnt.rowCount !== 1) throw new Error("Could not create user");
@@ -80,7 +80,7 @@ async function insertTopicConfidence(
 
   try {
     const stmnt = await client.query(
-      `INSERT INTO user_confidence (user_id, topic_id, confidence_value) VALUES ($1, $2, $3)`,
+      `INSERT INTO student_confidence (user_id, topic_id, confidence_value) VALUES ($1, $2, $3)`,
       [studentId, topic_id, confidence_value]
     );
     if (stmnt.rowCount !== 1)
