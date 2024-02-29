@@ -3,6 +3,7 @@ import { SlotDetails, UserType } from "@/app/types";
 import Overlay from "./Overlay";
 import AvailabilityList from "./AvailabilityList";
 
+
 interface UserProfileCardProp {
   user: UserType;
 }
@@ -48,20 +49,22 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
         {/* <p className="text-gray-700 text-base">Gender: {user.gender}</p> */}
       </div>
 
-      <div className="flex justify-evenly">
-        <button
-          onClick={() => setShowAvailability(true)}
-          className="text-blue-500 border border-purple-800 block text-center py-2 w-1/3"
-        >
-          Availability
-        </button>
-        <button
-          onClick={() => console.log("Study button clicked")}
-          className="text-blue-500 border border-purple-800 block text-center py-2 w-1/3"
-        >
-          Study
-        </button>
-      </div>
+      <section>
+        <div className="flex justify-evenly w-1/2">
+          <button
+            onClick={() => setShowAvailability(true)}
+            className="text-blue-500 border border-purple-800 block text-center py-2 w-1/3"
+          >
+            Availability
+          </button>
+          <button
+            onClick={() => console.log("Study button clicked")}
+            className="text-blue-500 border border-purple-800 block text-center py-2 w-1/3"
+          >
+            Study
+          </button>
+        </div>
+      </section>
       {showAvailability && (
         <Overlay onClose={() => setShowAvailability(false)}>
           <div>
