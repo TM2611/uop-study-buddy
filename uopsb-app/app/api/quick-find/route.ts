@@ -44,7 +44,7 @@ async function getUsersByCourse(email: string, courseCode: string) {
 
   try {
     const result = await client.query(
-      "SELECT * FROM user WHERE course_code = $1 AND email != $2",
+      "SELECT * FROM student WHERE course_code = $1 AND email != $2",
       [courseCode, email]
     );
     return result.rows;
