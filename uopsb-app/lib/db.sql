@@ -1,15 +1,25 @@
+/*
+ * This SQL file is used to create and populate tables for the application.
+ * It should be uploaded to the Azure PostgreSQL database for the application (best done by using the Azure Commandline Interface).
+ * 
+ * Note: The drop_all_tables() function is intended for development stage only
+ * and should not be used in a production environment.
+ */
 
--- Drop tables if they exist - development phase ONLY
-DROP TABLE IF EXISTS user_confidence;
-DROP TABLE IF EXISTS slot;
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS course;
-DROP TABLE IF EXISTS topic;
-DROP TABLE IF EXISTS department;
+CREATE OR REPLACE FUNCTION drop_all_tables() RETURNS VOID AS $$
+DECLARE
+    table_name RECORD;
+BEGIN
+    FOR table_name IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'DROP TABLE IF EXISTS "' || table_name.tablename || '" CASCADE';
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
 
+SELECT drop_all_tables();
 
 CREATE TABLE department (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
 
@@ -19,7 +29,7 @@ INSERT INTO department (name) VALUES
 
 
 CREATE TABLE topic (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     department_id INT NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
@@ -75,22 +85,21 @@ INSERT INTO course (course_code, name, department_id) VALUES
 ('U2194PYC', 'Engineering and Technology (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
 ('U2174PYC', 'Electronic Engineering (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
 
-CREATE TABLE user (
+CREATE TABLE student (
   id VARCHAR(36) PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
   given_name VARCHAR(255) NOT NULL,
   family_name VARCHAR(255) NOT NULL,
   picture VARCHAR(255),
   course_code VARCHAR(12) NOT NULL,
-  gender TEXT CHECK( gender IN ('Male', 'Female', 'Other', 'Prefer not to say') ) NOT NULL, -- enum psql
+  gender TEXT CHECK( gender IN ('Male', 'Female', 'Other', 'Prefer not to say') ) NOT NULL,
   year INTEGER NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (course_code) REFERENCES course(course_code)
 );
 
-
-INSERT INTO user (id, email, given_name, family_name, picture, course_code, gender, year) 
+INSERT INTO student (id, email, given_name, family_name, picture, course_code, gender, year) 
 VALUES 
 ('932756', 'up932756@myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api/portraits/men/0.jpg', 'U0056PYC', 'Male', 1), 
 ('932757', 'up932757@myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api/portraits/women/0.jpg', 'U0056PYC', 'Female', 1), 
@@ -118,12 +127,12 @@ VALUES
 ('932779', 'up932779@myport.ac.uk', 'Amelia', 'Long', 'https://randomuser.me/api/portraits/women/12.jpg', 'U0968PYC', 'Female', 1),
 ('932780', 'up932780@myport.ac.uk', 'Louis', 'Baker', 'https://randomuser.me/api/portraits/men/13.jpg', 'U0968PYC', 'Male', 2);
 
-CREATE TABLE user_confidence (
+CREATE TABLE student_confidence (
   user_id VARCHAR(36) NOT NULL,
   topic_id INTEGER NOT NULL,
   confidence_value INTEGER NOT NULL CHECK (confidence_value BETWEEN 1 AND 5),
   PRIMARY KEY (user_id, topic_id),
-  FOREIGN KEY (user_id) REFERENCES user(id),
+  FOREIGN KEY (user_id) REFERENCES student(id),
   FOREIGN KEY (topic_id) REFERENCES topic(id)
 );
 
@@ -133,7 +142,7 @@ CREATE TABLE slot (
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
   start_hour INTEGER NOT NULL,
   end_hour INTEGER NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES user(id)
+  FOREIGN KEY (user_id) REFERENCES student(id)
 );
 
 INSERT INTO slot (user_id, day, start_hour, end_hour) VALUES

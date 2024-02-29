@@ -1,8 +1,8 @@
-import { getUsersByCourse } from "@/server/database";
-import { NextResponse } from "next/server";
+import pool from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 import { URL } from "url";
 
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const email = url.searchParams.get("email");
@@ -36,5 +36,22 @@ export async function GET(request: any) {
       }),
       { status: 500 }
     );
+  }
+}
+
+async function getUsersByCourse(email: string, courseCode: string) {
+  const client = await pool.connect();
+
+  try {
+    const result = await client.query(
+      "SELECT * FROM student WHERE course_code = $1 AND email != $2",
+      [courseCode, email]
+    );
+    return result.rows;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
   }
 }

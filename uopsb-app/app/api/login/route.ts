@@ -1,9 +1,8 @@
+import pool from "@/lib/db";
 import { NextResponse } from "next/server";
-import { getUserByEmail } from "../../../server/database";
-import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 
-export async function POST(request: { json: () => any }) {
+export async function POST(request: NextRequest) {
   try {
     console.log("in login/route.ts");
     const creds = await request.json();
@@ -34,5 +33,21 @@ export async function POST(request: { json: () => any }) {
       }),
       { status: 500 }
     );
+  }
+}
+
+async function getUserByEmail(email: string) {
+  const client = await pool.connect();
+
+  try {
+    const result = await client.query("SELECT * FROM student WHERE email = $1", [
+      email,
+    ]);
+    return result.rows[0];
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
   }
 }
