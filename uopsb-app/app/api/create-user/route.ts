@@ -1,6 +1,7 @@
 import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { SlotDetails, UserProfileType } from "@/app/types";
+import { extractUpNum } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 async function createUser(userProfile: UserProfileType) {
   const client = await pool.connect();
   const email = userProfile.email;
-  const upNum = userProfile.email.match(/\d+/); // Extract the UP number email
+  const upNum = extractUpNum(userProfile.email);
   const given_name = userProfile.given_name;
   const family_name = userProfile.family_name;
   const picture = userProfile.picture;
@@ -48,10 +49,12 @@ async function createUser(userProfile: UserProfileType) {
 
   try {
     const stmnt = await client.query(
-      `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [upNum, email, given_name, family_name, picture, year, courseCode, gender]
-    );
+        `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+        [upNum, email, given_name, family_name, picture, year, courseCode, gender]
+      );
     if (stmnt.rowCount !== 1) throw new Error("Could not create user");
+    console.log(stmnt.rows[0]);
+    console.log(stmnt);
 
     for (const topicConfidence of TopicConfidence) {
       await insertTopicConfidence(upNum, topicConfidence);
@@ -72,7 +75,7 @@ async function createUser(userProfile: UserProfileType) {
 }
 
 async function insertTopicConfidence(
-  studentId: RegExpMatchArray | null,
+  studentId: string,
   topicConfidence: { topic_id: number; confidence_value: number }
 ) {
   const client = await pool.connect();
@@ -94,7 +97,7 @@ async function insertTopicConfidence(
 }
 
 async function insertSlots(
-  studentId: RegExpMatchArray | null,
+  studentId: string,
   slot: SlotDetails
 ) {
   const client = await pool.connect();
