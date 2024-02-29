@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { SlotDetails, UserType } from "@/app/types";
 import Overlay from "./Overlay";
 import AvailabilityList from "./AvailabilityList";
-
+import { MdOutlineEventAvailable } from "react-icons/md";
+import { IoBulbOutline } from "react-icons/io5";
 
 interface UserProfileCardProp {
   user: UserType;
@@ -49,21 +50,32 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
         {/* <p className="text-gray-700 text-base">Gender: {user.gender}</p> */}
       </div>
 
-      <section>
+      <section className="flex">
         <div className="flex justify-evenly w-1/2">
           <button
+            type="button"
+            aria-label="Show availability"
             onClick={() => setShowAvailability(true)}
-            className="text-blue-500 border border-purple-800 block text-center py-2 w-1/3"
+            className="text-blue-500 flex items-center justify-center p-2"
           >
-            Availability
+            <MdOutlineEventAvailable size={30} />
           </button>
+
           <button
-            onClick={() => console.log("Study button clicked")}
-            className="text-blue-500 border border-purple-800 block text-center py-2 w-1/3"
+            type="button"
+            aria-label="Show availability"
+            onClick={() => console.log("Confidence button clicked")}
+            className="text-blue-500 flex items-center justify-center p-2"
           >
-            Study
+            <IoBulbOutline size={30} />
           </button>
         </div>
+        <button
+          onClick={() => console.log("Study button clicked")}
+          className="text-blue-500 border bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-1/2"
+        >
+          Study
+        </button>
       </section>
       {showAvailability && (
         <Overlay onClose={() => setShowAvailability(false)}>
