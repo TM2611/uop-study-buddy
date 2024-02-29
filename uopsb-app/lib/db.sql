@@ -1,3 +1,23 @@
+/*
+ * This SQL file is used to create and populate tables for an educational application.
+ * It should be uploaded to the Azure PostgreSQL database for the application.
+ * 
+ * Note: The drop_all_tables() function is intended for development stage only
+ * and should not be used in a production environment.
+ */
+
+CREATE OR REPLACE FUNCTION drop_all_tables() RETURNS VOID AS $$
+DECLARE
+    table_name RECORD;
+BEGIN
+    FOR table_name IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'DROP TABLE IF EXISTS "' || table_name.tablename || '" CASCADE';
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT drop_all_tables();
+
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
@@ -65,7 +85,7 @@ INSERT INTO course (course_code, name, department_id) VALUES
 ('U2194PYC', 'Engineering and Technology (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
 ('U2174PYC', 'Electronic Engineering (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
 
-CREATE TABLE "user" (
+CREATE TABLE student (
   id VARCHAR(36) PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
   given_name VARCHAR(255) NOT NULL,
