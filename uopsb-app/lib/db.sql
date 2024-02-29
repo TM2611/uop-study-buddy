@@ -1,6 +1,6 @@
 /*
- * This SQL file is used to create and populate tables for an educational application.
- * It should be uploaded to the Azure PostgreSQL database for the application.
+ * This SQL file is used to create and populate tables for the application.
+ * It should be uploaded to the Azure PostgreSQL database for the application (best done by using the Azure Commandline Interface).
  * 
  * Note: The drop_all_tables() function is intended for development stage only
  * and should not be used in a production environment.
