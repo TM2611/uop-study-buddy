@@ -38,6 +38,7 @@ export interface UserProfileType extends UserType {
 
 export interface TopicConfidence {
   topic_id: number;
+  topic_name: string;
   confidence_value: number;
 }
 
