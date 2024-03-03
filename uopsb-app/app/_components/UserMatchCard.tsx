@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { SlotDetails, UserType } from "@/app/types";
+import { SlotDetails, TopicConfidence, UserType } from "@/app/types";
 import Overlay from "./Overlay";
 import AvailabilityList from "./AvailabilityList";
+import ConfidenceListOverlay from "./ConfidenceListOverlay";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import { IoBulbOutline } from "react-icons/io5";
 
@@ -11,12 +12,16 @@ interface UserProfileCardProp {
 
 const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
   const [slots, setSlots] = useState<SlotDetails[]>([]);
+  const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
   const [showAvailability, setShowAvailability] = useState(false);
+  const [showConfidence, setShowConfidence] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const userSlots = await fetchUserAvailability(user.email);
+      const userConfidence = await fetchUserConfidence(user.email);
       setSlots(userSlots);
+      setConfidence(userConfidence);
     };
 
     fetchData();
@@ -31,6 +36,18 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
       throw new Error("Failed to fetch user availability");
     }
     const data: SlotDetails[] = await response.json();
+    return data;
+  }
+
+  async function fetchUserConfidence(
+    userEmail: string
+  ): Promise<TopicConfidence[]> {
+    const response = await fetch(`/api/confidence?email=${userEmail}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch user confidence");
+    }
+    const data: TopicConfidence[] = await response.json();
+    console.log("userConfidence", data);
     return data;
   }
 
@@ -63,8 +80,8 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
 
           <button
             type="button"
-            aria-label="Show availability"
-            onClick={() => console.log("Confidence button clicked")}
+            aria-label="Show confidence"
+            onClick={() => setShowConfidence(true)}
             className="text-blue-500 flex items-center justify-center p-2"
           >
             <IoBulbOutline size={30} />
@@ -82,6 +99,14 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
           <div>
             <h3 className="text-lg font-bold mb-4">Availability</h3>
             <AvailabilityList slots={slots} />
+          </div>
+        </Overlay>
+      )}
+      {showConfidence && (
+        <Overlay onClose={() => setShowConfidence(false)}>
+          <div>
+            <h3 className="text-lg font-bold mb-4">Confidence</h3>
+            <ConfidenceListOverlay confidence={confidence} />
           </div>
         </Overlay>
       )}
