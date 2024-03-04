@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SlotDetails, TopicConfidence, UserType } from "@/app/types";
+import { AvailabilitySlot, TopicConfidence, UserType } from "@/app/types";
 import Overlay from "./Overlay";
 import AvailabilityOverlay from "./AvailabilityOverlay";
 import ConfidenceOverlay from "./ConfidenceOverlay";
@@ -11,16 +11,16 @@ interface UserProfileCardProp {
 }
 
 const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
-  const [slots, setSlots] = useState<SlotDetails[]>([]);
+  const [availabilitySlots, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
   const [showAvailability, setShowAvailability] = useState(false);
   const [showConfidence, setShowConfidence] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const userSlots = await fetchUserAvailability(user.email);
+      const availability = await fetchUserAvailability(user.email);
       const userConfidence = await fetchUserConfidence(user.email);
-      setSlots(userSlots);
+      setAvailability(availability);
       setConfidence(userConfidence);
     };
 
@@ -29,13 +29,13 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
 
   async function fetchUserAvailability(
     userEmail: string
-  ): Promise<SlotDetails[]> {
+  ): Promise<AvailabilitySlot[]> {
     const response = await fetch(`/api/availability?email=${userEmail}`);
 
     if (!response.ok) {
-      throw new Error("Failed to fetch user availability");
+      throw new Error("Failed to fetch user availabilitySlots");
     }
-    const data: SlotDetails[] = await response.json();
+    const data: AvailabilitySlot[] = await response.json();
     return data;
   }
 
@@ -71,7 +71,7 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
         <div className="flex justify-evenly w-1/2">
           <button
             type="button"
-            aria-label="Show availability"
+            aria-label="Show availabilitySlots"
             onClick={() => setShowAvailability(true)}
             className="text-blue-500 flex items-center justify-center p-2"
           >
@@ -96,7 +96,7 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
       </section>
       {showAvailability && (
         <AvailabilityOverlay
-          slots={slots}
+          availabilitySlots={availabilitySlots}
           setShowAvailability={setShowAvailability}
         />
       )}

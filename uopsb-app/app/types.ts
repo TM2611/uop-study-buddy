@@ -25,14 +25,18 @@ export interface UserType {
   gender: string;
 }
 
-export interface SlotDetails {
+export interface AvailabilitySlot {
   day: string;
   start_hour: number;
   end_hour: number;
 }
 
+export interface SessionSlot extends AvailabilitySlot {
+  date: string;
+}
+
 export interface UserProfileType extends UserType {
-  slots: [SlotDetails];
+  slots: [AvailabilitySlot];
   topic_confidence: TopicConfidence[];
 }
 

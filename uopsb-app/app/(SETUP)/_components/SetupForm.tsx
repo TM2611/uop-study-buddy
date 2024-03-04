@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { useFormik } from "formik";
 import {
-  SlotDetails,
+  AvailabilitySlot,
   Course,
   FormPopulation,
   SetupFormInitValues,
@@ -16,10 +16,10 @@ import { TimeSlotGrid } from "./TimeSlotGrid";
 import ConfidenceGrid from "./ConfidenceGrid";
 import Form from "@/app/_components/Form";
 
-function convertBooleanSlots(slotsBool: boolean[][]): SlotDetails[] {
+function convertBooleanSlots(slotsBool: boolean[][]): AvailabilitySlot[] {
   try {
     const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-    let slots: SlotDetails[] = [];
+    let slots: AvailabilitySlot[] = [];
 
     days.forEach((day, dayIndex) => {
       let startHour: number | null = null;

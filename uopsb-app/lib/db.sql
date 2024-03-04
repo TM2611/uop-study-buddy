@@ -190,7 +190,7 @@ INSERT INTO student_confidence VALUES
 ('932760', 9, 2),
 ('932760', 10, 1);
 
-CREATE TABLE slot (
+CREATE TABLE availability (
   id SERIAL PRIMARY KEY,
   user_id VARCHAR(36) NOT NULL,
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
@@ -199,7 +199,7 @@ CREATE TABLE slot (
   FOREIGN KEY (user_id) REFERENCES student(id)
 );
 
-INSERT INTO slot (user_id, day, start_hour, end_hour) VALUES
+INSERT INTO availability (user_id, day, start_hour, end_hour) VALUES
 ('932756', 'MON', 9, 11),
 ('932756', 'TUE', 14, 16),
 ('932757', 'TUE', 13, 14),
