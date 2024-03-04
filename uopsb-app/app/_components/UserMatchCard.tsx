@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { SlotDetails, TopicConfidence, UserType } from "@/app/types";
 import Overlay from "./Overlay";
-import AvailabilityList from "./AvailabilityList";
-import ConfidenceListOverlay from "./ConfidenceListOverlay";
+import AvailabilityOverlay from "./AvailabilityOverlay";
+import ConfidenceOverlay from "./ConfidenceOverlay";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import { IoBulbOutline } from "react-icons/io5";
 
@@ -95,20 +95,16 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
         </button>
       </section>
       {showAvailability && (
-        <Overlay onClose={() => setShowAvailability(false)}>
-          <div>
-            <h3 className="text-lg font-bold mb-4">Availability</h3>
-            <AvailabilityList slots={slots} />
-          </div>
-        </Overlay>
+        <AvailabilityOverlay
+          slots={slots}
+          setShowAvailability={setShowAvailability}
+        />
       )}
       {showConfidence && (
-        <Overlay onClose={() => setShowConfidence(false)}>
-          <div>
-            <h3 className="text-lg font-bold mb-4">Confidence</h3>
-            <ConfidenceListOverlay confidence={confidence} />
-          </div>
-        </Overlay>
+        <ConfidenceOverlay
+          confidence={confidence}
+          setShowConfidence={setShowConfidence}
+        />
       )}
     </div>
   );
