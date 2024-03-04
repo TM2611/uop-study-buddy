@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import UserProfileCard from "../../_components/UserProfileCard";
+import UserMatchCard from "../../_components/UserMatchCard";
 import { UserType } from "@/app/types";
 
 type QuickFindProps = {
@@ -36,9 +36,7 @@ const QuickFind: React.FC<QuickFindProps> = ({ currentUser }) => {
       >
         Quick Find
       </button>
-      {showProfileCard && selectedUser && (
-        <UserProfileCard user={selectedUser} />
-      )}
+      {showProfileCard && selectedUser && <UserMatchCard user={selectedUser} />}
     </div>
   );
 };

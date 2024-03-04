@@ -6,8 +6,16 @@ interface OverlayProps {
 }
 
 const Overlay: React.FC<OverlayProps> = ({ children, onClose }) => {
+  const handleOuterClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
+    <div
+      className="absolute inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50"
+      onClick={handleOuterClick}
+    >
       <div className="relative bg-white p-6 rounded shadow-lg">
         {children}
         <button

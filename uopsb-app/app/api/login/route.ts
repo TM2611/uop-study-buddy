@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("in login/route.ts");
     const creds = await request.json();
     const user = await getUserByEmail(creds.email);
     if (user) {
