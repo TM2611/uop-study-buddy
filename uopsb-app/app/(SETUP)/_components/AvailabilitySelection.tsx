@@ -1,19 +1,13 @@
 import TimeSlotGrid from "@/app/_components/TimeSlotGrid";
 import { useState } from "react";
-
-const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-const hours = Array.from({ length: 24 }, (_, i) => i);
+import { hours, days, initSlotStates } from "@/lib/constants";
 
 export default function AvailabilitySelection({
   onChange,
 }: {
   onChange: (slotStates: boolean[][]) => void;
 }) {
-  const [slotStates, setSlotStates] = useState(
-    Array(7)
-      .fill(null)
-      .map(() => Array(24).fill(false))
-  );
+  const [slotStates, setSlotStates] = useState(initSlotStates);
 
   const toggleAvailability = (dayIndex: number, hourIndex: number) => {
     const newSlotStates = [...slotStates];
