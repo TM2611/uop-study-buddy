@@ -8,13 +8,19 @@ export default function TimeSlotGrid({
   hours,
   days,
   slotStates,
-  toggleAvailability,
+  setSlotStates,
 }: {
   hours: number[];
   days: string[];
   slotStates: boolean[][];
-  toggleAvailability: (dayIndex: number, hour: number) => void;
+  setSlotStates: (slotStates: boolean[][]) => void;
 }) {
+  const toggleAvailability = (dayIndex: number, hourIndex: number) => {
+    const newSlotStates = [...slotStates];
+    newSlotStates[dayIndex][hourIndex] = !newSlotStates[dayIndex][hourIndex];
+    setSlotStates(newSlotStates);
+  };
+
   return (
     <table className="w-full text-center">
       <thead>

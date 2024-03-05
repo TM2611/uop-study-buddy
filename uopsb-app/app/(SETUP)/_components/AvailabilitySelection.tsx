@@ -1,5 +1,5 @@
 import TimeSlotGrid from "@/app/_components/TimeSlotGrid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { hours, days, initSlotStates } from "@/lib/constants";
 
 export default function AvailabilitySelection({
@@ -9,12 +9,10 @@ export default function AvailabilitySelection({
 }) {
   const [slotStates, setSlotStates] = useState(initSlotStates);
 
-  const toggleAvailability = (dayIndex: number, hourIndex: number) => {
-    const newSlotStates = [...slotStates];
-    newSlotStates[dayIndex][hourIndex] = !newSlotStates[dayIndex][hourIndex];
-    setSlotStates(newSlotStates);
-    onChange(newSlotStates);
-  };
+  useEffect(() => {
+    onChange(slotStates);
+
+  }, [slotStates]);
 
   // Helper functions for button handlers
   const selectAll = () => {
@@ -95,7 +93,7 @@ export default function AvailabilitySelection({
         hours={hours}
         days={days}
         slotStates={slotStates}
-        toggleAvailability={toggleAvailability}
+        setSlotStates={setSlotStates}
       />
     </div>
   );
