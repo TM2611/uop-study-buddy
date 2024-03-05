@@ -11,21 +11,28 @@ interface UserProfileCardProp {
 }
 
 const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
-  const [availabilitySlots, setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [availabilitySlots, setAvailabilitySlots] = useState<
+    AvailabilitySlot[]
+  >([]);
   const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
-  const [showAvailability, setShowAvailability] = useState(false);
-  const [showConfidence, setShowConfidence] = useState(false);
+  const [showAvailabilityOverlay, setShowAvailabilityOverlay] = useState(false);
+  const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
+  const [showSessionSelection, setShowSessionSelection] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const availability = await fetchUserAvailability(user.email);
+      const availabilitySlots = await fetchUserAvailability(user.email);
       const userConfidence = await fetchUserConfidence(user.email);
-      setAvailability(availability);
+      setAvailabilitySlots(availabilitySlots);
       setConfidence(userConfidence);
     };
 
     fetchData();
   }, [user.email]);
+
+  const handleStudyButtonClick = () => {
+    setShowSessionSelection((prev) => !prev);
+  };
 
   async function fetchUserAvailability(
     userEmail: string
@@ -72,7 +79,7 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
           <button
             type="button"
             aria-label="Show availabilitySlots"
-            onClick={() => setShowAvailability(true)}
+            onClick={() => setShowAvailabilityOverlay(true)}
             className="text-blue-500 flex items-center justify-center p-2"
           >
             <MdOutlineEventAvailable size={30} />
@@ -81,29 +88,29 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
           <button
             type="button"
             aria-label="Show confidence"
-            onClick={() => setShowConfidence(true)}
+            onClick={() => setShowConfidenceOverlay(true)}
             className="text-blue-500 flex items-center justify-center p-2"
           >
             <IoBulbOutline size={30} />
           </button>
         </div>
         <button
-          onClick={() => console.log("Study button clicked")}
+          onClick={() => handleStudyButtonClick()}
           className="text-blue-500 border bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-1/2"
         >
           Study
         </button>
       </section>
-      {showAvailability && (
+      {showAvailabilityOverlay && (
         <AvailabilityOverlay
           availabilitySlots={availabilitySlots}
-          setShowAvailability={setShowAvailability}
+          setShowAvailabilityOverlay={setShowAvailabilityOverlay}
         />
       )}
-      {showConfidence && (
+      {showConfidenceOverlay && (
         <ConfidenceOverlay
           confidence={confidence}
-          setShowConfidence={setShowConfidence}
+          setShowConfidenceOverlay={setShowConfidenceOverlay}
         />
       )}
     </div>

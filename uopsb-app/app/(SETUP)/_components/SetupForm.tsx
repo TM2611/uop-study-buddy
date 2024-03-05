@@ -12,11 +12,11 @@ import {
   SetupFormInitValues,
 } from "@/app/types";
 
-import { TimeSlotGrid } from "./TimeSlotGrid";
+import AvailabilitySelection from "./AvailabilitySelection";
 import ConfidenceGrid from "./ConfidenceGrid";
 import Form from "@/app/_components/Form";
 
-function convertBooleanSlots(slotsBool: boolean[][]): AvailabilitySlot[] {
+function convertBooleanSlots(slotStates: boolean[][]): AvailabilitySlot[] {
   try {
     const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
     let slots: AvailabilitySlot[] = [];
@@ -24,7 +24,7 @@ function convertBooleanSlots(slotsBool: boolean[][]): AvailabilitySlot[] {
     days.forEach((day, dayIndex) => {
       let startHour: number | null = null;
 
-      slotsBool[dayIndex].forEach((hourAvailable, hourIndex) => {
+      slotStates[dayIndex].forEach((hourAvailable, hourIndex) => {
         if (hourAvailable && startHour === null) {
           startHour = hourIndex;
         }
@@ -52,8 +52,8 @@ const handleSubmit = async (
   router: any,
   setIsLoggedIn: any
 ) => {
-  const jsonSlots = convertBooleanSlots(values.slots);
-  values.slots = jsonSlots; // Replace the bool array with JSON array
+  const availabilitySlots = convertBooleanSlots(values.slots);
+  values.slots = availabilitySlots; // Replace the bool array with JSON array
   const userProfile = {
     ...user,
     ...values,
@@ -183,9 +183,9 @@ export function SetupForm(formPopulation: FormPopulation) {
         <label className="block text-purple-700 font-bold mb-2">
           Availability
         </label>
-        <TimeSlotGrid
-          onChange={(newAvailability) =>
-            formik.setFieldValue("slots", newAvailability)
+        <AvailabilitySelection
+          onChange={(newSlotStates) =>
+            formik.setFieldValue("slots", newSlotStates)
           }
         />
       </div>

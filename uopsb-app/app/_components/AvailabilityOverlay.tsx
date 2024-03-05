@@ -5,7 +5,7 @@ import { AvailabilitySlot } from "../types";
 
 interface AvailabilityListProps {
   availabilitySlots: AvailabilitySlot[];
-  setShowAvailability: (show: boolean) => void;
+  setShowAvailabilityOverlay: (show: boolean) => void;
 }
 
 const formatHour = (hour: number): string => {
@@ -16,10 +16,10 @@ const formatHour = (hour: number): string => {
 
 const AvailabilityList: React.FC<AvailabilityListProps> = ({
   availabilitySlots,
-  setShowAvailability,
+  setShowAvailabilityOverlay,
 }) => {
   return (
-    <Overlay onClose={() => setShowAvailability(false)}>
+    <Overlay onClose={() => setShowAvailabilityOverlay(false)}>
       <div>
         <h3 className="text-lg font-bold mb-4">Availability</h3>
       </div>
