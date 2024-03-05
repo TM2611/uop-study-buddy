@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import UserMatchCard from "../../_components/UserMatchCard";
+import UserMatchCard from "./UserMatchCard";
 import { UserType } from "@/app/types";
 
 type QuickFindProps = {

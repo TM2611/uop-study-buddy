@@ -2,7 +2,7 @@
 
 import React from "react";
 import StudyStatsOverview from "../_components/StudyStatsOverview";
-import QuickFind from "../_components/QuickFind";
+
 import { useAuth } from "@/app/AuthContext";
 
 const Dashboard = () => {
@@ -15,9 +15,7 @@ const Dashboard = () => {
           totalStudyTime={0}
           upcomingStudySessions={0}
         />
-        <section>
-          <QuickFind currentUser={user} />
-        </section>
+        <section></section>
       </section>
       {/* Other sections of the dashboard */}
     </section>
