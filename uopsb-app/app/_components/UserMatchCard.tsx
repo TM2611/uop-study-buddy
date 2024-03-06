@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AvailabilitySlot, TopicConfidence, UserType } from "@/app/types";
+import { fetchUserAvailability, fetchUserConfidence } from "@/lib/api";
 import Overlay from "./Overlay";
 import AvailabilityOverlay from "./AvailabilityOverlay";
 import ConfidenceOverlay from "./ConfidenceOverlay";
@@ -33,30 +34,6 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
   const handleStudyButtonClick = () => {
     setShowSessionSelection((prev) => !prev);
   };
-
-  async function fetchUserAvailability(
-    userEmail: string
-  ): Promise<AvailabilitySlot[]> {
-    const response = await fetch(`/api/availability?email=${userEmail}`);
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user availabilitySlots");
-    }
-    const data: AvailabilitySlot[] = await response.json();
-    return data;
-  }
-
-  async function fetchUserConfidence(
-    userEmail: string
-  ): Promise<TopicConfidence[]> {
-    const response = await fetch(`/api/confidence?email=${userEmail}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch user confidence");
-    }
-    const data: TopicConfidence[] = await response.json();
-    console.log("userConfidence", data);
-    return data;
-  }
 
   return (
     <div className="relative max-w-xs rounded overflow-hidden shadow-lg bg-white">
