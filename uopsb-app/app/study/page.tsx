@@ -9,14 +9,12 @@ import { TopicConfidence } from "../types";
 
 const Study = () => {
   const { user } = useAuth();
-  const [activeUserConfidence, setActiveUserConfidence] = useState<
-    TopicConfidence[]
-  >([]);
+  let activeUserConfidence: TopicConfidence[] = []; // Holds the active user's list of topics and confidence value for each 
 
   useEffect(() => {
     const fetchData = async () => {
       const userConfidence = await fetchUserConfidence(user.email);
-      setActiveUserConfidence(userConfidence);
+      activeUserConfidence = userConfidence;
     };
 
     if (user) {
