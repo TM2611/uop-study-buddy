@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AvailabilitySlot, TopicConfidence, UserType } from "@/app/types";
 import { fetchUserAvailability, fetchUserConfidence } from "@/lib/api";
-import Overlay from "./Overlay";
 import AvailabilityOverlay from "./AvailabilityOverlay";
 import ConfidenceOverlay from "./ConfidenceOverlay";
 import { MdOutlineEventAvailable } from "react-icons/md";
@@ -9,16 +8,24 @@ import { IoBulbOutline } from "react-icons/io5";
 
 interface UserProfileCardProp {
   user: UserType;
+  onStudyButtonClick: () => void;
+  showSessionSelection: boolean;
 }
 
-const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
+const UserMatchCard: React.FC<UserProfileCardProp> = ({
+  user,
+  onStudyButtonClick,
+}) => {
   const [availabilitySlots, setAvailabilitySlots] = useState<
     AvailabilitySlot[]
   >([]);
   const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
   const [showAvailabilityOverlay, setShowAvailabilityOverlay] = useState(false);
   const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
-  const [showSessionSelection, setShowSessionSelection] = useState(false);
+
+  const handleStudyButtonClick = () => {
+    onStudyButtonClick();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,10 +37,6 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
 
     fetchData();
   }, [user.email]);
-
-  const handleStudyButtonClick = () => {
-    setShowSessionSelection((prev) => !prev);
-  };
 
   return (
     <div className="relative max-w-xs rounded overflow-hidden shadow-lg bg-white">
