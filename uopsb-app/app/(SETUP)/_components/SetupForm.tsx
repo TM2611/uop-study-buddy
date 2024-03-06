@@ -15,37 +15,8 @@ import {
 import AvailabilitySelection from "./AvailabilitySelection";
 import ConfidenceGrid from "./ConfidenceGrid";
 import Form from "@/app/_components/Form";
+import { convertBooleanSlots } from "@/lib/utils";
 
-function convertBooleanSlots(slotStates: boolean[][]): AvailabilitySlot[] {
-  try {
-    const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-    let slots: AvailabilitySlot[] = [];
-
-    days.forEach((day, dayIndex) => {
-      let startHour: number | null = null;
-
-      slotStates[dayIndex].forEach((hourAvailable, hourIndex) => {
-        if (hourAvailable && startHour === null) {
-          startHour = hourIndex;
-        }
-
-        if ((!hourAvailable || hourIndex === 23) && startHour !== null) {
-          slots.push({
-            day,
-            start_hour: startHour,
-            end_hour: hourIndex,
-          });
-          startHour = null;
-        }
-      });
-    });
-
-    return slots;
-  } catch (error) {
-    console.error("Error converting Boolean slots to JSON:", error);
-    return [];
-  }
-}
 const handleSubmit = async (
   values: any,
   user: any,
