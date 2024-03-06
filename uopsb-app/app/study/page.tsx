@@ -15,7 +15,7 @@ const Study = () => {
   >([]); // Holds the active user's list of topics and confidence value for each
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [showProfileCard, setShowProfileCard] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState<string>("");
+  const [selectedTopicId, setSelectedTopic] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,7 +53,7 @@ const Study = () => {
         <div className="m-4">
           <select
             className="border rounded p-2"
-            value={selectedTopic}
+            value={selectedTopicId}
             onChange={handleTopicChange}
           >
             <option value="" disabled>
@@ -64,7 +64,7 @@ const Study = () => {
                 {x.topic_name}
               </option>
             ))}
-            <option value="n/a">N/A</option>
+            <option value="0">N/A</option>
           </select>
         </div>
         <h2 className="text-2xl font-semibold mb-4">
@@ -75,7 +75,7 @@ const Study = () => {
             currentUser={user}
             activeUserConfidence={activeUserConfidence}
             onMatch={handleMatch}
-            disabled={!selectedTopic}
+            selectedTopicId={selectedTopicId}
           />
         </div>
       </section>

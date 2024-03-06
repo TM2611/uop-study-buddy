@@ -4,14 +4,14 @@ import { UserType, TopicConfidence } from "@/app/types";
 type MatchButtonProps = {
   currentUser: UserType;
   onMatch: (user: UserType) => void;
-  disabled: boolean;
+  selectedTopicId: string;
   activeUserConfidence: TopicConfidence[];
 };
 
 const MatchButton: React.FC<MatchButtonProps> = ({
   currentUser,
   onMatch,
-  disabled,
+  selectedTopicId,
   activeUserConfidence,
 }) => {
   const fetchRandomUser = async () => {
@@ -30,12 +30,14 @@ const MatchButton: React.FC<MatchButtonProps> = ({
     console.log("Random user", randomUser);
     onMatch(randomUser);
   };
+  const isDisabled = !selectedTopicId;
+
   return (
     <button
       onClick={handleClick}
-      disabled={disabled}
+      disabled={isDisabled}
       className={`${
-        disabled ? "bg-blue-300" : "bg-blue-500 hover:bg-blue-700"
+        isDisabled ? "bg-blue-300" : "bg-blue-500 hover:bg-blue-700"
       } text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
     >
       Quick Find
