@@ -8,7 +8,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       {isLoggedIn && user ? (
         <div className="flex flex-col justify-center items-center">
-          <UserMatchCard user={user} />
+          {`Welcome, ${user.given_name}`}
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center">
