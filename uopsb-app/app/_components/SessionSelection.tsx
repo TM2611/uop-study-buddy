@@ -35,10 +35,10 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       <div className="flex justify-between mb-2">
         <button
           type="button"
-          className="py-1 px-2 rounded-md bg-blue-500 text-white"
+          className="py-1 px-2 rounded-md bg-blue-500 text-white text-sm"
           onClick={handlePreviousWeek}
         >
-          &lt; Previous Week
+          &lt; Previous
         </button>
         <span>{dateRange}</span>
         <button
@@ -46,7 +46,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
           className="py-1 px-2 rounded-md bg-blue-500 text-white"
           onClick={handleNextWeek}
         >
-          Next Week &gt;
+          Next &gt;
         </button>
       </div>
 
