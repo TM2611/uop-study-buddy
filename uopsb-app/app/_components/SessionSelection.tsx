@@ -2,6 +2,7 @@ import { initSlotStates, hours, days } from "@/lib/constants";
 import { useState, useEffect } from "react";
 import TimeSlotGrid from "./TimeSlotGrid";
 import Overlay from "./Overlay";
+import dayjs from "dayjs";
 
 interface SessionSelectionProps {
   setShowSessionSelection: (value: boolean) => void;
@@ -11,8 +12,19 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   setShowSessionSelection,
 }) => {
   const [slotStates, setSlotStates] = useState(initSlotStates);
+  const [activeDate, setActiveDate] = useState(dayjs().startOf("week"));
 
-  // Add helper functions and event handlers for week selection arrows
+  const handlePreviousWeek = () => {
+    setActiveDate(activeDate.subtract(1, "week"));
+  };
+
+  const handleNextWeek = () => {
+    setActiveDate(activeDate.add(1, "week"));
+  };
+
+  const dateRange = `${activeDate.format("DD/MM/YY")} - ${activeDate
+    .add(6, "day")
+    .format("DD/MM/YY")}`;
 
   return (
     <Overlay onClose={() => setShowSessionSelection(false)}>
@@ -21,14 +33,15 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         <button
           type="button"
           className="py-1 px-2 rounded-md bg-blue-500 text-white"
-          // Add event handler for the previous week arrow
+          onClick={handlePreviousWeek}
         >
           &lt; Previous Week
         </button>
+        <span>{dateRange}</span>
         <button
           type="button"
           className="py-1 px-2 rounded-md bg-blue-500 text-white"
-          // Add event handler for the next week arrow
+          onClick={handleNextWeek}
         >
           Next Week &gt;
         </button>
