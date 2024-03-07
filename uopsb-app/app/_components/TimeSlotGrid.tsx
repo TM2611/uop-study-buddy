@@ -52,7 +52,7 @@ export default function TimeSlotGrid({
                     availabilityStates[dayIndex][hours.indexOf(hour)] === 1
                       ? "bg-purple-500"
                       : availabilityStates[dayIndex][hours.indexOf(hour)] === -1
-                      ? "bg-black"
+                      ? "bg-slate-600"
                       : "bg-white"
                   }`}
                   onClick={() =>
