@@ -39,7 +39,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         const availabilitySlots: AvailabilitySlot[] = await response.json();
         const availabilityStates = availabilitySlotsToStates(availabilitySlots);
         const updatedAvailabilityStates =
-          includeUnavailableStates(availabilityStates);
+          includeOccupiedSlots(availabilityStates);
         setAvailabilityStates(updatedAvailabilityStates);
       } catch (error) {
         console.error("Failed to fetch user availabilitySlots", error);
@@ -102,7 +102,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
     availabilityStates.forEach((row, rowIndex) => {
       row.forEach((value, colIndex) => {
-        if (value === 1) {
+        if (value === 0) {
           UnavailableIndexes.push([rowIndex, colIndex]);
         }
       });
@@ -111,16 +111,12 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     return UnavailableIndexes;
   }
 
-  function includeUnavailableStates(
+  function includeOccupiedSlots(
     availabilityStates: WeeklyAvailabilityStates
   ): WeeklyAvailabilityStates {
-    // TODO: will need to combine with bookings
     const unavailableIndexes = getUnavailableIndexes(availabilityStates);
     const updatedStates = availabilityStates.map((row) => [...row]); // Create a shallow copy of the 2D array
-
-    unavailableIndexes.forEach(([rowIndex, colIndex]) => {
-      updatedStates[rowIndex][colIndex] = -1;
-    });
+    // TODO: will need to combine with bookings
 
     return updatedStates;
   }

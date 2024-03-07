@@ -58,7 +58,7 @@ export function availabilitySlotsToStates(
   try {
     // Initialize a 2D array with all values set to 0 (AvailabilityStatus)
     const availabilityStates: WeeklyAvailabilityStates = days.map(() =>
-      hours.map(() => 0 as AvailabilityStatus)
+      hours.map(() => -1 as AvailabilityStatus) // Grey out all slots
     );
 
     availabilitySlots.forEach((slot) => {
@@ -72,7 +72,7 @@ export function availabilitySlotsToStates(
           hourIndex < endHourIndex;
           hourIndex++
         ) {
-          availabilityStates[dayIndex][hourIndex] = 1; // Set the AvailabilityStatus to 1
+          availabilityStates[dayIndex][hourIndex] = 0; // Set the AvailabilityStatus to 0
         }
       }
     });
