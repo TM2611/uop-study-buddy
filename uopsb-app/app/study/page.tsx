@@ -106,6 +106,7 @@ const Study = () => {
             </button>
             <SessionSelection
               setShowSessionSelection={setShowSessionSelection}
+              selectedUser={selectedUser}
             />
           </div>
         </div>

@@ -5,13 +5,14 @@ import Overlay from "./Overlay";
 import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import { convertBooleanSlots } from "@/lib/utils";
-import { AvailabilitySlot } from "../types";
+import { AvailabilitySlot, UserType } from "../types";
 import Popup from "./Popup";
 
 dayjs.extend(isoWeek);
 
 interface SessionSelectionProps {
   setShowSessionSelection: (value: boolean) => void;
+  selectedUser: UserType | null;
 }
 
 const SessionSelection: React.FC<SessionSelectionProps> = ({
@@ -24,6 +25,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
 
+  // Check if any slots are selected before enabling confirm button
   useEffect(() => {
     const containsTrue = slotStates.some((row) =>
       row.some((item) => item === true)
@@ -87,34 +89,32 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
   const dateRange = getDateRange(activeDate);
 
-  useEffect(() => {
-    if (showConfirmPopup) {
-      const selectedSlots = convertBooleanSlots(slotStates);
-      const sessionTimes = getSelectedDateTimes(selectedSlots, activeDate);
-      setSelectedDateTime(sessionTimes);
+  const onConfirmClick = () => {
+    setShowConfirmPopup(true);
+    const selectedSlots = convertBooleanSlots(slotStates);
+    const sessionTimes = getSelectedDateTimes(selectedSlots, activeDate);
+    setSelectedDateTime(sessionTimes);
 
-      if (!selectedDateTime) {
-        alert("Please select a date and time.");
-        setShowConfirmPopup(false);
-        return;
-      }
-
-      const content = (
-        <div>
-          <span className="font-bold">
-            Are you sure you would like to request the following session(s)?
-          </span>
-          <ul className="list-disc p-2">
-            {sessionTimes.map((session) => (
-              <li key={session}>{session}</li>
-            ))}
-          </ul>
-        </div>
-      );
-
-      setPopupContent(content);
+    if (!selectedDateTime) {
+      alert("Please select a date and time.");
+      setShowConfirmPopup(false);
+      return;
     }
-  }, [showConfirmPopup, slotStates, activeDate]);
+    const content = (
+      <div>
+        <span className="font-bold">
+          Are you sure you would like to request the following session(s)?
+        </span>
+        <ul className="list-disc p-2">
+          {sessionTimes.map((session) => (
+            <li key={session}>{session}</li>
+          ))}
+        </ul>
+      </div>
+    );
+
+    setPopupContent(content);
+  };
 
   return (
     <Overlay onClose={() => setShowSessionSelection(false)}>
@@ -152,7 +152,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
           className={`py-1 px-2 mt-4 rounded-md  ${
             isConfirmDisabled ? `bg-gray-500` : `bg-blue-500 text-white`
           } `}
-          onClick={() => setShowConfirmPopup(true)}
+          onClick={() => onConfirmClick()}
           disabled={isConfirmDisabled}
         >
           Confirm
