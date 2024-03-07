@@ -42,9 +42,11 @@ export default function TimeSlotGrid({
                 <button
                   type="button"
                   className={`w-8 h-8 border border-black rounded-md ${
-                    slotStates[dayIndex][hour] ? "bg-purple-500" : "bg-white"
+                    slotStates[dayIndex][hours.indexOf(hour)] ? "bg-purple-500" : "bg-white"
                   }`}
-                  onClick={() => toggleAvailability(dayIndex, hour)}
+                  onClick={() =>
+                    toggleAvailability(dayIndex, hours.indexOf(hour))
+                  }
                   aria-label="Toggle Slot State"
                 ></button>
               </td>
