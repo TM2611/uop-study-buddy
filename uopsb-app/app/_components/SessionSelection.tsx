@@ -146,16 +146,18 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         slotStates={slotStates}
         setSlotStates={setSlotStates}
       />
-      <button
-        type="button"
-        className={`py-1 px-2 mt-4 rounded-md  ${
-          isConfirmDisabled ? `bg-gray-500` : `bg-blue-500 text-white`
-        } `}
-        onClick={() => setShowConfirmPopup(true)}
-        disabled={isConfirmDisabled}
-      >
-        Confirm
-      </button>
+      <div className="flex justify-center">
+        <button
+          type="button"
+          className={`py-1 px-2 mt-4 rounded-md  ${
+            isConfirmDisabled ? `bg-gray-500` : `bg-blue-500 text-white`
+          } `}
+          onClick={() => setShowConfirmPopup(true)}
+          disabled={isConfirmDisabled}
+        >
+          Confirm
+        </button>
+      </div>
       <Popup
         show={showConfirmPopup}
         title="Session Confirmation"
