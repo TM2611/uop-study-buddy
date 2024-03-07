@@ -1,3 +1,5 @@
+import { WeeklyAvailabilityStates } from "../types";
+
 function hourToInterval(hour: number): string {
   const start = hour.toString().padStart(2, "0") + ":00";
   const end = ((hour + 1) % 24).toString().padStart(2, "0") + ":00";
@@ -7,18 +9,23 @@ function hourToInterval(hour: number): string {
 export default function TimeSlotGrid({
   hours,
   days,
-  slotStates,
-  setSlotStates,
+  availabilityStates,
+  setAvailabilityStates,
 }: {
   hours: number[];
   days: string[];
-  slotStates: boolean[][];
-  setSlotStates: (slotStates: boolean[][]) => void;
+  availabilityStates: WeeklyAvailabilityStates;
+  setAvailabilityStates: (availabilityStates: WeeklyAvailabilityStates) => void;
 }) {
   const toggleAvailability = (dayIndex: number, hourIndex: number) => {
-    const newSlotStates = [...slotStates];
-    newSlotStates[dayIndex][hourIndex] = !newSlotStates[dayIndex][hourIndex];
-    setSlotStates(newSlotStates);
+    const newAvailabilityStates = [...availabilityStates];
+    const availabilityIndex = newAvailabilityStates[dayIndex][hourIndex];
+    if (availabilityIndex === 0) {
+      newAvailabilityStates[dayIndex][hourIndex] = 1;
+    } else if (availabilityIndex === 1) {
+      newAvailabilityStates[dayIndex][hourIndex] = 0;
+    }
+    setAvailabilityStates(newAvailabilityStates);
   };
 
   return (
@@ -42,7 +49,11 @@ export default function TimeSlotGrid({
                 <button
                   type="button"
                   className={`w-8 h-8 border border-black rounded-md ${
-                    slotStates[dayIndex][hours.indexOf(hour)] ? "bg-purple-500" : "bg-white"
+                    availabilityStates[dayIndex][hours.indexOf(hour)] === 1
+                      ? "bg-purple-500"
+                      : availabilityStates[dayIndex][hours.indexOf(hour)] === -1
+                      ? "bg-black"
+                      : "bg-white"
                   }`}
                   onClick={() =>
                     toggleAvailability(dayIndex, hours.indexOf(hour))

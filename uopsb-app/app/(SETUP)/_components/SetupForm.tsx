@@ -15,7 +15,8 @@ import {
 import AvailabilitySelection from "./AvailabilitySelection";
 import ConfidenceGrid from "./ConfidenceGrid";
 import Form from "@/app/_components/Form";
-import { convertBooleanSlots } from "@/lib/utils";
+import { availabilityStatesToSlots } from "@/lib/utils";
+
 
 const handleSubmit = async (
   values: any,
@@ -23,7 +24,7 @@ const handleSubmit = async (
   router: any,
   setIsLoggedIn: any
 ) => {
-  const availabilitySlots = convertBooleanSlots(values.slots);
+  const availabilitySlots = availabilityStatesToSlots(values.slots);
   values.slots = availabilitySlots; // Replace the bool array with JSON array
   const userProfile = {
     ...user,
@@ -54,9 +55,9 @@ export function SetupForm(formPopulation: FormPopulation) {
     year: "",
     course_code: "",
     gender: "",
-    slots: Array(7)
+    weekyAvailabilityStates: Array(7)
       .fill(null)
-      .map(() => Array(24).fill(false)),
+      .map(() => Array(24).fill(0)),
     topic_confidence: [],
   };
   const formik = useFormik({

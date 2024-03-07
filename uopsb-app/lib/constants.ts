@@ -1,6 +1,6 @@
 export const initSlotStates = Array(7)
   .fill(null)
-  .map(() => Array(16).fill(false));
+  .map(() => Array(16).fill(0));
 
 export const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 

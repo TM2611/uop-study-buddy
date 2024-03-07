@@ -4,9 +4,13 @@ import TimeSlotGrid from "./TimeSlotGrid";
 import Overlay from "./Overlay";
 import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
-import { convertBooleanSlots } from "@/lib/utils";
-import { AvailabilitySlot, UserType } from "../types";
+import {
+  availabilitySlotsToStates,
+  availabilityStatesToSlots,
+} from "@/lib/utils";
+import { AvailabilitySlot, UserType, WeeklyAvailabilityStates } from "../types";
 import Popup from "./Popup";
+import { fetchUserAvailability } from "@/lib/api";
 
 dayjs.extend(isoWeek);
 
@@ -17,21 +21,41 @@ interface SessionSelectionProps {
 
 const SessionSelection: React.FC<SessionSelectionProps> = ({
   setShowSessionSelection,
+  selectedUser,
 }) => {
-  const [slotStates, setSlotStates] = useState(initSlotStates);
+  const [availabilityStates, setAvailabilityStates] = useState(initSlotStates);
   const [activeDate, setActiveDate] = useState(dayjs().startOf("isoWeek"));
   const [selectedDateTime, setSelectedDateTime] = useState<string[]>([]);
   const [popupContent, setPopupContent] = useState<JSX.Element | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
 
+  //   useEffect(() => {
+  //     const setSessionAvailability = async (userEmail: string) => {
+  //       try {
+  //         const response = await fetch(`/api/availability?email=${userEmail}`);
+  //         if (!response.ok) {
+  //           throw new Error("Failed to fetch user availabilitySlots");
+  //         }
+  //         const availabilitySlots: AvailabilitySlot[] = await response.json();
+  //         const availabilityStates = availabilitySlotsToStates(availabilitySlots);
+  //         const unavailableIndexs = getUnavailableIndexes(availabilityStates); // TODO: will need to combine with bookings
+  //       } catch (error) {
+  //         console.error("Failed to fetch user availabilitySlots", error);
+  //       }
+  //     };
+  //     if (selectedUser) {
+  //       // Fetch user's availability from database
+  //       const userAvailability = fetchUserAvailability(selectedUser.email);
+  //     }
+  //   }, []);
   // Check if any slots are selected before enabling confirm button
   useEffect(() => {
-    const containsTrue = slotStates.some((row) =>
-      row.some((item) => item === true)
+    const containsSelection = availabilityStates.some((row) =>
+      row.some((item) => item === 1)
     );
-    setConfirmDisabled(!containsTrue);
-  }, [slotStates]);
+    setConfirmDisabled(!containsSelection);
+  }, [availabilityStates]);
 
   const getDateRange = (activeDate: Dayjs) => {
     return `${activeDate.format("DD/MM/YY")} - ${activeDate
@@ -70,6 +94,22 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     return dayDateArray;
   }
 
+  function getUnavailableIndexes(
+    availabilityStates: WeeklyAvailabilityStates
+  ): [number, number][] {
+    const UnavailableIndexes: [number, number][] = [];
+
+    availabilityStates.forEach((row, rowIndex) => {
+      row.forEach((value, colIndex) => {
+        if (value === 1) {
+          UnavailableIndexes.push([rowIndex, colIndex]);
+        }
+      });
+    });
+
+    return UnavailableIndexes;
+  }
+
   const handlePreviousWeek = () => {
     setActiveDate(activeDate.subtract(1, "week"));
   };
@@ -91,7 +131,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
   const onConfirmClick = () => {
     setShowConfirmPopup(true);
-    const selectedSlots = convertBooleanSlots(slotStates);
+    const selectedSlots = availabilityStatesToSlots(availabilityStates);
     const sessionTimes = getSelectedDateTimes(selectedSlots, activeDate);
     setSelectedDateTime(sessionTimes);
 
@@ -143,8 +183,8 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       <TimeSlotGrid
         hours={hours}
         days={days}
-        slotStates={slotStates}
-        setSlotStates={setSlotStates}
+        availabilityStates={availabilityStates}
+        setAvailabilityStates={setAvailabilityStates}
       />
       <div className="flex justify-center">
         <button

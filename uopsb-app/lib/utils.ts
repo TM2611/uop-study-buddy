@@ -1,4 +1,8 @@
-import { AvailabilitySlot } from "@/app/types";
+import {
+  AvailabilitySlot,
+  AvailabilityStatus,
+  WeeklyAvailabilityStates,
+} from "@/app/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { days, hours } from "./constants";
@@ -13,8 +17,8 @@ export function extractUpNum(email: string) {
   return match[0];
 }
 
-export function convertBooleanSlots(
-  slotStates: boolean[][]
+export function availabilityStatesToSlots(
+  availabilityStates: WeeklyAvailabilityStates
 ): AvailabilitySlot[] {
   try {
     let slots: AvailabilitySlot[] = [];
@@ -22,12 +26,15 @@ export function convertBooleanSlots(
     days.forEach((day, dayIndex) => {
       let startHour: number | null = null;
 
-      slotStates[dayIndex].forEach((hourAvailable, hourIndex) => {
-        if (hourAvailable && startHour === null) {
+      availabilityStates[dayIndex].forEach((availabilityStatus, hourIndex) => {
+        if (availabilityStatus === 1 && startHour === null) {
           startHour = hours[hourIndex];
         }
 
-        if ((!hourAvailable || hourIndex === hours.length - 1) && startHour !== null) {
+        if (
+          (availabilityStatus !== 1 || hourIndex === hours.length - 1) &&
+          startHour !== null
+        ) {
           slots.push({
             day,
             start_hour: startHour,
@@ -40,7 +47,42 @@ export function convertBooleanSlots(
 
     return slots;
   } catch (error) {
-    console.error("Error converting Boolean slots to JSON:", error);
+    console.error("Error converting Availability States to JSON:", error);
+    return [];
+  }
+}
+
+export function availabilitySlotsToStates(
+  availabilitySlots: AvailabilitySlot[]
+): WeeklyAvailabilityStates {
+  try {
+    // Initialize a 2D array with all values set to 0 (AvailabilityStatus)
+    const availabilityStates: WeeklyAvailabilityStates = days.map(() =>
+      hours.map(() => 0 as AvailabilityStatus)
+    );
+
+    availabilitySlots.forEach((slot) => {
+      const dayIndex = days.indexOf(slot.day);
+      const startHourIndex = hours.indexOf(slot.start_hour);
+      const endHourIndex = hours.indexOf(slot.end_hour);
+
+      if (dayIndex !== -1 && startHourIndex !== -1 && endHourIndex !== -1) {
+        for (
+          let hourIndex = startHourIndex;
+          hourIndex < endHourIndex;
+          hourIndex++
+        ) {
+          availabilityStates[dayIndex][hourIndex] = 1; // Set the AvailabilityStatus to 1
+        }
+      }
+    });
+
+    return availabilityStates;
+  } catch (error) {
+    console.error(
+      "Error converting JSON slots to Availability States array:",
+      error
+    );
     return [];
   }
 }

@@ -46,10 +46,14 @@ export interface TopicConfidence {
   confidence_value: number;
 }
 
+export type AvailabilityStatus = 0 | 1 | -1;
+type DailyAvailabilityStates = AvailabilityStatus[];
+export type WeeklyAvailabilityStates = DailyAvailabilityStates[];
+
 export interface SetupFormInitValues {
   year: string;
   course_code: string;
   gender: string;
-  slots: boolean[][];
+  weekyAvailabilityStates: DailyAvailabilityStates[];
   topic_confidence: TopicConfidence[];
 }
