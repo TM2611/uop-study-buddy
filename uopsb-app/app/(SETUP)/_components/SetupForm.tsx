@@ -15,8 +15,7 @@ import {
 import AvailabilitySelection from "./AvailabilitySelection";
 import ConfidenceGrid from "./ConfidenceGrid";
 import Form from "@/app/_components/Form";
-import { availabilityStatesToSlots } from "@/lib/utils";
-
+import { statesToAvailabilitySlots } from "@/lib/utils";
 
 const handleSubmit = async (
   values: any,
@@ -24,8 +23,8 @@ const handleSubmit = async (
   router: any,
   setIsLoggedIn: any
 ) => {
-  const availabilitySlots = availabilityStatesToSlots(values.slots);
-  values.slots = availabilitySlots; // Replace the bool array with JSON array
+  const availableSlots = statesToAvailabilitySlots(values.slots);
+  values.slots = availableSlots; // Replace the bool array with JSON array
   const userProfile = {
     ...user,
     ...values,

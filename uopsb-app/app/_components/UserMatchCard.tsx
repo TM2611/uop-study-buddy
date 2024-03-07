@@ -16,9 +16,9 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
   user,
   onStudyButtonClick,
 }) => {
-  const [availabilitySlots, setAvailabilitySlots] = useState<
-    AvailabilitySlot[]
-  >([]);
+  const [availableSlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>(
+    []
+  );
   const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
   const [showAvailabilityOverlay, setShowAvailabilityOverlay] = useState(false);
   const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
@@ -29,9 +29,9 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const availabilitySlots = await fetchUserAvailability(user.email);
+      const availableSlots = await fetchUserAvailability(user.email);
       const userConfidence = await fetchUserConfidence(user.email);
-      setAvailabilitySlots(availabilitySlots);
+      setAvailabilitySlots(availableSlots);
       setConfidence(userConfidence);
     };
 
@@ -58,7 +58,7 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
         <div className="flex justify-evenly w-1/2">
           <button
             type="button"
-            aria-label="Show availabilitySlots"
+            aria-label="Show availableSlots"
             onClick={() => setShowAvailabilityOverlay(true)}
             className="text-blue-500 flex items-center justify-center p-2"
           >
@@ -83,7 +83,7 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
       </section>
       {showAvailabilityOverlay && (
         <AvailabilityOverlay
-          availabilitySlots={availabilitySlots}
+          availableSlots={availableSlots}
           setShowAvailabilityOverlay={setShowAvailabilityOverlay}
         />
       )}

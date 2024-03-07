@@ -1,4 +1,4 @@
-import { WeeklyAvailabilityStates } from "../types";
+import { WeeklySlotStates } from "../types";
 
 function hourToInterval(hour: number): string {
   const start = hour.toString().padStart(2, "0") + ":00";
@@ -9,23 +9,23 @@ function hourToInterval(hour: number): string {
 export default function TimeSlotGrid({
   hours,
   days,
-  availabilityStates,
-  setAvailabilityStates,
+  slotStates,
+  setSlotStates,
 }: {
   hours: number[];
   days: string[];
-  availabilityStates: WeeklyAvailabilityStates;
-  setAvailabilityStates: (availabilityStates: WeeklyAvailabilityStates) => void;
+  slotStates: WeeklySlotStates;
+  setSlotStates: (slotStates: WeeklySlotStates) => void;
 }) {
-  const toggleAvailability = (dayIndex: number, hourIndex: number) => {
-    const newAvailabilityStates = [...availabilityStates];
-    const availabilityIndex = newAvailabilityStates[dayIndex][hourIndex];
-    if (availabilityIndex === 0) {
-      newAvailabilityStates[dayIndex][hourIndex] = 1;
-    } else if (availabilityIndex === 1) {
-      newAvailabilityStates[dayIndex][hourIndex] = 0;
+  const toggleSlot = (dayIndex: number, hourIndex: number) => {
+    const newSlotStates = [...slotStates];
+    const slotIndex = newSlotStates[dayIndex][hourIndex];
+    if (slotIndex === 0) {
+      newSlotStates[dayIndex][hourIndex] = 1;
+    } else if (slotIndex === 1) {
+      newSlotStates[dayIndex][hourIndex] = 0;
     }
-    setAvailabilityStates(newAvailabilityStates);
+    setSlotStates(newSlotStates);
   };
 
   return (
@@ -49,15 +49,13 @@ export default function TimeSlotGrid({
                 <button
                   type="button"
                   className={`w-8 h-8 border border-black rounded-md ${
-                    availabilityStates[dayIndex][hours.indexOf(hour)] === 1
+                    slotStates[dayIndex][hours.indexOf(hour)] === 1
                       ? "bg-purple-500"
-                      : availabilityStates[dayIndex][hours.indexOf(hour)] === -1
+                      : slotStates[dayIndex][hours.indexOf(hour)] === -1
                       ? "bg-slate-600"
                       : "bg-white"
                   }`}
-                  onClick={() =>
-                    toggleAvailability(dayIndex, hours.indexOf(hour))
-                  }
+                  onClick={() => toggleSlot(dayIndex, hours.indexOf(hour))}
                   aria-label="Toggle Slot State"
                 ></button>
               </td>

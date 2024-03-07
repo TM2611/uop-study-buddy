@@ -1,8 +1,4 @@
-import {
-  AvailabilitySlot,
-  AvailabilityStatus,
-  WeeklyAvailabilityStates,
-} from "@/app/types";
+import { AvailabilitySlot, SlotStatus, WeeklySlotStates } from "@/app/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { days, hours } from "./constants";
@@ -17,8 +13,8 @@ export function extractUpNum(email: string) {
   return match[0];
 }
 
-export function availabilityStatesToSlots(
-  availabilityStates: WeeklyAvailabilityStates
+export function statesToAvailabilitySlots(
+  slotStates: WeeklySlotStates
 ): AvailabilitySlot[] {
   try {
     let slots: AvailabilitySlot[] = [];
@@ -26,13 +22,13 @@ export function availabilityStatesToSlots(
     days.forEach((day, dayIndex) => {
       let startHour: number | null = null;
 
-      availabilityStates[dayIndex].forEach((availabilityStatus, hourIndex) => {
-        if (availabilityStatus === 1 && startHour === null) {
+      slotStates[dayIndex].forEach((slotState, hourIndex) => {
+        if (slotState === 1 && startHour === null) {
           startHour = hours[hourIndex];
         }
 
         if (
-          (availabilityStatus !== 1 || hourIndex === hours.length - 1) &&
+          (slotState !== 1 || hourIndex === hours.length - 1) &&
           startHour !== null
         ) {
           slots.push({
@@ -53,15 +49,15 @@ export function availabilityStatesToSlots(
 }
 
 export function availabilitySlotsToStates(
-  availabilitySlots: AvailabilitySlot[]
-): WeeklyAvailabilityStates {
+  availableSlots: AvailabilitySlot[]
+): WeeklySlotStates {
   try {
-    // Initialize a 2D array with all values set to 0 (AvailabilityStatus)
-    const availabilityStates: WeeklyAvailabilityStates = days.map(() =>
-      hours.map(() => -1 as AvailabilityStatus) // Grey out all slots
+    // Initialize a 2D array with all values set to 0 (SlotStatus)
+    const slotStates: WeeklySlotStates = days.map(
+      () => hours.map(() => -1 as SlotStatus) // Grey out all slots
     );
 
-    availabilitySlots.forEach((slot) => {
+    availableSlots.forEach((slot) => {
       const dayIndex = days.indexOf(slot.day);
       const startHourIndex = hours.indexOf(slot.start_hour);
       const endHourIndex = hours.indexOf(slot.end_hour);
@@ -72,12 +68,12 @@ export function availabilitySlotsToStates(
           hourIndex < endHourIndex;
           hourIndex++
         ) {
-          availabilityStates[dayIndex][hourIndex] = 0; // Set the AvailabilityStatus to 0
+          slotStates[dayIndex][hourIndex] = 0; // Set the SlotStatus to 0
         }
       }
     });
 
-    return availabilityStates;
+    return slotStates;
   } catch (error) {
     console.error(
       "Error converting JSON slots to Availability States array:",

@@ -6,9 +6,9 @@ import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import {
   availabilitySlotsToStates,
-  availabilityStatesToSlots,
+  statesToAvailabilitySlots,
 } from "@/lib/utils";
-import { AvailabilitySlot, UserType, WeeklyAvailabilityStates } from "../types";
+import { AvailabilitySlot, UserType, WeeklySlotStates } from "../types";
 import Popup from "./Popup";
 
 dayjs.extend(isoWeek);
@@ -22,7 +22,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   setShowSessionSelection,
   selectedUser,
 }) => {
-  const [availabilityStates, setAvailabilityStates] = useState(initSlotStates);
+  const [slotStates, setSlotStates] = useState(initSlotStates);
   const [activeDate, setActiveDate] = useState(dayjs().startOf("isoWeek"));
   const [selectedDateTime, setSelectedDateTime] = useState<string[]>([]);
   const [popupContent, setPopupContent] = useState<JSX.Element | null>(null);
@@ -34,29 +34,28 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       try {
         const response = await fetch(`/api/availability?email=${userEmail}`);
         if (!response.ok) {
-          throw new Error("Failed to fetch user availabilitySlots");
+          throw new Error("Failed to fetch user availableSlots");
         }
-        const availabilitySlots: AvailabilitySlot[] = await response.json();
-        const availabilityStates = availabilitySlotsToStates(availabilitySlots);
-        const updatedAvailabilityStates =
-          includeOccupiedSlots(availabilityStates);
-        setAvailabilityStates(updatedAvailabilityStates);
+        const availableSlots: AvailabilitySlot[] = await response.json();
+        const availableStates = availabilitySlotsToStates(availableSlots);
+        const updatedAvailableStates = includeOccupiedSlots(availableStates);
+        setSlotStates(updatedAvailableStates);
       } catch (error) {
-        console.error("Failed to fetch user availabilitySlots", error);
+        console.error("Failed to fetch user availableSlots", error);
       }
     };
     if (selectedUser) {
       setSessionAvailability(selectedUser.email);
     }
   }, []);
-  
+
   // Check if any slots are selected before enabling confirm button
   useEffect(() => {
-    const containsSelection = availabilityStates.some((row) =>
+    const containsSelection = slotStates.some((row) =>
       row.some((item) => item === 1)
     );
     setConfirmDisabled(!containsSelection);
-  }, [availabilityStates]);
+  }, [slotStates]);
 
   const getDateRange = (activeDate: Dayjs) => {
     return `${activeDate.format("DD/MM/YY")} - ${activeDate
@@ -95,27 +94,10 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     return dayDateArray;
   }
 
-  function getUnavailableIndexes(
-    availabilityStates: WeeklyAvailabilityStates
-  ): [number, number][] {
-    const UnavailableIndexes: [number, number][] = [];
-
-    availabilityStates.forEach((row, rowIndex) => {
-      row.forEach((value, colIndex) => {
-        if (value === 0) {
-          UnavailableIndexes.push([rowIndex, colIndex]);
-        }
-      });
-    });
-
-    return UnavailableIndexes;
-  }
-
   function includeOccupiedSlots(
-    availabilityStates: WeeklyAvailabilityStates
-  ): WeeklyAvailabilityStates {
-    const unavailableIndexes = getUnavailableIndexes(availabilityStates);
-    const updatedStates = availabilityStates.map((row) => [...row]); // Create a shallow copy of the 2D array
+    slotStates: WeeklySlotStates
+  ): WeeklySlotStates {
+    const updatedStates = slotStates.map((row) => [...row]); // Create a shallow copy of the 2D array
     // TODO: will need to combine with bookings
 
     return updatedStates;
@@ -142,7 +124,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
   const onConfirmClick = () => {
     setShowConfirmPopup(true);
-    const selectedSlots = availabilityStatesToSlots(availabilityStates);
+    const selectedSlots = statesToAvailabilitySlots(slotStates);
     const sessionTimes = getSelectedDateTimes(selectedSlots, activeDate);
     setSelectedDateTime(sessionTimes);
 
@@ -194,8 +176,8 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       <TimeSlotGrid
         hours={hours}
         days={days}
-        availabilityStates={availabilityStates}
-        setAvailabilityStates={setAvailabilityStates}
+        slotStates={slotStates}
+        setSlotStates={setSlotStates}
       />
       <div className="flex justify-center">
         <button

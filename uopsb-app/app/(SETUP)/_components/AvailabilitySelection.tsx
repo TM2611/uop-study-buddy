@@ -1,58 +1,58 @@
 import TimeSlotGrid from "@/app/_components/TimeSlotGrid";
 import { useEffect, useState } from "react";
 import { hours, days, initSlotStates } from "@/lib/constants";
-import { WeeklyAvailabilityStates } from "@/app/types";
+import { WeeklySlotStates } from "@/app/types";
 
 export default function AvailabilitySelection({
   onChange,
 }: {
-  onChange: (availabilityStates: WeeklyAvailabilityStates) => void;
+  onChange: (slotStates: WeeklySlotStates) => void;
 }) {
-  const [availabilityStates, setAvailabilityStates] = useState(initSlotStates);
+  const [slotStates, setSlotStates] = useState(initSlotStates);
 
   useEffect(() => {
-    onChange(availabilityStates);
-  }, [availabilityStates]);
+    onChange(slotStates);
+  }, [slotStates]);
 
   // Helper functions for button handlers
   const selectAll = () => {
-    const newAvailabilityStates = Array(7)
+    const newSlotStates = Array(7)
       .fill(null)
       .map(() => Array(24).fill(0));
-    setAvailabilityStates(newAvailabilityStates);
-    onChange(newAvailabilityStates);
+    setSlotStates(newSlotStates);
+    onChange(newSlotStates);
   };
 
   const deselectAll = () => {
-    const newAvailabilityStates = Array(7)
+    const newSlotStates = Array(7)
       .fill(null)
       .map(() => Array(24).fill(0));
-    setAvailabilityStates(newAvailabilityStates);
-    onChange(newAvailabilityStates);
+    setSlotStates(newSlotStates);
+    onChange(newSlotStates);
   };
 
   const selectWeekdays = () => {
-    const newAvailabilityStates = [...availabilityStates];
+    const newSlotStates = [...slotStates];
     for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
       // Only Monday to Friday
       for (let hourIndex = 0; hourIndex < 24; hourIndex++) {
-        newAvailabilityStates[dayIndex][hourIndex] = 1;
+        newSlotStates[dayIndex][hourIndex] = 1;
       }
     }
-    setAvailabilityStates(newAvailabilityStates);
-    onChange(newAvailabilityStates);
+    setSlotStates(newSlotStates);
+    onChange(newSlotStates);
   };
 
   const selectWeekends = () => {
-    const newAvailabilityStates = [...availabilityStates];
+    const newSlotStates = [...slotStates];
     for (let dayIndex = 5; dayIndex < 7; dayIndex++) {
       // Only Saturday and Sunday
       for (let hourIndex = 0; hourIndex < 24; hourIndex++) {
-        newAvailabilityStates[dayIndex][hourIndex] = 1;
+        newSlotStates[dayIndex][hourIndex] = 1;
       }
     }
-    setAvailabilityStates(newAvailabilityStates);
-    onChange(newAvailabilityStates);
+    setSlotStates(newSlotStates);
+    onChange(newSlotStates);
   };
 
   return (
@@ -92,8 +92,8 @@ export default function AvailabilitySelection({
       <TimeSlotGrid
         hours={hours}
         days={days}
-        availabilityStates={availabilityStates}
-        setAvailabilityStates={setAvailabilityStates}
+        slotStates={slotStates}
+        setSlotStates={setSlotStates}
       />
     </div>
   );
