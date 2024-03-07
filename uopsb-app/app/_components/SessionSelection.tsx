@@ -10,7 +10,6 @@ import {
 } from "@/lib/utils";
 import { AvailabilitySlot, UserType, WeeklyAvailabilityStates } from "../types";
 import Popup from "./Popup";
-import { fetchUserAvailability } from "@/lib/api";
 
 dayjs.extend(isoWeek);
 
@@ -30,25 +29,27 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
 
-  //   useEffect(() => {
-  //     const setSessionAvailability = async (userEmail: string) => {
-  //       try {
-  //         const response = await fetch(`/api/availability?email=${userEmail}`);
-  //         if (!response.ok) {
-  //           throw new Error("Failed to fetch user availabilitySlots");
-  //         }
-  //         const availabilitySlots: AvailabilitySlot[] = await response.json();
-  //         const availabilityStates = availabilitySlotsToStates(availabilitySlots);
-  //         const unavailableIndexs = getUnavailableIndexes(availabilityStates); // TODO: will need to combine with bookings
-  //       } catch (error) {
-  //         console.error("Failed to fetch user availabilitySlots", error);
-  //       }
-  //     };
-  //     if (selectedUser) {
-  //       // Fetch user's availability from database
-  //       const userAvailability = fetchUserAvailability(selectedUser.email);
-  //     }
-  //   }, []);
+  useEffect(() => {
+    const setSessionAvailability = async (userEmail: string) => {
+      try {
+        const response = await fetch(`/api/availability?email=${userEmail}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user availabilitySlots");
+        }
+        const availabilitySlots: AvailabilitySlot[] = await response.json();
+        const availabilityStates = availabilitySlotsToStates(availabilitySlots);
+        const updatedAvailabilityStates =
+          includeUnavailableStates(availabilityStates);
+        setAvailabilityStates(updatedAvailabilityStates);
+      } catch (error) {
+        console.error("Failed to fetch user availabilitySlots", error);
+      }
+    };
+    if (selectedUser) {
+      setSessionAvailability(selectedUser.email);
+    }
+  }, []);
+  
   // Check if any slots are selected before enabling confirm button
   useEffect(() => {
     const containsSelection = availabilityStates.some((row) =>
@@ -108,6 +109,20 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     });
 
     return UnavailableIndexes;
+  }
+
+  function includeUnavailableStates(
+    availabilityStates: WeeklyAvailabilityStates
+  ): WeeklyAvailabilityStates {
+    // TODO: will need to combine with bookings
+    const unavailableIndexes = getUnavailableIndexes(availabilityStates);
+    const updatedStates = availabilityStates.map((row) => [...row]); // Create a shallow copy of the 2D array
+
+    unavailableIndexes.forEach(([rowIndex, colIndex]) => {
+      updatedStates[rowIndex][colIndex] = -1;
+    });
+
+    return updatedStates;
   }
 
   const handlePreviousWeek = () => {
