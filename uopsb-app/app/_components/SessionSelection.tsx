@@ -22,6 +22,14 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const [selectedDateTime, setSelectedDateTime] = useState<string[]>([]);
   const [popupContent, setPopupContent] = useState<JSX.Element | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [isConfirmDisabled, setConfirmDisabled] = useState(true);
+
+  useEffect(() => {
+    const containsTrue = slotStates.some((row) =>
+      row.some((item) => item === true)
+    );
+    setConfirmDisabled(!containsTrue);
+  }, [slotStates]);
 
   const getDateRange = (activeDate: Dayjs) => {
     return `${activeDate.format("DD/MM/YY")} - ${activeDate
@@ -111,7 +119,9 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   return (
     <Overlay onClose={() => setShowSessionSelection(false)}>
       {/* Week selection arrows */}
-      <h3 className="flex justify-center font-bold mb-3">Study Session Selection</h3>
+      <h3 className="flex justify-center font-bold mb-3">
+        Study Session Selection
+      </h3>
       <div className="flex justify-between mb-2">
         <button
           type="button"
@@ -138,8 +148,11 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       />
       <button
         type="button"
-        className="py-1 px-2 mt-4 rounded-md bg-green-500 text-white"
+        className={`py-1 px-2 mt-4 rounded-md  ${
+          isConfirmDisabled ? `bg-gray-500` : `bg-blue-500 text-white`
+        } `}
         onClick={() => setShowConfirmPopup(true)}
+        disabled={isConfirmDisabled}
       >
         Confirm
       </button>
