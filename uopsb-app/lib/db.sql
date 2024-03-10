@@ -18,6 +18,8 @@ $$ LANGUAGE plpgsql;
 
 SELECT drop_all_tables();
 
+SET datestyle = 'ISO, DMY';
+
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
