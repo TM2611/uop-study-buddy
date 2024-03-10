@@ -8,7 +8,7 @@ import {
   availabilitySlotsToStates,
   statesToAvailabilitySlots,
 } from "@/lib/utils";
-import { AvailabilitySlot, UserType, WeeklySlotStates } from "../types";
+import { AvailabilitySlot, Topic, UserType, WeeklySlotStates } from "../types";
 import Popup from "./Popup";
 
 dayjs.extend(isoWeek);
@@ -16,13 +16,13 @@ dayjs.extend(isoWeek);
 interface SessionSelectionProps {
   setShowSessionSelection: (value: boolean) => void;
   selectedUser: UserType | null;
-  selectedTopicId: string;
+  selectedTopic: Partial<Topic>;
 }
 
 const SessionSelection: React.FC<SessionSelectionProps> = ({
   setShowSessionSelection,
   selectedUser,
-  selectedTopicId,
+  selectedTopic,
 }) => {
   const [slotStates, setSlotStates] = useState(initSlotStates);
   const [activeDate, setActiveDate] = useState(dayjs().startOf("isoWeek"));
@@ -140,6 +140,10 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         <span className="font-bold">
           Are you sure you would like to request the following session(s)?
         </span>
+        <br />
+        <div>
+          <span className="font-bold">Topic:</span> {selectedTopic.name}
+        </div>
         <ul className="list-disc p-2">
           {sessionTimes.map((session) => (
             <li key={session}>{session}</li>

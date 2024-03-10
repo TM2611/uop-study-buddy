@@ -6,8 +6,10 @@ import { useAuth } from "@/app/AuthContext";
 import { fetchUserConfidence } from "@/lib/api";
 import ConfidenceList from "@/app/_components/ConfidenceList";
 import { useEffect, useState } from "react";
-import { TopicConfidence, UserType } from "../types";
+import { Topic, TopicConfidence, UserType } from "../types";
 import SessionSelection from "../_components/SessionSelection";
+
+type SelectedTopic = Partial<Topic>;
 
 const Study = () => {
   const { user } = useAuth();
@@ -16,7 +18,7 @@ const Study = () => {
   >([]); // Holds the active user's list of topics and confidence value for each
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [showProfileCard, setShowProfileCard] = useState(false);
-  const [selectedTopicId, setSelectedTopicId] = useState<string>("");
+  const [selectedTopic, setSelectedTopic] = useState<SelectedTopic>({});
   const [showSessionSelection, setShowSessionSelection] = useState(false);
 
   useEffect(() => {
@@ -41,9 +43,10 @@ const Study = () => {
 
   const handleTopicChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = event.target.options[event.target.selectedIndex];
-    const id = selectedOption.getAttribute("data-id");
+    const id = Number(selectedOption.getAttribute("data-id"));
+    const name = selectedOption.value;
     if (id) {
-      setSelectedTopicId(id);
+      setSelectedTopic({ id, name });
     }
   };
 
@@ -63,7 +66,7 @@ const Study = () => {
         <div className="m-4">
           <select
             className="border rounded p-2"
-            value={selectedTopicId}
+            value={selectedTopic.name}
             onChange={handleTopicChange}
           >
             <option value="" disabled>
@@ -89,7 +92,7 @@ const Study = () => {
             currentUser={user}
             activeUserConfidence={activeUserConfidence}
             onMatch={handleMatch}
-            selectedTopicId={selectedTopicId}
+            selectedTopic={selectedTopic}
           />
         </div>
       </section>
@@ -117,7 +120,7 @@ const Study = () => {
             <SessionSelection
               setShowSessionSelection={setShowSessionSelection}
               selectedUser={selectedUser}
-              selectedTopicId={selectedTopicId}
+              selectedTopic={selectedTopic}
             />
           </div>
         </div>

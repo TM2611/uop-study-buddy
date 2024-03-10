@@ -1,17 +1,17 @@
 import React from "react";
-import { UserType, TopicConfidence } from "@/app/types";
+import { UserType, TopicConfidence, Topic } from "@/app/types";
 
 type MatchButtonProps = {
   currentUser: UserType;
   onMatch: (user: UserType) => void;
-  selectedTopicId: string;
+  selectedTopic: Partial<Topic>;
   activeUserConfidence: TopicConfidence[];
 };
 
 const MatchButton: React.FC<MatchButtonProps> = ({
   currentUser,
   onMatch,
-  selectedTopicId,
+  selectedTopic,
   activeUserConfidence,
 }) => {
   const fetchRandomUser = async () => {
@@ -30,7 +30,7 @@ const MatchButton: React.FC<MatchButtonProps> = ({
     console.log("Random user", randomUser);
     onMatch(randomUser);
   };
-  const isDisabled = !selectedTopicId;
+  const isDisabled = !selectedTopic;
 
   return (
     <button
