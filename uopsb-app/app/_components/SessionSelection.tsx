@@ -8,7 +8,7 @@ import {
   availabilitySlotsToStates,
   statesToAvailabilitySlots,
 } from "@/lib/utils";
-import { AvailabilitySlot, Topic, UserType, WeeklySlotStates } from "../types";
+import { AvailabilitySlot, SessionSlot, Topic, UserType, WeeklySlotStates } from "../types";
 import Popup from "./Popup";
 
 dayjs.extend(isoWeek);
@@ -65,31 +65,47 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       .format("DD/MM/YY")}`;
   };
 
+  function getSessionSlotData(
+    slots: AvailabilitySlot[],
+    activeDate: Dayjs
+  ): SessionSlot[] {
+    return slots.map((slot) => {
+      let dayIndex = days.indexOf(slot.day);
+      let slotDate = activeDate.toDate();
+      slotDate.setDate(slotDate.getDate() + dayIndex);
+      let ukSlotDate = slotDate.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      return {
+        ...slot,
+        date: ukSlotDate,
+      };
+    });
+  }
+
   function getSelectedDateTimes(
     selectedSlots: AvailabilitySlot[],
     activeDate: Dayjs
   ) {
-    const weekDays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
     const dateOptions: Intl.DateTimeFormatOptions = {
       weekday: "short",
       day: "numeric",
       month: "long",
     };
 
-    let weekStartDate = activeDate.toDate();
-    let dayDateArray: string[] = [];
+    const dayDateArray: string[] = [];
+    const sessionSlots = getSessionSlotData(selectedSlots, activeDate);
 
-    selectedSlots.forEach((slot) => {
-      let dayIndex = weekDays.indexOf(slot.day);
-      let slotDate = new Date(weekStartDate);
-      slotDate.setDate(weekStartDate.getDate() + dayIndex);
-
-      let dateString = slotDate.toLocaleDateString("en-GB", dateOptions);
-      let startHour = slot.start_hour % 12 || 12;
-      let endHour = slot.end_hour % 12 || 12;
-      let startAmPm = slot.start_hour >= 12 ? "PM" : "AM";
-      let endAmPm = slot.end_hour >= 12 ? "PM" : "AM";
-      let timeRange = `(${startHour} ${startAmPm} - ${endHour} ${endAmPm})`;
+    sessionSlots.forEach((sessionSlot) => {
+      const slotDate = new Date(sessionSlot.date);
+      const dateString = slotDate.toLocaleDateString("en-GB", dateOptions);
+      const startHour = sessionSlot.start_hour % 12 || 12;
+      const endHour = sessionSlot.end_hour % 12 || 12;
+      const startAmPm = sessionSlot.start_hour >= 12 ? "PM" : "AM";
+      const endAmPm = sessionSlot.end_hour >= 12 ? "PM" : "AM";
+      const timeRange = `(${startHour} ${startAmPm} - ${endHour} ${endAmPm})`;
       dayDateArray.push(`${dateString} ${timeRange}`);
     });
 
@@ -113,7 +129,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     setActiveDate(activeDate.add(1, "week"));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     console.log("Save Session");
     // Save session to database, notify recipient
   };
