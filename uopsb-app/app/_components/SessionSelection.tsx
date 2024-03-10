@@ -16,11 +16,13 @@ dayjs.extend(isoWeek);
 interface SessionSelectionProps {
   setShowSessionSelection: (value: boolean) => void;
   selectedUser: UserType | null;
+  selectedTopicId: string;
 }
 
 const SessionSelection: React.FC<SessionSelectionProps> = ({
   setShowSessionSelection,
   selectedUser,
+  selectedTopicId,
 }) => {
   const [slotStates, setSlotStates] = useState(initSlotStates);
   const [activeDate, setActiveDate] = useState(dayjs().startOf("isoWeek"));

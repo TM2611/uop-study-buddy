@@ -16,7 +16,7 @@ const Study = () => {
   >([]); // Holds the active user's list of topics and confidence value for each
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [showProfileCard, setShowProfileCard] = useState(false);
-  const [selectedTopicId, setSelectedTopic] = useState<string>("");
+  const [selectedTopicId, setSelectedTopicId] = useState<string>("");
   const [showSessionSelection, setShowSessionSelection] = useState(false);
 
   useEffect(() => {
@@ -40,7 +40,11 @@ const Study = () => {
   };
 
   const handleTopicChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedTopic(event.target.value);
+    const selectedOption = event.target.options[event.target.selectedIndex];
+    const id = selectedOption.getAttribute("data-id");
+    if (id) {
+      setSelectedTopicId(id);
+    }
   };
 
   return (
@@ -66,11 +70,17 @@ const Study = () => {
               Please select
             </option>
             {activeUserConfidence.map((x) => (
-              <option key={x.topic_name} value={x.topic_name}>
+              <option
+                key={x.topic_name}
+                value={x.topic_name}
+                data-id={x.topic_id.toString()}
+              >
                 {x.topic_name}
               </option>
             ))}
-            <option value="0">N/A</option>
+            <option value="0" data-id={"n/a"}>
+              N/A
+            </option>
           </select>
         </div>
         <h2 className="text-2xl font-semibold mb-4">Match with Study Buddy:</h2>
@@ -107,6 +117,7 @@ const Study = () => {
             <SessionSelection
               setShowSessionSelection={setShowSessionSelection}
               selectedUser={selectedUser}
+              selectedTopicId={selectedTopicId}
             />
           </div>
         </div>
