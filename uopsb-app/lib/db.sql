@@ -250,3 +250,27 @@ INSERT INTO availability (user_id, day, start_hour, end_hour) VALUES
 -- ('932779', 'MON', 11, 13),
 -- ('932780', 'TUE', 14, 16),
 -- ('932780', 'THU', 10, 12);
+
+CREATE TYPE session_status AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED', 'CANCELLED');
+CREATE TABLE session (
+  id SERIAL PRIMARY KEY,
+  topic_id INTEGER NOT NULL,
+  start_time TIMESTAMP NOT NULL,
+  end_time TIMESTAMP NOT NULL,
+  date DATE NOT NULL,
+  status session_status NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  FOREIGN KEY (topic_id) REFERENCES topic(id)
+);
+
+CREATE TABLE student_session (
+  session_id INTEGER NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+  feedback TEXT,
+  requestee BOOLEAN NOT NULL,
+  PRIMARY KEY (user_id, session_id),
+  FOREIGN KEY (user_id) REFERENCES student(id),
+  FOREIGN KEY (session_id) REFERENCES session(id)
+);
