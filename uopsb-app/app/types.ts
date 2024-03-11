@@ -46,7 +46,14 @@ export interface TopicConfidence {
   confidence_value: number;
 }
 
-export type SlotStatus = 0 | 1 | -1;
+const SlotStatusMap = {
+  available: 0,
+  unavailable: -1,
+  selected: 1,
+  booked: 2,
+};
+
+export type SlotStatus = (typeof SlotStatusMap)[keyof typeof SlotStatusMap];
 type DailySlotStates = SlotStatus[];
 export type WeeklySlotStates = DailySlotStates[];
 
