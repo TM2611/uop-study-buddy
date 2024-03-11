@@ -9,10 +9,18 @@
 CREATE OR REPLACE FUNCTION drop_all_tables() RETURNS VOID AS $$
 DECLARE
     table_name RECORD;
+    type_name RECORD;
 BEGIN
+    -- Drop tables
     FOR table_name IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
         EXECUTE 'DROP TABLE IF EXISTS "' || table_name.tablename || '" CASCADE';
     END LOOP;
+
+    -- Drop types
+    FOR type_name IN (SELECT typname FROM pg_type WHERE typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')) LOOP
+        EXECUTE 'DROP TYPE IF EXISTS "' || type_name.typname || '" CASCADE';
+    END LOOP;
+
 END;
 $$ LANGUAGE plpgsql;
 
