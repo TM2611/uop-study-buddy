@@ -9,6 +9,8 @@ import {
   availabilitySlotsToStates,
   createDateFromString,
   extractUpNum,
+  getBookedSlotIndexes,
+  isDateInRange,
   statesToAvailabilitySlots,
 } from "@/lib/utils";
 import {
@@ -54,7 +56,9 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         }
         const availableSlots: AvailabilitySlot[] = await response.json();
         const availableStates = availabilitySlotsToStates(availableSlots);
-        const updatedAvailableStates = includeOccupiedSlots(availableStates);
+        const updatedAvailableStates = await includeOccupiedSlots(
+          availableStates
+        );
         setSlotStates(updatedAvailableStates);
       } catch (error) {
         console.error("Failed to fetch user availableSlots", error);
@@ -63,7 +67,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     if (selectedUser) {
       setSessionAvailability(selectedUser.email);
     }
-  }, []);
+  }, [activeDate]);
 
   // Check if any slots are selected before enabling confirm button
   useEffect(() => {
@@ -126,12 +130,24 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     return dayDateArray;
   }
 
-  function includeOccupiedSlots(
+  async function includeOccupiedSlots(
     slotStates: WeeklySlotStates
-  ): WeeklySlotStates {
+  ): Promise<WeeklySlotStates> {
     const updatedStates = slotStates.map((row) => [...row]); // Create a shallow copy of the 2D array
-    // TODO: will need to combine with bookings
-
+    const userId = extractUpNum(selectedUser.email);
+    const response = await fetch(`/api/session?id=${userId}&type=booked`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch booked sessions");
+    }
+    const allBookedSessions: Omit<SessionSlot, "day">[] = await response.json();
+    const weekBookedSessions = allBookedSessions.filter((x) =>
+      isDateInRange(x.date ?? "", activeDate.toISOString())
+    );
+    const bookedSlotIndexes = getBookedSlotIndexes(weekBookedSessions);
+    bookedSlotIndexes.forEach((slotIndex) => {
+      const [dayIndex, hourIndex] = slotIndex;
+      updatedStates[dayIndex][hourIndex] = 2;
+    });
     return updatedStates;
   }
 
