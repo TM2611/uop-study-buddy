@@ -7,6 +7,28 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// needed for db insertion
+export function convertDateToYMD(dateString: string): string {
+  const [day, month, year] = dateString.split("/");
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+}
+
+function convertDateToDMY(dateString: string): string {
+  const [year, month, day] = dateString.split("-");
+  return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
+}
+
+
+export function createDateFromString(dateString: string): Date {
+    const [day, month, year] = dateString.split('/').map(Number);
+    const adjustedMonth = month - 1;
+    return new Date(year, adjustedMonth, day);
+  }
+  
+  const dateString = '14/03/2024';
+  const dateObject = createDateFromString(dateString);
+  
+  console.log(dateObject);
 export function extractUpNum(email: string) {
   const match = email.match(/\d+/);
   if (!match) throw new Error("Could not extract upNum from email");
