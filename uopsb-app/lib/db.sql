@@ -214,8 +214,9 @@ INSERT INTO availability (user_id, day, start_hour, end_hour) VALUES
 ('932756', 'TUE', 14, 16),
 ('932757', 'TUE', 13, 14),
 ('932757', 'WED', 10, 12),
-('932758', 'WED', 11, 13),
+('932758', 'WED', 9, 18),
 ('932758', 'THU', 15, 17),
+('932759', 'WED', 9, 18),
 ('932759', 'THU', 16, 18),
 ('932759', 'FRI', 8, 10),
 ('932760', 'FRI', 12, 14),
@@ -274,6 +275,20 @@ CREATE TABLE session (
   FOREIGN KEY (topic_id) REFERENCES topic(id)
 );
 
+-- For demo/test purposes
+CREATE OR REPLACE FUNCTION next_wednesday() RETURNS DATE AS $$
+BEGIN
+  RETURN CURRENT_DATE + INTERVAL '1 day' * ((10 - EXTRACT(DOW FROM CURRENT_DATE)::INTEGER) % 7);
+END;
+$$ LANGUAGE plpgsql;
+
+
+INSERT INTO session (topic_id, start_hour, end_hour, date, status) VALUES
+-- Jenny and Zack
+(7, 10, 11, next_wednesday(), 'ACCEPTED'),
+(2, 14, 15, next_wednesday(), 'ACCEPTED');
+-- End of Jenny and Zack
+
 CREATE TABLE student_session (
   session_id INTEGER NOT NULL,
   user_id VARCHAR(36) NOT NULL,
@@ -284,3 +299,11 @@ CREATE TABLE student_session (
   FOREIGN KEY (user_id) REFERENCES student(id),
   FOREIGN KEY (session_id) REFERENCES session(id)
 );
+
+INSERT INTO student_session (session_id, user_id, is_requester) VALUES
+-- Jenny and Zack
+(1, '932758', TRUE),
+(1, '932759', FALSE),
+(2, '932759', TRUE),
+(2, '932758', FALSE);
+-- End of Jenny and Zack
