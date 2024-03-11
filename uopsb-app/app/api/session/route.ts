@@ -106,3 +106,97 @@ async function insertSession(
     client.release();
   }
 }
+const validSessionTypes = ["all", "booked"] as const;
+type SessionType = (typeof validSessionTypes)[number];
+
+const sessionTypeFunctions = {
+  all: getAllUserSessions,
+  booked: getUserBookings,
+};
+
+export async function GET(req: NextRequest, res: NextResponse) {
+  const client = await pool.connect();
+  const userId = req.nextUrl.searchParams.get("id");
+  const sessionType: SessionType = req.nextUrl.searchParams.get(
+    "type"
+  ) as SessionType;
+  if (!userId) {
+    return new NextResponse("User ID missing or invalid", { status: 400 });
+  }
+  if (!sessionType || (sessionType !== "all" && sessionType !== "booked")) {
+    return new NextResponse("Session type missing or invalid", { status: 400 });
+  }
+
+  try {
+    let sessions;
+    const sessionFunction = sessionTypeFunctions[sessionType];
+    if (sessionFunction) {
+      sessions = await sessionFunction(userId);
+    } else {
+      return new NextResponse("Session type missing or invalid", {
+        status: 400,
+      });
+    }
+
+    return sessions
+      ? new NextResponse(JSON.stringify(sessions), { status: 200 })
+      : new NextResponse("No existing sessions found", { status: 200 });
+  } catch (err) {
+    console.error(err);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  } finally {
+    client.release();
+  }
+}
+
+async function getUserBookings(userId: string) {
+  const client = await pool.connect();
+
+  try {
+    const query = `
+        SELECT
+          s.start_hour,
+          s.end_hour,
+          s.date
+        FROM
+          session s
+          INNER JOIN student_session ss ON s.id = ss.session_id
+        WHERE
+          ss.user_id = $1 AND
+          s.status = 'ACCEPTED';
+      `;
+    const result = await client.query(query, [userId]);
+    return result.rows;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function getAllUserSessions(userId: string) {
+  const client = await pool.connect();
+
+  try {
+    const query = `
+          SELECT
+            s.start_hour,
+            s.end_hour,
+            s.date,
+            s.status
+          FROM
+            session s
+            INNER JOIN student_session ss ON s.id = ss.session_id
+          WHERE
+            ss.user_id = $1;
+        `;
+    const result = await client.query(query, [userId]);
+    return result.rows;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
