@@ -205,7 +205,7 @@ CREATE TABLE availability (
   user_id VARCHAR(36) NOT NULL,
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
   start_hour INTEGER NOT NULL,
-  end_hour INTEGER NOT NULL
+  end_hour INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES student(id)
 );
 
