@@ -6,7 +6,7 @@
  * and should not be used in a production environment.
  */
 
-CREATE OR REPLACE FUNCTION drop_all_tables() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION drop_all() RETURNS VOID AS $$
 DECLARE
     table_name RECORD;
     type_name RECORD;
@@ -16,15 +16,15 @@ BEGIN
         EXECUTE 'DROP TABLE IF EXISTS "' || table_name.tablename || '" CASCADE';
     END LOOP;
 
-    -- Drop types
-    FOR type_name IN (SELECT typname FROM pg_type WHERE typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')) LOOP
+    -- Drop types (including ENUMs)
+    FOR type_name IN (SELECT t.typname FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid WHERE t.typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')) LOOP
         EXECUTE 'DROP TYPE IF EXISTS "' || type_name.typname || '" CASCADE';
     END LOOP;
 
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT drop_all_tables();
+SELECT drop_all();
 
 SET datestyle = 'ISO, DMY';
 
@@ -265,8 +265,8 @@ CREATE TYPE session_status AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETE
 CREATE TABLE session (
   id SERIAL PRIMARY KEY,
   topic_id INTEGER NOT NULL,
-  start_hour INTEGER NOT NULL
-  end_hour INTEGER NOT NULL
+  start_hour INTEGER NOT NULL,
+  end_hour INTEGER NOT NULL,
   date DATE NOT NULL,
   status session_status NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
