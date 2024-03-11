@@ -25,10 +25,7 @@ export function createDateFromString(dateString: string): Date {
     return new Date(year, adjustedMonth, day);
   }
   
-  const dateString = '14/03/2024';
-  const dateObject = createDateFromString(dateString);
   
-  console.log(dateObject);
 export function extractUpNum(email: string) {
   const match = email.match(/\d+/);
   if (!match) throw new Error("Could not extract upNum from email");
