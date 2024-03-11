@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { initSlotStates, hours, days } from "@/lib/constants";
 import { useState, useEffect } from "react";
 import TimeSlotGrid from "./TimeSlotGrid";
@@ -38,9 +39,11 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const [selectedDateTime, setSelectedDateTime] = useState<string[]>([]);
   const [popupContent, setPopupContent] = useState<JSX.Element | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
 
   const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const setSessionAvailability = async (userEmail: string) => {
@@ -140,33 +143,58 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     setActiveDate(activeDate.add(1, "week"));
   };
 
-  const handleConfirm = async () => {
-    console.log("Save Session");
-    const requestedSessions = statesToAvailabilitySlots(slotStates);
-    const sessionData = getSessionSlotData(requestedSessions, activeDate);
-    const jsonString = JSON.stringify(sessionData);
-    const encodedSessions = encodeURIComponent(jsonString);
-    const res = await fetch("/api/session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: selectedUser?.email,
-        requester_id: extractUpNum(user.email),
-        receiver_id: extractUpNum(selectedUser.email),
-        topic: selectedTopic.id,
-        sessions: encodedSessions,
-      }),
-    });
-    const data = await res.json();
-    console.log("data", data);
+  const handleSessionConfirm = async () => {
+    try {
+      const requestedSessions = statesToAvailabilitySlots(slotStates);
+      const sessionData = getSessionSlotData(requestedSessions, activeDate);
+      const jsonString = JSON.stringify(sessionData);
+      const encodedSessions = encodeURIComponent(jsonString);
+      const res = await fetch("/api/session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: selectedUser?.email,
+          requester_id: extractUpNum(user.email),
+          receiver_id: extractUpNum(selectedUser.email),
+          topic: selectedTopic.id,
+          sessions: encodedSessions,
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to request session");
+      }
 
-    // Save session to database, notify recipient
+      const content = (
+        <div>
+          <span className="mt-3">
+            The user has been notified of your request
+          </span>
+          <br />
+          <span className="font-bold text-lg mt-3">Summary</span>
+          <div>
+            <span className="font-bold">Topic:</span> {selectedTopic.name}
+          </div>
+          <ul className="list-disc p-2">
+            {selectedDateTime.map((session, i) => (
+              <li key={i}>{session}</li>
+            ))}
+          </ul>
+        </div>
+      );
+      setShowConfirmPopup(false);
+      setPopupContent(content);
+      setShowSuccessPopup(true);
+    } catch (error) {
+      console.error("Failed to request session", error);
+    }
   };
 
-  const handleCancel = () => {
-    setShowConfirmPopup(false);
+  const handleSuccessPopupClose = () => {
+    setShowSuccessPopup(false);
+    setShowSessionSelection(false);
+    router.push("/dashboard");
   };
 
   const dateRange = getDateRange(activeDate);
@@ -225,7 +253,6 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
           Next &gt;
         </button>
       </div>
-
       <TimeSlotGrid
         hours={hours}
         days={days}
@@ -248,9 +275,17 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         show={showConfirmPopup}
         title="Session Confirmation"
         content={popupContent || <></>}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
+        onConfirm={handleSessionConfirm}
+        onClose={() => setShowConfirmPopup(false)}
       />
+      <Popup
+        show={showSuccessPopup}
+        title="Session(s) Requested!"
+        content={popupContent || <></>}
+        onConfirm={null}
+        onClose={() => handleSuccessPopupClose()}
+      />
+      ;
     </Overlay>
   );
 };
