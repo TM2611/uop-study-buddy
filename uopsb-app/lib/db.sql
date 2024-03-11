@@ -257,8 +257,8 @@ CREATE TYPE session_status AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETE
 CREATE TABLE session (
   id SERIAL PRIMARY KEY,
   topic_id INTEGER NOT NULL,
-  start_time TIMESTAMP NOT NULL,
-  end_time TIMESTAMP NOT NULL,
+  start_hour INTEGER NOT NULL
+  end_hour INTEGER NOT NULL
   date DATE NOT NULL,
   status session_status NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -271,7 +271,7 @@ CREATE TABLE student_session (
   user_id VARCHAR(36) NOT NULL,
   rating INTEGER CHECK (rating BETWEEN 1 AND 5),
   feedback TEXT,
-  requestee BOOLEAN NOT NULL,
+  is_requester BOOLEAN NOT NULL,
   PRIMARY KEY (user_id, session_id),
   FOREIGN KEY (user_id) REFERENCES student(id),
   FOREIGN KEY (session_id) REFERENCES session(id)
