@@ -6,16 +6,25 @@ import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import {
   availabilitySlotsToStates,
+  createDateFromString,
+  extractUpNum,
   statesToAvailabilitySlots,
 } from "@/lib/utils";
-import { AvailabilitySlot, SessionSlot, Topic, UserType, WeeklySlotStates } from "../types";
+import {
+  AvailabilitySlot,
+  SessionSlot,
+  Topic,
+  UserType,
+  WeeklySlotStates,
+} from "../types";
 import Popup from "./Popup";
+import { useAuth } from "../AuthContext";
 
 dayjs.extend(isoWeek);
 
 interface SessionSelectionProps {
   setShowSessionSelection: (value: boolean) => void;
-  selectedUser: UserType | null;
+  selectedUser: UserType;
   selectedTopic: Partial<Topic>;
 }
 
@@ -30,6 +39,8 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const [popupContent, setPopupContent] = useState<JSX.Element | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
+
+  const { user } = useAuth();
 
   useEffect(() => {
     const setSessionAvailability = async (userEmail: string) => {
@@ -99,7 +110,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     const sessionSlots = getSessionSlotData(selectedSlots, activeDate);
 
     sessionSlots.forEach((sessionSlot) => {
-      const slotDate = new Date(sessionSlot.date);
+      const slotDate = createDateFromString(sessionSlot.date);
       const dateString = slotDate.toLocaleDateString("en-GB", dateOptions);
       const startHour = sessionSlot.start_hour % 12 || 12;
       const endHour = sessionSlot.end_hour % 12 || 12;
@@ -131,6 +142,26 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
   const handleConfirm = async () => {
     console.log("Save Session");
+    const requestedSessions = statesToAvailabilitySlots(slotStates);
+    const sessionData = getSessionSlotData(requestedSessions, activeDate);
+    const jsonString = JSON.stringify(sessionData);
+    const encodedSessions = encodeURIComponent(jsonString);
+    const res = await fetch("/api/session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: selectedUser?.email,
+        requester_id: extractUpNum(user.email),
+        receiver_id: extractUpNum(selectedUser.email),
+        topic: selectedTopic.id,
+        sessions: encodedSessions,
+      }),
+    });
+    const data = await res.json();
+    console.log("data", data);
+
     // Save session to database, notify recipient
   };
 
