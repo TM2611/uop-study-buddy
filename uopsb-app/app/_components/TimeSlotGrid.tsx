@@ -53,6 +53,8 @@ export default function TimeSlotGrid({
                       ? "bg-purple-500"
                       : slotStates[dayIndex][hours.indexOf(hour)] === -1
                       ? "bg-slate-600"
+                      : slotStates[dayIndex][hours.indexOf(hour)] === 2
+                      ? "bg-red-500"
                       : "bg-white"
                   }`}
                   onClick={() => toggleSlot(dayIndex, hours.indexOf(hour))}
