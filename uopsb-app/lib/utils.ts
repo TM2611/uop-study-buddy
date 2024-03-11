@@ -1,4 +1,9 @@
-import { AvailabilitySlot, SlotStatus, WeeklySlotStates } from "@/app/types";
+import {
+  AvailabilitySlot,
+  SessionSlot,
+  SlotStatus,
+  WeeklySlotStates,
+} from "@/app/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { days, hours } from "./constants";
@@ -117,4 +122,26 @@ export function availabilitySlotsToStates(
     );
     return [];
   }
+}
+
+export function getBookedSlotIndexes(
+  weekBookedSessions: Omit<SessionSlot, "day">[]
+): [number, number][] {
+  const indexes: [number, number][] = [];
+
+  weekBookedSessions.forEach((session) => {
+    const date = new Date(session.date);
+    const dayOfWeek = (date.getDay() + 6) % 7;
+
+    for (let hour = session.start_hour; hour < session.end_hour; hour++) {
+      const dayIndex = days.indexOf(days[dayOfWeek]);
+      const hourIndex = hours.indexOf(hour);
+
+      if (dayIndex !== -1 && hourIndex !== -1) {
+        indexes.push([dayIndex, hourIndex]);
+      }
+    }
+  });
+
+  return indexes;
 }
