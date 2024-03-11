@@ -18,14 +18,31 @@ function convertDateToDMY(dateString: string): string {
   return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
 }
 
-
 export function createDateFromString(dateString: string): Date {
-    const [day, month, year] = dateString.split('/').map(Number);
-    const adjustedMonth = month - 1;
-    return new Date(year, adjustedMonth, day);
-  }
-  
-  
+  const [day, month, year] = dateString.split("/").map(Number);
+  const adjustedMonth = month - 1;
+  return new Date(year, adjustedMonth, day);
+}
+
+export function isDateInRange(dateStr: string, startOfWeek: string): boolean {
+  // Convert date strings to Date objects
+  const date = new Date(dateStr);
+  const startDate = new Date(startOfWeek);
+
+  // Calculate the end date of the week
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 6);
+
+  // Check if the date is within the range
+  return date >= startDate && date <= endDate;
+}
+
+export function getDayFromDateStr(dateString: string): string {
+  const date = new Date(dateString);
+  const dayIndex = date.getDay();
+  return days[dayIndex];
+}
+
 export function extractUpNum(email: string) {
   const match = email.match(/\d+/);
   if (!match) throw new Error("Could not extract upNum from email");
