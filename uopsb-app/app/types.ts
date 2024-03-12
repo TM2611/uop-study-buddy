@@ -35,6 +35,23 @@ export interface SessionSlot extends AvailabilitySlot {
   date: string;
 }
 
+export interface SessionData {
+  start_hour: number;
+  end_hour: number;
+  date: string;
+  status: string;
+  session_id: number;
+  requester_id: string;
+  email: string;
+  given_name: string;
+  family_name: string;
+  picture: string;
+  course_code: string;
+  course_name: string;
+  topic_name: string;
+  requester_confidence: number;
+}
+
 export interface UserProfileType extends UserType {
   slots: [AvailabilitySlot];
   topic_confidence: TopicConfidence[];
