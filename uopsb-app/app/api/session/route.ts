@@ -106,12 +106,13 @@ async function insertSession(
     client.release();
   }
 }
-const validSessionTypes = ["all", "booked"] as const;
+const validSessionTypes = ["all", "booked", "requests"] as const;
 type SessionType = (typeof validSessionTypes)[number];
 
 const sessionTypeFunctions = {
   all: getAllUserSessions,
   booked: getUserBookings,
+  requests: getUserSessionsRequests,
 };
 
 export async function GET(req: NextRequest, res: NextResponse) {
@@ -123,7 +124,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   if (!userId) {
     return new NextResponse("User ID missing or invalid", { status: 400 });
   }
-  if (!sessionType || (sessionType !== "all" && sessionType !== "booked")) {
+  if (!sessionType || !validSessionTypes.includes(sessionType)) {
     return new NextResponse("Session type missing or invalid", { status: 400 });
   }
 
@@ -191,6 +192,34 @@ async function getAllUserSessions(userId: string) {
           WHERE
             ss.user_id = $1;
         `;
+    const result = await client.query(query, [userId]);
+    return result.rows;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function getUserSessionsRequests(userId: string) {
+  const client = await pool.connect();
+
+  try {
+    const query = `
+            SELECT
+              s.start_hour,
+              s.end_hour,
+              s.date,
+              s.status
+            FROM
+              session s
+              INNER JOIN student_session ss ON s.id = ss.session_id
+            WHERE
+              ss.user_id = $1 AND
+              s.status = 'PENDING' AND
+              ss.is_requester = false;
+          `;
     const result = await client.query(query, [userId]);
     return result.rows;
   } catch (err) {
