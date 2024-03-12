@@ -50,15 +50,22 @@ export default function TimeSlotGrid({
                   type="button"
                   className={`w-8 h-8 border border-black rounded-md ${
                     slotStates[dayIndex][hours.indexOf(hour)] === 1
-                      ? "bg-purple-500"
+                      ? "bg-purple-500 cursor-default"
                       : slotStates[dayIndex][hours.indexOf(hour)] === -1
-                      ? "bg-slate-600"
+                      ? "bg-slate-600 cursor-default"
                       : slotStates[dayIndex][hours.indexOf(hour)] === 2
-                      ? "bg-red-500"
+                      ? "bg-red-500 cursor-default"
                       : "bg-white"
                   }`}
                   onClick={() => toggleSlot(dayIndex, hours.indexOf(hour))}
                   aria-label="Toggle Slot State"
+                  title={
+                    slotStates[dayIndex][hours.indexOf(hour)] === -1
+                      ? "Unavailable"
+                      : slotStates[dayIndex][hours.indexOf(hour)] === 2
+                      ? "Booked"
+                      : ""
+                  }
                 ></button>
               </td>
             ))}
