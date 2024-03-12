@@ -207,19 +207,32 @@ async function getUserSessionsRequests(userId: string) {
 
   try {
     const query = `
-            SELECT
-              s.start_hour,
-              s.end_hour,
-              s.date,
-              s.status
-            FROM
-              session s
-              INNER JOIN student_session ss ON s.id = ss.session_id
-            WHERE
-              ss.user_id = $1 AND
-              s.status = 'PENDING' AND
-              ss.is_requester = false;
-          `;
+    SELECT
+    s.start_hour,
+    s.end_hour,
+    s.date,
+    s.status,
+    s.id as session_id,
+    u.id as requester_id,
+    u.email,
+    u.given_name,
+    u.family_name,
+    u.picture,
+    c.course_code,
+    c.name as course_name,
+    t.name as topic_name,
+    sc.confidence_value as requester_confidence
+  FROM
+    session s
+    INNER JOIN topic t ON s.topic_id = t.id
+    INNER JOIN student_session ss ON s.id = ss.session_id
+    INNER JOIN student_session ss_other ON s.id = ss_other.session_id AND ss_other.user_id != ss.user_id
+    INNER JOIN student u ON ss_other.user_id = u.id
+    INNER JOIN course c ON u.course_code = c.course_code
+    LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.id
+  WHERE
+    ss.user_id = $1;
+        `;
     const result = await client.query(query, [userId]);
     return result.rows;
   } catch (err) {
