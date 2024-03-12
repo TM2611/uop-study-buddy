@@ -242,3 +242,34 @@ async function getUserSessionsRequests(userId: string) {
     client.release();
   }
 }
+
+export async function PATCH(req: NextRequest, res: NextResponse) {
+  const client = await pool.connect();
+  const sessionId = req.nextUrl.searchParams.get("session");
+  const body = await req.json();
+  //const receiverId = req.nextUrl.searchParams.get("receiver");
+  //const requesterId = req.nextUrl.searchParams.get("requester");
+  const status = body.status
+  if (!sessionId || !status) {
+    return new NextResponse("Session ID or status missing or invalid", {
+      status: 400,
+    });
+  }
+
+  try {
+    const query = `
+        UPDATE session
+        SET status = $1
+        WHERE id = $2;
+        `;
+    await client.query(query, [status, sessionId]);
+    return new NextResponse("Session status updated successfully", {
+      status: 200,
+    });
+  } catch (err) {
+    console.error(err);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  } finally {
+    client.release();
+  }
+}
