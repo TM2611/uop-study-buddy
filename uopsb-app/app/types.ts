@@ -53,6 +53,13 @@ export interface SessionData {
 }
 export type SessionTableType = "Requests" | "Bookings";
 
+export type SessionStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "REJECTED"
+  | "COMPLETED"
+  | "CANCELLED";
+
 export interface UserProfileType extends UserType {
   slots: [AvailabilitySlot];
   topic_confidence: TopicConfidence[];

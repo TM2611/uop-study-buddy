@@ -1,5 +1,10 @@
 import React from "react";
-import { SessionData, SessionTableType, UserType } from "@/app/types";
+import {
+  SessionData,
+  SessionStatus,
+  SessionTableType,
+  UserType,
+} from "@/app/types";
 import { extractUpNum } from "@/lib/utils";
 import CircularNumberIcon from "@/app/_components/CircularNumberIcon";
 import SessionUser from "./SessionUser";
@@ -35,7 +40,7 @@ const SessionTable: React.FC<SessionTableProps> = ({
 }) => {
   const sessions = type === "Requests" ? sessionRequests : sessionBookings;
 
-  const handleAction = async (session: SessionData, action: string) => {
+  const handleAction = async (session: SessionData, status: SessionStatus) => {
     const receiverID = extractUpNum(currentUser.email);
     const requesterID = session.requester_id;
     const sessionID = session.session_id;
@@ -47,18 +52,32 @@ const SessionTable: React.FC<SessionTableProps> = ({
       body: JSON.stringify({
         receiver: receiverID,
         requester: requesterID,
-        status: action,
+        status: status,
       }),
     });
     if (res.ok) {
       const data = await res.text();
       console.log(data);
-      const newSessionRequests = sessionRequests.filter(
-        (s) => s.session_id !== sessionID
-      );
-      const newSessionBookings = [...sessionBookings, session];
-      setSessionRequests(newSessionRequests);
-      setSessionBookings(newSessionBookings);
+
+      if (status === "CANCELLED") {
+        // SessionBookingTable Action - remove cancelled session from bookings
+        const newSessionBookings = sessionBookings.filter(
+          (s) => s.session_id !== sessionID
+        );
+        setSessionBookings(newSessionBookings);
+      } else {
+        // SessionRequestTable Action - remove accepted/rejected session from requests
+        const newSessionRequests = sessionRequests.filter(
+          (s) => s.session_id !== sessionID
+        );
+        setSessionRequests(newSessionRequests);
+
+        if (status === "ACCEPTED") {
+          // SessionRequestTable Action - add accepted session to bookings
+          const newSessionBookings = [...sessionBookings, session];
+          setSessionBookings(newSessionBookings);
+        }
+      }
     }
   };
 
