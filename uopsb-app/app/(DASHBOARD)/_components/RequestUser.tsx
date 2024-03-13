@@ -1,11 +1,11 @@
 import { SessionData } from "@/app/types";
 import React from "react";
 
-interface SessionRequestUserProps {
+interface RequestUserProps {
   session: SessionData;
 }
 
-const SessionRequerUser: React.FC<SessionRequestUserProps> = ({ session }) => {
+const RequestUser: React.FC<RequestUserProps> = ({ session }) => {
   const fname = session.given_name;
   const lname = session.family_name;
   const course_name = session.course_name;
@@ -27,4 +27,4 @@ const SessionRequerUser: React.FC<SessionRequestUserProps> = ({ session }) => {
   );
 };
 
-export default SessionRequerUser;
+export default RequestUser;
