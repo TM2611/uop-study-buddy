@@ -1,23 +1,56 @@
-import { SessionData } from "@/app/types";
-import SessionRequestUser from "./SessionRequestUser";
+import { SessionData, UserType } from "@/app/types";
+import RequestUser from "./RequestUser";
 import SessionDate from "./SessionDate";
+import { extractUpNum } from "@/lib/utils";
+import CircularNumberIcon from "@/app/_components/CircularNumberIcon";
 
 interface SessionRequestsTableProps {
   sessionRequests: SessionData[];
+  sessionBookings: SessionData[];
+  setSessionRequests: (sessionRequests: SessionData[]) => void;
+  setSessionBookings: (sessionBookings: SessionData[]) => void;
+  currentUser: UserType;
 }
 const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
   sessionRequests,
+  setSessionRequests,
+  sessionBookings,
+  setSessionBookings,
+  currentUser,
 }) => {
-  const handleAccept = (sessionID) => {
-    // Handle accept action here
+  const handleAction = async (session: SessionData, action: string) => {
+    const receiverID = extractUpNum(currentUser.email);
+    const requesterID = session.requester_id;
+    const sessionID = session.session_id;
+    const res = await fetch(`/api/session?session=${sessionID}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        receiver: receiverID,
+        requester: requesterID,
+        status: action,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.text();
+      console.log(data);
+      const newSessionRequests = sessionRequests.filter(
+        (s) => s.session_id !== sessionID
+      );
+      const newSessionBookings = [...sessionBookings, session];
+      setSessionRequests(newSessionRequests);
+      setSessionBookings(newSessionBookings);
+    }
   };
 
-  const handleReject = (sessionID) => {
-    // Handle reject action here
-  };
   return (
     <section>
-      <h2 className="text-xl font-semibold mb-4">Session Requests</h2>
+      <h2 className="text-xl font-semibold my-4">
+        <span className=" mx-1 my-2">Session Requests</span>
+        <CircularNumberIcon number={sessionRequests.length} />
+      </h2>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -39,7 +72,7 @@ const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
           {sessionRequests.map((session, i: number) => (
             <tr key={i}>
               <td className="px-6 py-4 whitespace-nowrap">
-                <SessionRequestUser session={session} />
+                <RequestUser session={session} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <SessionDate
@@ -55,13 +88,13 @@ const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <button
-                  onClick={() => handleAccept(session.session_id)}
+                  onClick={() => handleAction(session, "ACCEPTED")}
                   className="bg-green-500 text-white px-4 py-2 rounded mr-2"
                 >
                   Accept
                 </button>
                 <button
-                  onClick={() => handleReject(session.session_id)}
+                  onClick={() => handleAction(session, "REJECTED")}
                   className="bg-red-500 text-white px-4 py-2 rounded"
                 >
                   Reject
