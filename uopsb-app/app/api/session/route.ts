@@ -106,20 +106,13 @@ async function insertSession(
     client.release();
   }
 }
-const validSessionTypes = ["all", "booked", "requests"] as const;
-type SessionType = (typeof validSessionTypes)[number];
 
 export async function GET(req: NextRequest, res: NextResponse) {
   const client = await pool.connect();
   const userId = req.nextUrl.searchParams.get("id");
-  const sessionType: SessionType = req.nextUrl.searchParams.get(
-    "type"
-  ) as SessionType;
+
   if (!userId) {
     return new NextResponse("User ID missing or invalid", { status: 400 });
-  }
-  if (!sessionType || !validSessionTypes.includes(sessionType)) {
-    return new NextResponse("Session type missing or invalid", { status: 400 });
   }
 
   try {
