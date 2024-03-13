@@ -12,8 +12,8 @@ const Dashboard = () => {
 
   const [sessionRequests, setSessionRequests] = useState<SessionData[]>([]);
   const [sessionBookings, setSessionBookings] = useState<SessionData[]>([]);
-  const [showRequestsTable, setShowRequestsTable] = useState(true);
-  const [showBookingsTable, setShowBookingsTable] = useState(false);
+  const [showRequestsTable, setShowRequestsTable] = useState(false);
+  const [showBookingsTable, setShowBookingsTable] = useState(true);
 
   useEffect(() => {
     // Fetch the list of session requests here and set the state
@@ -35,17 +35,19 @@ const Dashboard = () => {
   }, [user]);
 
   return (
-    <section>
+    <div>
+      <StudyStatsOverview
+        studySessionsCompleted={0}
+        totalStudyTime={0}
+        upcomingStudySessions={sessionBookings.length}
+      />
       <section>
-        <StudyStatsOverview
-          studySessionsCompleted={0}
-          totalStudyTime={0}
-          upcomingStudySessions={sessionBookings.length}
-        />
         {showRequestsTable && (
           <SessionTable
             sessionBookings={sessionBookings}
+            setShowBookingsTable={setShowBookingsTable}
             sessionRequests={sessionRequests}
+            setShowRequestsTable={setShowRequestsTable}
             setSessionBookings={setSessionBookings}
             setSessionRequests={setSessionRequests}
             currentUser={user}
@@ -62,7 +64,9 @@ const Dashboard = () => {
         {showBookingsTable && (
           <SessionTable
             sessionBookings={sessionBookings}
+            setShowBookingsTable={setShowBookingsTable}
             sessionRequests={sessionRequests}
+            setShowRequestsTable={setShowRequestsTable}
             setSessionBookings={setSessionBookings}
             setSessionRequests={setSessionRequests}
             currentUser={user}
@@ -78,7 +82,7 @@ const Dashboard = () => {
         )}
       </section>
       {/* Other sections of the dashboard */}
-    </section>
+    </div>
   );
 };
 

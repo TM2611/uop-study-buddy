@@ -14,7 +14,9 @@ interface SessionTableProps {
   sessionRequests: SessionData[];
   sessionBookings: SessionData[];
   setSessionRequests: (sessionRequests: SessionData[]) => void;
+  setShowRequestsTable: (showRequestsTable: boolean) => void;
   setSessionBookings: (sessionBookings: SessionData[]) => void;
+  setShowBookingsTable: (showBookingsTable: boolean) => void;
   currentUser: UserType;
   type: SessionTableType;
   action: SessionTableActionType;
@@ -23,8 +25,10 @@ interface SessionTableProps {
 const SessionTable: React.FC<SessionTableProps> = ({
   sessionRequests,
   setSessionRequests,
+  setShowRequestsTable,
   sessionBookings,
   setSessionBookings,
+  setShowBookingsTable,
   currentUser,
   type,
   action,
@@ -58,12 +62,32 @@ const SessionTable: React.FC<SessionTableProps> = ({
     }
   };
 
+  const handleViewTable = (type: SessionTableType) => {
+    if (type === "Requests") {
+      setShowRequestsTable(true);
+      setShowBookingsTable(false);
+    } else {
+      setShowBookingsTable(true);
+      setShowRequestsTable(false);
+    }
+  };
+
   return (
     <section>
-      <h2 className="text-xl font-semibold my-4">
-        <span className=" mx-1 my-2">{`Session ${type}`}</span>
-        <CircularNumberIcon number={sessions.length} />
-      </h2>
+      <div className="flex  justify-between">
+        <h2 className="text-xl font-semibold my-4">
+          <span className=" mx-1 my-2">{`Session ${type}`}</span>
+          <CircularNumberIcon number={sessions.length} />
+        </h2>
+        <button
+          className="h-10 bg-blue-600 text-white px-4 py-2 m-3 rounded hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+          onClick={() =>
+            handleViewTable(type === "Requests" ? "Bookings" : "Requests")
+          }
+        >
+          {`View ${type === "Requests" ? "Bookings" : "Requests"}`}
+        </button>
+      </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
