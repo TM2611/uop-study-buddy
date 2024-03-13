@@ -1,5 +1,5 @@
 import { SessionData, UserType } from "@/app/types";
-import RequestUser from "./RequestUser";
+import SessionUser from "./SessionUser";
 import SessionDate from "./SessionDate";
 import { extractUpNum } from "@/lib/utils";
 import CircularNumberIcon from "@/app/_components/CircularNumberIcon";
@@ -72,7 +72,7 @@ const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
           {sessionRequests.map((session, i: number) => (
             <tr key={i}>
               <td className="px-6 py-4 whitespace-nowrap">
-                <RequestUser session={session} />
+                <SessionUser session={session} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <SessionDate
