@@ -1,23 +1,36 @@
+import React from "react";
 import { SessionData, UserType } from "@/app/types";
-import SessionUser from "./SessionUser";
-import SessionDate from "./SessionDate";
 import { extractUpNum } from "@/lib/utils";
 import CircularNumberIcon from "@/app/_components/CircularNumberIcon";
+import SessionUser from "./SessionUser";
+import SessionDate from "./SessionDate";
 
-interface SessionRequestsTableProps {
+type SessionTableActionType = (
+  session: SessionData,
+  handleAction: (session: SessionData, action: string) => void
+) => React.ReactNode;
+
+interface SessionTableProps {
   sessionRequests: SessionData[];
   sessionBookings: SessionData[];
   setSessionRequests: (sessionRequests: SessionData[]) => void;
   setSessionBookings: (sessionBookings: SessionData[]) => void;
   currentUser: UserType;
+  type: "Requests" | "Bookings";
+  action: SessionTableActionType;
 }
-const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
+
+const SessionTable: React.FC<SessionTableProps> = ({
   sessionRequests,
   setSessionRequests,
   sessionBookings,
   setSessionBookings,
   currentUser,
+  type,
+  action,
 }) => {
+  const sessions = type === "Requests" ? sessionRequests : sessionBookings;
+
   const handleAction = async (session: SessionData, action: string) => {
     const receiverID = extractUpNum(currentUser.email);
     const requesterID = session.requester_id;
@@ -48,8 +61,8 @@ const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
   return (
     <section>
       <h2 className="text-xl font-semibold my-4">
-        <span className=" mx-1 my-2">Session Requests</span>
-        <CircularNumberIcon number={sessionRequests.length} />
+        <span className=" mx-1 my-2">{`Session ${type}`}</span>
+        <CircularNumberIcon number={sessions.length} />
       </h2>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
@@ -69,7 +82,7 @@ const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200 text-xs">
-          {sessionRequests.map((session, i: number) => (
+          {sessions.map((session, i: number) => (
             <tr key={i}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <SessionUser session={session} />
@@ -87,18 +100,7 @@ const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <button
-                  onClick={() => handleAction(session, "ACCEPTED")}
-                  className="bg-green-500 text-white px-4 py-2 rounded mr-2"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() => handleAction(session, "REJECTED")}
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                >
-                  Reject
-                </button>
+                {action(session, handleAction)}
               </td>
             </tr>
           ))}
@@ -108,4 +110,4 @@ const SessionRequestsTable: React.FC<SessionRequestsTableProps> = ({
   );
 };
 
-export default SessionRequestsTable;
+export default SessionTable;

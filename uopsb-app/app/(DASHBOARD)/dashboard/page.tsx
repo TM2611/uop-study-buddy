@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import StudyStatsOverview from "../_components/StudyStatsOverview";
 import { useAuth } from "@/app/AuthContext";
-import SessionRequestsTable from "../_components/SessionRequestsTable";
 import { SessionData } from "@/app/types";
+import SessionTable from "../_components/SessionTable";
+import SessionRequestAction from "../_components/SessionRequestAction";
 
 const Dashboard = () => {
   const { isLoggedIn, user } = useAuth();
@@ -39,12 +40,20 @@ const Dashboard = () => {
           totalStudyTime={0}
           upcomingStudySessions={sessionBookings.length}
         />
-        <SessionRequestsTable
+
+        <SessionTable
           sessionBookings={sessionBookings}
           sessionRequests={sessionRequests}
-          setSessionRequests={setSessionRequests}
           setSessionBookings={setSessionBookings}
+          setSessionRequests={setSessionRequests}
           currentUser={user}
+          type="Requests"
+          action={(session, handleAction) => (
+            <SessionRequestAction
+              session={session}
+              handleAction={handleAction}
+            />
+          )}
         />
       </section>
       {/* Other sections of the dashboard */}
