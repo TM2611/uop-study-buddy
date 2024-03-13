@@ -15,6 +15,7 @@ import {
 } from "@/lib/utils";
 import {
   AvailabilitySlot,
+  SessionData,
   SessionSlot,
   Topic,
   UserType,
@@ -135,12 +136,15 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   ): Promise<WeeklySlotStates> {
     const updatedStates = slotStates.map((row) => [...row]); // Create a shallow copy of the 2D array
     const userId = extractUpNum(selectedUser.email);
-    const response = await fetch(`/api/session?id=${userId}&type=booked`);
+    const response = await fetch(`/api/session?id=${userId}`);
     if (!response.ok) {
       throw new Error("Failed to fetch booked sessions");
     }
-    const allBookedSessions: Omit<SessionSlot, "day">[] = await response.json();
-    const weekBookedSessions = allBookedSessions.filter((x) =>
+    const sessions = await response.json();
+    const bookedSessions: Omit<SessionSlot, "day">[] = sessions.filter(
+      (x: SessionData) => x.status === "ACCEPTED"
+    );
+    const weekBookedSessions = bookedSessions.filter((x) =>
       isDateInRange(x.date ?? "", activeDate.toISOString())
     );
     const bookedSlotIndexes = getBookedSlotIndexes(weekBookedSessions);
