@@ -7,11 +7,12 @@ interface SessionActionProps {
   type: SessionTableType;
 }
 
-const SessionRequestAction: React.FC<SessionRequestActionProps> = ({
+const SessionAction: React.FC<SessionActionProps> = ({
   session,
   handleAction,
+  type,
 }) => {
-  return (
+  const requestAction = (
     <>
       <button
         onClick={() => handleAction(session, "ACCEPTED")}
@@ -27,6 +28,19 @@ const SessionRequestAction: React.FC<SessionRequestActionProps> = ({
       </button>
     </>
   );
+
+  const bookingAction = (
+    <>
+      <button
+        onClick={() => handleAction(session, "CANCELLED")}
+        className="bg-red-500 text-white px-4 py-2 rounded"
+      >
+        Cancel
+      </button>
+    </>
+  );
+  
+  return type === "Requests" ? requestAction : bookingAction;
 };
 
-export default SessionRequestAction;
+export default SessionAction;
