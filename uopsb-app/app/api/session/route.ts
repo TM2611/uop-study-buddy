@@ -231,7 +231,8 @@ async function getUserSessionsRequests(userId: string) {
     INNER JOIN course c ON u.course_code = c.course_code
     LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.id
   WHERE
-    ss.user_id = $1;
+    ss.user_id = $1 AND
+    s.status = 'PENDING';
         `;
     const result = await client.query(query, [userId]);
     return result.rows;
@@ -249,7 +250,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
   const body = await req.json();
   //const receiverId = req.nextUrl.searchParams.get("receiver");
   //const requesterId = req.nextUrl.searchParams.get("requester");
-  const status = body.status
+  const status = body.status;
   if (!sessionId || !status) {
     return new NextResponse("Session ID or status missing or invalid", {
       status: 400,
