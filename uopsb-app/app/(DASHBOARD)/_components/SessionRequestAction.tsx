@@ -1,12 +1,16 @@
-import React from 'react';
-import { SessionData } from "@/app/types";
+import React from "react";
+import { SessionData, SessionTableType } from "@/app/types";
 
-interface SessionRequestActionProps {
+interface SessionActionProps {
   session: SessionData;
   handleAction: (session: SessionData, action: string) => void;
+  type: SessionTableType;
 }
 
-const SessionRequestAction: React.FC<SessionRequestActionProps> = ({ session, handleAction }) => {
+const SessionRequestAction: React.FC<SessionRequestActionProps> = ({
+  session,
+  handleAction,
+}) => {
   return (
     <>
       <button

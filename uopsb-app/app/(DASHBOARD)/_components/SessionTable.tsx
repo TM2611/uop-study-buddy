@@ -1,5 +1,5 @@
 import React from "react";
-import { SessionData, UserType } from "@/app/types";
+import { SessionData, SessionTableType, UserType } from "@/app/types";
 import { extractUpNum } from "@/lib/utils";
 import CircularNumberIcon from "@/app/_components/CircularNumberIcon";
 import SessionUser from "./SessionUser";
@@ -16,7 +16,7 @@ interface SessionTableProps {
   setSessionRequests: (sessionRequests: SessionData[]) => void;
   setSessionBookings: (sessionBookings: SessionData[]) => void;
   currentUser: UserType;
-  type: "Requests" | "Bookings";
+  type: SessionTableType;
   action: SessionTableActionType;
 }
 

@@ -51,6 +51,7 @@ export interface SessionData {
   topic_name: string;
   requester_confidence: number;
 }
+export type SessionTableType = "Requests" | "Bookings";
 
 export interface UserProfileType extends UserType {
   slots: [AvailabilitySlot];
