@@ -73,11 +73,12 @@ INSERT INTO topic (name, department_id) VALUES
 ('Nanotechnology and Advanced Materials', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
 ('Electric Vehicles and Sustainable Transportation', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
 
+CREATE TYPE course_level AS ENUM ('UG', 'PG');
 CREATE TABLE course (
     course_code VARCHAR(12) PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     department_id INT NOT NULL,
-    level ENUM('UG', 'PG') NOT NULL,
+    level course_level NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
