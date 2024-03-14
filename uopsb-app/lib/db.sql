@@ -90,7 +90,7 @@ INSERT INTO course (course_code, name, department_id, level) VALUES
 ('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
 ('U0580PYC', 'Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
 ('U2753PYC', 'Cyber Security and Forensic Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
-('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing'), 'PG'),
+('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
 ('U0968PYC', 'Software Engineering', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG');
 
 -- School of Energy and Electronic Engineering
