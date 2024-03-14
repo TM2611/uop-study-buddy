@@ -265,7 +265,7 @@ INSERT INTO availability (user_id, day, start_hour, end_hour) VALUES
 CREATE TYPE session_status AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED', 'CANCELLED');
 CREATE TABLE session (
   id SERIAL PRIMARY KEY,
-  topic_id INTEGER NOT NULL,
+  topic_id INTEGER,
   start_hour INTEGER NOT NULL,
   end_hour INTEGER NOT NULL,
   date DATE NOT NULL,
