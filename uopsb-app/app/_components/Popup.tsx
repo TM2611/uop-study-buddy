@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface PopupProps {
   show: boolean;
@@ -21,7 +21,7 @@ const Popup: React.FC<PopupProps> = ({
         <div className="bg-white p-6 rounded shadow-md">
           <h3 className="text-xl font-semibold mb-4">{title}</h3>
           {content}
-          {onConfirm && (
+          {onConfirm ? (
             <div className="mt-4 flex justify-end">
               <button
                 onClick={onConfirm}
@@ -36,14 +36,14 @@ const Popup: React.FC<PopupProps> = ({
                 Cancel
               </button>
             </div>
+          ) : (
+            <button
+              onClick={onClose}
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded shadow-md"
+            >
+              Close
+            </button>
           )}
-
-          <button
-            onClick={onClose}
-            className="bg-gray-300 text-gray-800 px-4 py-2 rounded shadow-md"
-          >
-            Close
-          </button>
         </div>
       </div>
     )
