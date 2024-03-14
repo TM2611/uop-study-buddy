@@ -10,6 +10,11 @@ export interface Topic {
   department_id: String;
 }
 
+export type SelectedTopic = {
+  name: string | null;
+  id: number | null;
+};
+
 export interface FormPopulation {
   courses: Course[];
   topics: Topic[];
@@ -25,14 +30,43 @@ export interface UserType {
   gender: string;
 }
 
-export interface SlotDetails {
+export interface AvailabilitySlot {
   day: string;
   start_hour: number;
   end_hour: number;
 }
 
+export interface SessionSlot extends AvailabilitySlot {
+  date: string;
+}
+
+export interface SessionData {
+  start_hour: number;
+  end_hour: number;
+  date: string;
+  status: string;
+  session_id: number;
+  requester_id: string;
+  email: string;
+  given_name: string;
+  family_name: string;
+  picture: string;
+  course_code: string;
+  course_name: string;
+  topic_name: string;
+  requester_confidence: number;
+}
+export type SessionTableType = "Requests" | "Bookings";
+
+export type SessionStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "REJECTED"
+  | "COMPLETED"
+  | "CANCELLED";
+
 export interface UserProfileType extends UserType {
-  slots: [SlotDetails];
+  slots: [AvailabilitySlot];
   topic_confidence: TopicConfidence[];
 }
 
@@ -42,10 +76,21 @@ export interface TopicConfidence {
   confidence_value: number;
 }
 
+const SlotStatusMap = {
+  available: 0,
+  unavailable: -1,
+  selected: 1,
+  booked: 2,
+};
+
+export type SlotStatus = (typeof SlotStatusMap)[keyof typeof SlotStatusMap];
+type DailySlotStates = SlotStatus[];
+export type WeeklySlotStates = DailySlotStates[];
+
 export interface SetupFormInitValues {
   year: string;
   course_code: string;
   gender: string;
-  slots: boolean[][];
+  weekyAvailabilityStates: DailySlotStates[];
   topic_confidence: TopicConfidence[];
 }

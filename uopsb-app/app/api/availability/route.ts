@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     const upNum = extractUpNum(email);
     const result = await client.query(
-      "SELECT day, start_hour, end_hour FROM slot WHERE user_id = $1",
+      "SELECT day, start_hour, end_hour FROM availability WHERE user_id = $1",
       [upNum]
     );
     return NextResponse.json(result.rows, { status: 200 });

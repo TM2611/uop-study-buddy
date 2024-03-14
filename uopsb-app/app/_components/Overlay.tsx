@@ -20,7 +20,7 @@ const Overlay: React.FC<OverlayProps> = ({ children, onClose }) => {
         {children}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 focus:outline-none"
+          className="absolute top-3 right-3 focus:outline-none text-2xl"
         >
           &times;
         </button>

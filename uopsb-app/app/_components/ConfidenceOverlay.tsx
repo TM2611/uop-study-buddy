@@ -1,28 +1,23 @@
 import React from "react";
 import { TopicConfidence } from "../types";
 import Overlay from "./Overlay";
+import ConfidenceList from "./ConfidenceList";
 
 interface ConfidenceListOverlayProps {
   confidence: TopicConfidence[];
-  setShowConfidence: (show: boolean) => void;
+  setShowConfidenceOverlay: (show: boolean) => void;
 }
 
 const ConfidenceOverlay: React.FC<ConfidenceListOverlayProps> = ({
   confidence,
-  setShowConfidence,
+  setShowConfidenceOverlay,
 }) => {
   return (
-    <Overlay onClose={() => setShowConfidence(false)}>
+    <Overlay onClose={() => setShowConfidenceOverlay(false)}>
       <div>
         <h3 className="text-lg font-bold mb-4">Confidence</h3>
       </div>
-      <ul className="space-y-1">
-        {confidence.map((topic, index) => (
-          <li key={index} className="text-gray-700 text-xs">
-            {topic.topic_name}: {topic.confidence_value}
-          </li>
-        ))}
-      </ul>
+      <ConfidenceList confidence={confidence} />
     </Overlay>
   );
 };

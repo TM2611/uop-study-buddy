@@ -6,54 +6,25 @@ import { useEffect, useState } from "react";
 
 import { useFormik } from "formik";
 import {
-  SlotDetails,
+  AvailabilitySlot,
   Course,
   FormPopulation,
   SetupFormInitValues,
 } from "@/app/types";
 
-import { TimeSlotGrid } from "./TimeSlotGrid";
+import AvailabilitySelection from "./AvailabilitySelection";
 import ConfidenceGrid from "./ConfidenceGrid";
 import Form from "@/app/_components/Form";
+import { statesToAvailabilitySlots } from "@/lib/utils";
 
-function convertBooleanSlots(slotsBool: boolean[][]): SlotDetails[] {
-  try {
-    const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-    let slots: SlotDetails[] = [];
-
-    days.forEach((day, dayIndex) => {
-      let startHour: number | null = null;
-
-      slotsBool[dayIndex].forEach((hourAvailable, hourIndex) => {
-        if (hourAvailable && startHour === null) {
-          startHour = hourIndex;
-        }
-
-        if ((!hourAvailable || hourIndex === 23) && startHour !== null) {
-          slots.push({
-            day,
-            start_hour: startHour,
-            end_hour: hourIndex,
-          });
-          startHour = null;
-        }
-      });
-    });
-
-    return slots;
-  } catch (error) {
-    console.error("Error converting Boolean slots to JSON:", error);
-    return [];
-  }
-}
 const handleSubmit = async (
   values: any,
   user: any,
   router: any,
   setIsLoggedIn: any
 ) => {
-  const jsonSlots = convertBooleanSlots(values.slots);
-  values.slots = jsonSlots; // Replace the bool array with JSON array
+  const availableSlots = statesToAvailabilitySlots(values.slots);
+  values.slots = availableSlots; // Replace the bool array with JSON array
   const userProfile = {
     ...user,
     ...values,
@@ -83,9 +54,9 @@ export function SetupForm(formPopulation: FormPopulation) {
     year: "",
     course_code: "",
     gender: "",
-    slots: Array(7)
+    weekyAvailabilityStates: Array(7)
       .fill(null)
-      .map(() => Array(24).fill(false)),
+      .map(() => Array(24).fill(0)),
     topic_confidence: [],
   };
   const formik = useFormik({
@@ -183,9 +154,9 @@ export function SetupForm(formPopulation: FormPopulation) {
         <label className="block text-purple-700 font-bold mb-2">
           Availability
         </label>
-        <TimeSlotGrid
-          onChange={(newAvailability) =>
-            formik.setFieldValue("slots", newAvailability)
+        <AvailabilitySelection
+          onChange={(newSlotStates) =>
+            formik.setFieldValue("slots", newSlotStates)
           }
         />
       </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { SlotDetails, TopicConfidence, UserType } from "@/app/types";
-import Overlay from "./Overlay";
+import { AvailabilitySlot, TopicConfidence, UserType } from "@/app/types";
+import { fetchUserAvailability, fetchUserConfidence } from "@/lib/api";
 import AvailabilityOverlay from "./AvailabilityOverlay";
 import ConfidenceOverlay from "./ConfidenceOverlay";
 import { MdOutlineEventAvailable } from "react-icons/md";
@@ -8,48 +8,35 @@ import { IoBulbOutline } from "react-icons/io5";
 
 interface UserProfileCardProp {
   user: UserType;
+  onStudyButtonClick: () => void;
+  showSessionSelection: boolean;
 }
 
-const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
-  const [slots, setSlots] = useState<SlotDetails[]>([]);
+const UserMatchCard: React.FC<UserProfileCardProp> = ({
+  user,
+  onStudyButtonClick,
+}) => {
+  const [availableSlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>(
+    []
+  );
   const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
-  const [showAvailability, setShowAvailability] = useState(false);
-  const [showConfidence, setShowConfidence] = useState(false);
+  const [showAvailabilityOverlay, setShowAvailabilityOverlay] = useState(false);
+  const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
+
+  const handleStudyButtonClick = () => {
+    onStudyButtonClick();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-      const userSlots = await fetchUserAvailability(user.email);
+      const availableSlots = await fetchUserAvailability(user.email);
       const userConfidence = await fetchUserConfidence(user.email);
-      setSlots(userSlots);
+      setAvailabilitySlots(availableSlots);
       setConfidence(userConfidence);
     };
 
     fetchData();
   }, [user.email]);
-
-  async function fetchUserAvailability(
-    userEmail: string
-  ): Promise<SlotDetails[]> {
-    const response = await fetch(`/api/availability?email=${userEmail}`);
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user availability");
-    }
-    const data: SlotDetails[] = await response.json();
-    return data;
-  }
-
-  async function fetchUserConfidence(
-    userEmail: string
-  ): Promise<TopicConfidence[]> {
-    const response = await fetch(`/api/confidence?email=${userEmail}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch user confidence");
-    }
-    const data: TopicConfidence[] = await response.json();
-    console.log("userConfidence", data);
-    return data;
-  }
 
   return (
     <div className="relative max-w-xs rounded overflow-hidden shadow-lg bg-white">
@@ -71,8 +58,8 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
         <div className="flex justify-evenly w-1/2">
           <button
             type="button"
-            aria-label="Show availability"
-            onClick={() => setShowAvailability(true)}
+            aria-label="Show availableSlots"
+            onClick={() => setShowAvailabilityOverlay(true)}
             className="text-blue-500 flex items-center justify-center p-2"
           >
             <MdOutlineEventAvailable size={30} />
@@ -81,29 +68,29 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({ user }) => {
           <button
             type="button"
             aria-label="Show confidence"
-            onClick={() => setShowConfidence(true)}
+            onClick={() => setShowConfidenceOverlay(true)}
             className="text-blue-500 flex items-center justify-center p-2"
           >
             <IoBulbOutline size={30} />
           </button>
         </div>
         <button
-          onClick={() => console.log("Study button clicked")}
+          onClick={() => handleStudyButtonClick()}
           className="text-blue-500 border bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-1/2"
         >
           Study
         </button>
       </section>
-      {showAvailability && (
+      {showAvailabilityOverlay && (
         <AvailabilityOverlay
-          slots={slots}
-          setShowAvailability={setShowAvailability}
+          availableSlots={availableSlots}
+          setShowAvailabilityOverlay={setShowAvailabilityOverlay}
         />
       )}
-      {showConfidence && (
+      {showConfidenceOverlay && (
         <ConfidenceOverlay
           confidence={confidence}
-          setShowConfidence={setShowConfidence}
+          setShowConfidenceOverlay={setShowConfidenceOverlay}
         />
       )}
     </div>

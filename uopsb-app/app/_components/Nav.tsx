@@ -47,8 +47,8 @@ export default function Nav() {
           <a href="/" className="text-lg font-bold sm:ml-8">
             Home
           </a>
-          <a href="/about" className="text-lg font-bold sm:ml-8">
-            About
+          <a href="/study" className="text-lg font-bold sm:ml-8">
+            Study
           </a>
           <a href="/dashboard" className="text-lg font-bold sm:ml-8">
             Dashboard

@@ -6,17 +6,27 @@
  * and should not be used in a production environment.
  */
 
-CREATE OR REPLACE FUNCTION drop_all_tables() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION drop_all() RETURNS VOID AS $$
 DECLARE
     table_name RECORD;
+    type_name RECORD;
 BEGIN
+    -- Drop tables
     FOR table_name IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
         EXECUTE 'DROP TABLE IF EXISTS "' || table_name.tablename || '" CASCADE';
     END LOOP;
+
+    -- Drop types (including ENUMs)
+    FOR type_name IN (SELECT t.typname FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid WHERE t.typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')) LOOP
+        EXECUTE 'DROP TYPE IF EXISTS "' || type_name.typname || '" CASCADE';
+    END LOOP;
+
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT drop_all_tables();
+SELECT drop_all();
+
+SET datestyle = 'ISO, DMY';
 
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,
@@ -190,7 +200,7 @@ INSERT INTO student_confidence VALUES
 ('932760', 9, 2),
 ('932760', 10, 1);
 
-CREATE TABLE slot (
+CREATE TABLE availability (
   id SERIAL PRIMARY KEY,
   user_id VARCHAR(36) NOT NULL,
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
@@ -199,13 +209,14 @@ CREATE TABLE slot (
   FOREIGN KEY (user_id) REFERENCES student(id)
 );
 
-INSERT INTO slot (user_id, day, start_hour, end_hour) VALUES
+INSERT INTO availability (user_id, day, start_hour, end_hour) VALUES
 ('932756', 'MON', 9, 11),
 ('932756', 'TUE', 14, 16),
 ('932757', 'TUE', 13, 14),
 ('932757', 'WED', 10, 12),
-('932758', 'WED', 11, 13),
+('932758', 'WED', 9, 18),
 ('932758', 'THU', 15, 17),
+('932759', 'WED', 9, 18),
 ('932759', 'THU', 16, 18),
 ('932759', 'FRI', 8, 10),
 ('932760', 'FRI', 12, 14),
@@ -250,3 +261,49 @@ INSERT INTO slot (user_id, day, start_hour, end_hour) VALUES
 -- ('932779', 'MON', 11, 13),
 -- ('932780', 'TUE', 14, 16),
 -- ('932780', 'THU', 10, 12);
+
+CREATE TYPE session_status AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED', 'CANCELLED');
+CREATE TABLE session (
+  id SERIAL PRIMARY KEY,
+  topic_id INTEGER,
+  start_hour INTEGER NOT NULL,
+  end_hour INTEGER NOT NULL,
+  date DATE NOT NULL,
+  status session_status NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  FOREIGN KEY (topic_id) REFERENCES topic(id)
+);
+
+-- For demo/test purposes
+CREATE OR REPLACE FUNCTION next_wednesday() RETURNS DATE AS $$
+BEGIN
+  RETURN CURRENT_DATE + INTERVAL '1 day' * ((10 - EXTRACT(DOW FROM CURRENT_DATE)::INTEGER) % 7);
+END;
+$$ LANGUAGE plpgsql;
+
+
+INSERT INTO session (topic_id, start_hour, end_hour, date, status) VALUES
+-- Jenny and Zack
+(7, 10, 11, next_wednesday(), 'ACCEPTED'),
+(2, 14, 15, next_wednesday(), 'ACCEPTED');
+-- End of Jenny and Zack
+
+CREATE TABLE student_session (
+  session_id INTEGER NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+  feedback TEXT,
+  is_requester BOOLEAN NOT NULL,
+  PRIMARY KEY (user_id, session_id),
+  FOREIGN KEY (user_id) REFERENCES student(id),
+  FOREIGN KEY (session_id) REFERENCES session(id)
+);
+
+INSERT INTO student_session (session_id, user_id, is_requester) VALUES
+-- Jenny and Zack
+(1, '932758', TRUE),
+(1, '932759', FALSE),
+(2, '932759', TRUE),
+(2, '932758', FALSE);
+-- End of Jenny and Zack

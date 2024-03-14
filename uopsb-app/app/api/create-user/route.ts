@@ -1,6 +1,6 @@
 import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { SlotDetails, UserProfileType } from "@/app/types";
+import { AvailabilitySlot, UserProfileType } from "@/app/types";
 import { extractUpNum } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
@@ -49,9 +49,9 @@ async function createUser(userProfile: UserProfileType) {
 
   try {
     const stmnt = await client.query(
-        `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-        [upNum, email, given_name, family_name, picture, year, courseCode, gender]
-      );
+      `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [upNum, email, given_name, family_name, picture, year, courseCode, gender]
+    );
     if (stmnt.rowCount !== 1) throw new Error("Could not create user");
     console.log(stmnt.rows[0]);
     console.log(stmnt);
@@ -60,9 +60,9 @@ async function createUser(userProfile: UserProfileType) {
       await insertTopicConfidence(upNum, topicConfidence);
     }
 
-    // Insert each slot entry into the slot table
+    // Insert each slot entry into the availability table
     for (const availability of slots) {
-      await insertSlots(upNum, availability);
+      await insertAvailabilitySlots(upNum, availability);
     }
 
     return true;
@@ -96,16 +96,16 @@ async function insertTopicConfidence(
   }
 }
 
-async function insertSlots(
+async function insertAvailabilitySlots(
   studentId: string,
-  slot: SlotDetails
+  availabilitySlot: AvailabilitySlot
 ) {
   const client = await pool.connect();
-  const { day, start_hour, end_hour } = slot;
+  const { day, start_hour, end_hour } = availabilitySlot;
 
   try {
     const stmnt = await client.query(
-      `INSERT INTO slot (user_id, day, start_hour, end_hour) VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO availability (user_id, day, start_hour, end_hour) VALUES ($1, $2, $3, $4)`,
       [studentId, day, start_hour, end_hour]
     );
     if (stmnt.rowCount !== 1) throw new Error("Could not insert slot");
