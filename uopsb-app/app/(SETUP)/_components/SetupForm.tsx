@@ -53,7 +53,6 @@ export function SetupForm(formPopulation: FormPopulation) {
   const initialValues: SetupFormInitValues = {
     year: "",
     course_code: "",
-    gender: "",
     weekyAvailabilityStates: Array(7)
       .fill(null)
       .map(() => Array(24).fill(0)),
@@ -109,27 +108,6 @@ export function SetupForm(formPopulation: FormPopulation) {
               {course.name}
             </option>
           ))}
-        </select>
-      </div>
-      <div className="mb-4">
-        <label
-          htmlFor="gender"
-          className="block text-purple-700 font-bold mb-2"
-        >
-          Gender
-        </label>
-        <select
-          id="gender"
-          name="gender"
-          value={formik.values.gender}
-          onChange={formik.handleChange}
-          className="w-full p-2 border border-purple-300 rounded-md focus:border-purple-500 focus:outline-none"
-        >
-          <option value="">Select a gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-          <option value="Prefer not to say">Prefer not to say</option>
         </select>
       </div>
     </>

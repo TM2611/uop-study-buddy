@@ -43,14 +43,13 @@ async function createUser(userProfile: UserProfileType) {
   const picture = userProfile.picture;
   const year = Number(userProfile.year);
   const courseCode = userProfile.course_code;
-  const gender = userProfile.gender;
   const slots = userProfile.slots;
   const TopicConfidence = userProfile.topic_confidence;
 
   try {
     const stmnt = await client.query(
-      `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [upNum, email, given_name, family_name, picture, year, courseCode, gender]
+      `INSERT INTO student (id, email, given_name, family_name, picture, year, course_code) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [upNum, email, given_name, family_name, picture, year, courseCode]
     );
     if (stmnt.rowCount !== 1) throw new Error("Could not create user");
     console.log(stmnt.rows[0]);

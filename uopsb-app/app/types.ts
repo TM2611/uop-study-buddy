@@ -27,7 +27,6 @@ export interface UserType {
   picture: string;
   year: number;
   course_code: string;
-  gender: string;
 }
 
 export interface AvailabilitySlot {
@@ -90,7 +89,6 @@ export type WeeklySlotStates = DailySlotStates[];
 export interface SetupFormInitValues {
   year: string;
   course_code: string;
-  gender: string;
   weekyAvailabilityStates: DailySlotStates[];
   topic_confidence: TopicConfidence[];
 }

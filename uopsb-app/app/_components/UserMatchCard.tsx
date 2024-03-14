@@ -51,7 +51,6 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
         <p className="text-gray-700 text-base">{user.email}</p>
         <p className="text-gray-700 text-base">Year: {user.year}</p>
         <p className="text-gray-700 text-base">Course: {user.course_code}</p>
-        {/* <p className="text-gray-700 text-base">Gender: {user.gender}</p> */}
       </div>
 
       <section className="flex">
