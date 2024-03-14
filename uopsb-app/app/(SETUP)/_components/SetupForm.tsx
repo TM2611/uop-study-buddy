@@ -86,6 +86,7 @@ export function SetupForm(formPopulation: FormPopulation) {
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
+          <option value="4">Postgraduate</option>
         </select>
       </div>
       <div className="mb-4">

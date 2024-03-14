@@ -2,6 +2,7 @@ export interface Course {
   course_code: string;
   name: string;
   department_id: string;
+  level: "UG" | "PG";
 }
 
 export interface Topic {

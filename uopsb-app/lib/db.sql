@@ -77,23 +77,25 @@ CREATE TABLE course (
     course_code VARCHAR(12) PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     department_id INT NOT NULL,
+    level ENUM('UG', 'PG') NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
---School of Computing
-INSERT INTO course (course_code, name, department_id) VALUES
-('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U2365PYC', 'Computer Networks', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U0056PYC', 'Computer Science (BSc)', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U0580PYC', 'Computing', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U2753PYC', 'Cyber Security and Forensic Computing', (SELECT id FROM department WHERE name = 'School of Computing')),
-('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U0968PYC', 'Software Engineering', (SELECT id FROM department WHERE name = 'School of Computing'));
 
---School of Energy and Electronic Engineering
-INSERT INTO course (course_code, name, department_id) VALUES
-('U2194PYC', 'Engineering and Technology (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
-('U2174PYC', 'Electronic Engineering (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
+-- School of Computing
+INSERT INTO course (course_code, name, department_id, level) VALUES
+('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', (SELECT id FROM department WHERE name = 'School of Computing'), 'PG'),
+('U2365PYC', 'Computer Networks', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U0056PYC', 'Computer Science (BSc)', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U0580PYC', 'Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U2753PYC', 'Cyber Security and Forensic Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing'), 'PG'),
+('U0968PYC', 'Software Engineering', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG');
+
+-- School of Energy and Electronic Engineering
+INSERT INTO course (course_code, name, department_id, level) VALUES
+('U2194PYC', 'Engineering and Technology (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'), 'UG'),
+('U2174PYC', 'Electronic Engineering (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'), 'UG');
 
 CREATE TABLE student (
   id VARCHAR(36) PRIMARY KEY,
