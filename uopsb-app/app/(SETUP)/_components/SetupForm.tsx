@@ -101,14 +101,21 @@ export function SetupForm(formPopulation: FormPopulation) {
           name="course_code"
           value={formik.values.course_code}
           onChange={formik.handleChange}
+          disabled={!formik.values.year}
           className="w-full p-2 border border-purple-300 rounded-md focus:border-purple-500 focus:outline-none"
         >
           <option value="">Select a course</option>
-          {formPopulation?.courses?.map((course: Course) => (
-            <option key={course.course_code} value={course.course_code}>
-              {course.name}
-            </option>
-          ))}
+          {formPopulation?.courses
+            ?.filter((course: Course) =>
+              formik.values.year === "4"
+                ? course.level === "PG"
+                : course.level === "UG"
+            )
+            .map((course: Course) => (
+              <option key={course.course_code} value={course.course_code}>
+                {course.name}
+              </option>
+            ))}
         </select>
       </div>
     </>
