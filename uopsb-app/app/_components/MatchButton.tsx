@@ -1,10 +1,10 @@
 import React from "react";
-import { UserType, TopicConfidence, Topic } from "@/app/types";
+import { UserType, TopicConfidence, SelectedTopic } from "@/app/types";
 
 type MatchButtonProps = {
   currentUser: UserType;
   onMatch: (user: UserType) => void;
-  selectedTopic: Partial<Topic>;
+  selectedTopic: SelectedTopic;
   activeUserConfidence: TopicConfidence[];
 };
 

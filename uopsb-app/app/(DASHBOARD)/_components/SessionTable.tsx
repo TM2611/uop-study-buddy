@@ -12,7 +12,7 @@ import SessionDate from "./SessionDate";
 
 type SessionTableActionType = (
   session: SessionData,
-  handleAction: (session: SessionData, action: string) => void
+  handleAction: (session: SessionData, status: SessionStatus) => void
 ) => React.ReactNode;
 
 interface SessionTableProps {
@@ -139,7 +139,9 @@ const SessionTable: React.FC<SessionTableProps> = ({
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span>
-                  {session.topic_name} - {session.requester_confidence}
+                  {session.topic_name
+                    ? `${session.topic_name} - ${session.requester_confidence}`
+                    : "None"}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">

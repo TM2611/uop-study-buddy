@@ -15,9 +15,9 @@ import {
 } from "@/lib/utils";
 import {
   AvailabilitySlot,
+  SelectedTopic,
   SessionData,
   SessionSlot,
-  Topic,
   UserType,
   WeeklySlotStates,
 } from "../types";
@@ -29,7 +29,7 @@ dayjs.extend(isoWeek);
 interface SessionSelectionProps {
   setShowSessionSelection: (value: boolean) => void;
   selectedUser: UserType;
-  selectedTopic: Partial<Topic>;
+  selectedTopic: SelectedTopic;
 }
 
 const SessionSelection: React.FC<SessionSelectionProps> = ({
@@ -194,7 +194,8 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
           <br />
           <span className="font-bold text-lg mt-3">Summary</span>
           <div>
-            <span className="font-bold">Topic:</span> {selectedTopic.name}
+            <span className="font-bold">Topic:</span>{" "}
+            {selectedTopic.name || "No Topic"}
           </div>
           <ul className="list-disc p-2">
             {selectedDateTime.map((session, i) => (

@@ -1,9 +1,9 @@
 import React from "react";
-import { SessionData, SessionTableType } from "@/app/types";
+import { SessionData, SessionStatus, SessionTableType } from "@/app/types";
 
 interface SessionActionProps {
   session: SessionData;
-  handleAction: (session: SessionData, action: string) => void;
+  handleAction: (session: SessionData, status: SessionStatus) => void;
   type: SessionTableType;
 }
 

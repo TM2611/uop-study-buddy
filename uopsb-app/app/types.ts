@@ -10,6 +10,11 @@ export interface Topic {
   department_id: String;
 }
 
+export type SelectedTopic = {
+  name: string | null;
+  id: number | null;
+};
+
 export interface FormPopulation {
   courses: Course[];
   topics: Topic[];

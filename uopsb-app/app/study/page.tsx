@@ -9,7 +9,15 @@ import { useEffect, useState } from "react";
 import { Topic, TopicConfidence, UserType } from "../types";
 import SessionSelection from "../_components/SessionSelection";
 
-type SelectedTopic = Partial<Topic>;
+type SelectedTopic = {
+  name: string | null;
+  id: number | null;
+};
+
+const defaultSelectedTopic: SelectedTopic = {
+  id: 0,
+  name: "",
+};
 
 const Study = () => {
   const { user } = useAuth();
@@ -18,7 +26,8 @@ const Study = () => {
   >([]); // Holds the active user's list of topics and confidence value for each
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [showProfileCard, setShowProfileCard] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState<SelectedTopic>({});
+  const [selectedTopic, setSelectedTopic] =
+    useState<SelectedTopic>(defaultSelectedTopic);
   const [showSessionSelection, setShowSessionSelection] = useState(false);
 
   useEffect(() => {
@@ -43,11 +52,11 @@ const Study = () => {
 
   const handleTopicChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = event.target.options[event.target.selectedIndex];
-    const id = Number(selectedOption.getAttribute("data-id"));
     const name = selectedOption.value;
-    if (id) {
-      setSelectedTopic({ id, name });
-    }
+    const id = Number(selectedOption.getAttribute("data-id"));
+    id
+      ? setSelectedTopic({ id, name })
+      : setSelectedTopic({ id: null, name: null });
   };
 
   return (
@@ -66,7 +75,7 @@ const Study = () => {
         <div className="m-4">
           <select
             className="border rounded p-2"
-            value={selectedTopic.name}
+            value={selectedTopic.name || "No Topic"}
             onChange={handleTopicChange}
           >
             <option value="" disabled>
@@ -81,8 +90,8 @@ const Study = () => {
                 {x.topic_name}
               </option>
             ))}
-            <option value="0" data-id={"n/a"}>
-              N/A
+            <option key="No Topic" value="No Topic" data-id={"none"}>
+              No Topic
             </option>
           </select>
         </div>
