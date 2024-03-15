@@ -73,27 +73,30 @@ INSERT INTO topic (name, department_id) VALUES
 ('Nanotechnology and Advanced Materials', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
 ('Electric Vehicles and Sustainable Transportation', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
 
+CREATE TYPE course_level AS ENUM ('UG', 'PG');
 CREATE TABLE course (
     course_code VARCHAR(12) PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     department_id INT NOT NULL,
+    level course_level NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
---School of Computing
-INSERT INTO course (course_code, name, department_id) VALUES
-('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U2365PYC', 'Computer Networks', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U0056PYC', 'Computer Science (BSc)', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U0580PYC', 'Computing', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U2753PYC', 'Cyber Security and Forensic Computing', (SELECT id FROM department WHERE name = 'School of Computing')),
-('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing')),
-('U0968PYC', 'Software Engineering', (SELECT id FROM department WHERE name = 'School of Computing'));
 
---School of Energy and Electronic Engineering
-INSERT INTO course (course_code, name, department_id) VALUES
-('U2194PYC', 'Engineering and Technology (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
-('U2174PYC', 'Electronic Engineering (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'));
+-- School of Computing
+INSERT INTO course (course_code, name, department_id, level) VALUES
+('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', (SELECT id FROM department WHERE name = 'School of Computing'), 'PG'),
+('U2365PYC', 'Computer Networks', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U0056PYC', 'Computer Science (BSc)', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U0580PYC', 'Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U2753PYC', 'Cyber Security and Forensic Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U0968PYC', 'Software Engineering', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG');
+
+-- School of Energy and Electronic Engineering
+INSERT INTO course (course_code, name, department_id, level) VALUES
+('U2194PYC', 'Engineering and Technology (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'), 'UG'),
+('U2174PYC', 'Electronic Engineering (BEng)', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering'), 'UG');
 
 CREATE TABLE student (
   id VARCHAR(36) PRIMARY KEY,
@@ -102,41 +105,40 @@ CREATE TABLE student (
   family_name VARCHAR(255) NOT NULL,
   picture VARCHAR(255),
   course_code VARCHAR(12) NOT NULL,
-  gender TEXT CHECK( gender IN ('Male', 'Female', 'Other', 'Prefer not to say') ) NOT NULL,
   year INTEGER NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (course_code) REFERENCES course(course_code)
 );
 
-INSERT INTO student (id, email, given_name, family_name, picture, course_code, gender, year) 
+INSERT INTO student (id, email, given_name, family_name, picture, course_code, year) 
 VALUES 
 -- School of Computing
-('932756', 'up932756@myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api/portraits/men/0.jpg', 'U0056PYC', 'Male', 1), 
-('932757', 'up932757@myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api/portraits/women/0.jpg', 'U0056PYC', 'Female', 1), 
-('932758', 'up932758@myport.ac.uk', 'Zack', 'Smith', 'https://randomuser.me/api/portraits/men/1.jpg', 'U0968PYC', 'Male', 3),
-('932759', 'up932759@myport.ac.uk', 'Jenny', 'Smith', 'https://randomuser.me/api/portraits/women/2.jpg', 'U0968PYC', 'Female', 3),
-('932760', 'up932760@myport.ac.uk', 'Tom', 'Brown', 'https://randomuser.me/api/portraits/men/3.jpg', 'U0056PYC', 'Male', 2); 
--- ('932762', 'up932762@myport.ac.uk', 'Mark', 'Jones', 'https://randomuser.me/api/portraits/men/4.jpg', 'U2365PYC', 'Male', 2),
--- ('932761', 'up932761@myport.ac.uk', 'Emma', 'Taylor', 'https://randomuser.me/api/portraits/women/3.jpg', 'P3439FTC', 'Female', 1),
--- ('932779', 'up932779@myport.ac.uk', 'Amelia', 'Long', 'https://randomuser.me/api/portraits/women/12.jpg', 'U0968PYC', 'Female', 1),
--- ('932780', 'up932780@myport.ac.uk', 'Louis', 'Baker', 'https://randomuser.me/api/portraits/men/13.jpg', 'U0968PYC', 'Male', 2);
--- ('932763', 'up932763@myport.ac.uk', 'Lucy', 'White', 'https://randomuser.me/api/portraits/women/4.jpg', 'U2515PYC', 'Female', 4),
--- ('932764', 'up932764@myport.ac.uk', 'Liam', 'Harris', 'https://randomuser.me/api/portraits/men/5.jpg', 'U0580PYC', 'Male', 1),
--- ('932765', 'up932765@myport.ac.uk', 'Sophie', 'Walker', 'https://randomuser.me/api/portraits/women/5.jpg', 'U2753PYC', 'Female', 3),
--- ('932766', 'up932766@myport.ac.uk', 'Nathan', 'Patel', 'https://randomuser.me/api/portraits/men/6.jpg', 'C3559FTC', 'Male', 1),
--- ('932767', 'up932767@myport.ac.uk', 'Alice', 'Young', 'https://randomuser.me/api/portraits/women/6.jpg', 'U2365PYC', 'Female', 1),
--- ('932768', 'up932768@myport.ac.uk', 'David', 'Thompson', 'https://randomuser.me/api/portraits/men/7.jpg', 'U0056PYC', 'Male', 2),
--- ('932769', 'up932769@myport.ac.uk', 'Claire', 'Martin', 'https://randomuser.me/api/portraits/women/7.jpg', 'U2515PYC', 'Female', 4),
--- ('932770', 'up932770@myport.ac.uk', 'Evan', 'Murphy', 'https://randomuser.me/api/portraits/men/8.jpg', 'C3559FTC', 'Male', 1),
--- ('932771', 'up932771@myport.ac.uk', 'Isla', 'Green', 'https://randomuser.me/api/portraits/women/8.jpg', 'U0968PYC', 'Female', 1),
--- ('932772', 'up932772@myport.ac.uk', 'Sam', 'Alexander', 'https://randomuser.me/api/portraits/men/9.jpg', 'U0968PYC', 'Male', 2),
--- ('932773', 'up932773@myport.ac.uk', 'Ava', 'Adams', 'https://randomuser.me/api/portraits/women/9.jpg', 'U0968PYC', 'Female', 3),
--- ('932774', 'up932774@myport.ac.uk', 'Leon', 'Turner', 'https://randomuser.me/api/portraits/men/10.jpg', 'U0968PYC', 'Male', 4),
--- ('932775', 'up932775@myport.ac.uk', 'Mila', 'Gibson', 'https://randomuser.me/api/portraits/women/10.jpg', 'U0968PYC', 'Female', 2),
--- ('932776', 'up932776@myport.ac.uk', 'Aaron', 'Spencer', 'https://randomuser.me/api/portraits/men/11.jpg', 'U0968PYC', 'Male', 1),
--- ('932777', 'up932777@myport.ac.uk', 'Leah', 'Mason', 'https://randomuser.me/api/portraits/women/11.jpg', 'U0968PYC', 'Female', 3),
--- ('932778', 'up932778@myport.ac.uk', 'Harry', 'Parker', 'https://randomuser.me/api/portraits/men/12.jpg', 'U0968PYC', 'Male', 4),
+('932756', 'up932756@myport.ac.uk', 'John', 'Doe', 'https://randomuser.me/api/portraits/men/0.jpg', 'U0056PYC', 1), 
+('932757', 'up932757@myport.ac.uk', 'Kate', 'Doe', 'https://randomuser.me/api/portraits/women/0.jpg', 'U0056PYC', 1), 
+('932758', 'up932758@myport.ac.uk', 'Zack', 'Smith', 'https://randomuser.me/api/portraits/men/1.jpg', 'U0968PYC', 3),
+('932759', 'up932759@myport.ac.uk', 'Jenny', 'Smith', 'https://randomuser.me/api/portraits/women/2.jpg', 'U0968PYC', 3),
+('932760', 'up932760@myport.ac.uk', 'Tom', 'Brown', 'https://randomuser.me/api/portraits/men/3.jpg', 'U0056PYC', 2); 
+-- ('932762', 'up932762@myport.ac.uk', 'Mark', 'Jones', 'https://randomuser.me/api/portraits/men/4.jpg', 'U2365PYC', 2),
+-- ('932761', 'up932761@myport.ac.uk', 'Emma', 'Taylor', 'https://randomuser.me/api/portraits/women/3.jpg', 'P3439FTC', 1),
+-- ('932779', 'up932779@myport.ac.uk', 'Amelia', 'Long', 'https://randomuser.me/api/portraits/women/12.jpg', 'U0968PYC', 1),
+-- ('932780', 'up932780@myport.ac.uk', 'Louis', 'Baker', 'https://randomuser.me/api/portraits/men/13.jpg', 'U0968PYC', 2);
+-- ('932763', 'up932763@myport.ac.uk', 'Lucy', 'White', 'https://randomuser.me/api/portraits/women/4.jpg', 'U2515PYC', 4),
+-- ('932764', 'up932764@myport.ac.uk', 'Liam', 'Harris', 'https://randomuser.me/api/portraits/men/5.jpg', 'U0580PYC', 1),
+-- ('932765', 'up932765@myport.ac.uk', 'Sophie', 'Walker', 'https://randomuser.me/api/portraits/women/5.jpg', 'U2753PYC', 3),
+-- ('932766', 'up932766@myport.ac.uk', 'Nathan', 'Patel', 'https://randomuser.me/api/portraits/men/6.jpg', 'C3559FTC', 1),
+-- ('932767', 'up932767@myport.ac.uk', 'Alice', 'Young', 'https://randomuser.me/api/portraits/women/6.jpg', 'U2365PYC', 1),
+-- ('932768', 'up932768@myport.ac.uk', 'David', 'Thompson', 'https://randomuser.me/api/portraits/men/7.jpg', 'U0056PYC', 2),
+-- ('932769', 'up932769@myport.ac.uk', 'Claire', 'Martin', 'https://randomuser.me/api/portraits/women/7.jpg', 'U2515PYC', 4),
+-- ('932770', 'up932770@myport.ac.uk', 'Evan', 'Murphy', 'https://randomuser.me/api/portraits/men/8.jpg', 'C3559FTC', 1),
+-- ('932771', 'up932771@myport.ac.uk', 'Isla', 'Green', 'https://randomuser.me/api/portraits/women/8.jpg', 'U0968PYC', 1),
+-- ('932772', 'up932772@myport.ac.uk', 'Sam', 'Alexander', 'https://randomuser.me/api/portraits/men/9.jpg', 'U0968PYC', 2),
+-- ('932773', 'up932773@myport.ac.uk', 'Ava', 'Adams', 'https://randomuser.me/api/portraits/women/9.jpg', 'U0968PYC', 3),
+-- ('932774', 'up932774@myport.ac.uk', 'Leon', 'Turner', 'https://randomuser.me/api/portraits/men/10.jpg', 'U0968PYC', 4),
+-- ('932775', 'up932775@myport.ac.uk', 'Mila', 'Gibson', 'https://randomuser.me/api/portraits/women/10.jpg', 'U0968PYC', 2),
+-- ('932776', 'up932776@myport.ac.uk', 'Aaron', 'Spencer', 'https://randomuser.me/api/portraits/men/11.jpg', 'U0968PYC', 1),
+-- ('932777', 'up932777@myport.ac.uk', 'Leah', 'Mason', 'https://randomuser.me/api/portraits/women/11.jpg', 'U0968PYC', 3),
+-- ('932778', 'up932778@myport.ac.uk', 'Harry', 'Parker', 'https://randomuser.me/api/portraits/men/12.jpg', 'U0968PYC', 4),
 
 CREATE TABLE student_confidence (
   user_id VARCHAR(36) NOT NULL,
@@ -204,8 +206,8 @@ CREATE TABLE availability (
   id SERIAL PRIMARY KEY,
   user_id VARCHAR(36) NOT NULL,
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
-  start_hour INTEGER NOT NULL,
-  end_hour INTEGER NOT NULL,
+  start_hour INTEGER NOT NULL CHECK (start_hour BETWEEN 0 AND 23),
+  end_hour INTEGER NOT NULL CHECK (end_hour BETWEEN 0 AND 23),
   FOREIGN KEY (user_id) REFERENCES student(id)
 );
 

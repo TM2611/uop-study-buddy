@@ -53,7 +53,6 @@ export function SetupForm(formPopulation: FormPopulation) {
   const initialValues: SetupFormInitValues = {
     year: "",
     course_code: "",
-    gender: "",
     weekyAvailabilityStates: Array(7)
       .fill(null)
       .map(() => Array(24).fill(0)),
@@ -87,6 +86,7 @@ export function SetupForm(formPopulation: FormPopulation) {
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
+          <option value="4">Postgraduate</option>
         </select>
       </div>
       <div className="mb-4">
@@ -101,35 +101,21 @@ export function SetupForm(formPopulation: FormPopulation) {
           name="course_code"
           value={formik.values.course_code}
           onChange={formik.handleChange}
+          disabled={!formik.values.year}
           className="w-full p-2 border border-purple-300 rounded-md focus:border-purple-500 focus:outline-none"
         >
           <option value="">Select a course</option>
-          {formPopulation?.courses?.map((course: Course) => (
-            <option key={course.course_code} value={course.course_code}>
-              {course.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="mb-4">
-        <label
-          htmlFor="gender"
-          className="block text-purple-700 font-bold mb-2"
-        >
-          Gender
-        </label>
-        <select
-          id="gender"
-          name="gender"
-          value={formik.values.gender}
-          onChange={formik.handleChange}
-          className="w-full p-2 border border-purple-300 rounded-md focus:border-purple-500 focus:outline-none"
-        >
-          <option value="">Select a gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-          <option value="Prefer not to say">Prefer not to say</option>
+          {formPopulation?.courses
+            ?.filter((course: Course) =>
+              formik.values.year === "4"
+                ? course.level === "PG"
+                : course.level === "UG"
+            )
+            .map((course: Course) => (
+              <option key={course.course_code} value={course.course_code}>
+                {course.name}
+              </option>
+            ))}
         </select>
       </div>
     </>
