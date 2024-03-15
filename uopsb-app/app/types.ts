@@ -93,3 +93,5 @@ export interface SetupFormInitValues {
   weekyAvailabilityStates: DailySlotStates[];
   topic_confidence: TopicConfidence[];
 }
+
+export type MatchType = "Department" | "Confidence" | "Similarity";

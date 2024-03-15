@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { TopicConfidence } from "../types";
+import { matchTypes } from "@/lib/constants";
 
 const MatchFormSchema = Yup.object().shape({
   topic: Yup.string().required("Topic is required"),
@@ -69,12 +70,11 @@ const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
                   <option value={initialValues.match_type} disabled>
                     Please select
                   </option>
-                  <option key="confidence" value="Confidence">
-                    Confidence
-                  </option>
-                  <option key="similarity" value="Similarity">
-                    Similarity
-                  </option>
+                  {matchTypes.map((matchType) => (
+                    <option key={matchType} value={matchType}>
+                      {matchType}
+                    </option>
+                  ))}
                 </Field>
               </div>
 
