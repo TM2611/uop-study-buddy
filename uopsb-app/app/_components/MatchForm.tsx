@@ -40,6 +40,15 @@ const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
                 <Field
                   as="select"
                   name="topic"
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    formik.handleChange(e);
+                    const selectedOption =
+                      e.target.options[e.target.selectedIndex];
+                    const topicId = selectedOption.getAttribute("data-id");
+                    topicId
+                      ? formik.setFieldValue("topic_id", topicId)
+                      : formik.setFieldValue("topic_id", null);
+                  }}
                   className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
                 >
                   <option value={initialValues.topic} disabled>
@@ -54,7 +63,7 @@ const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
                       {x.topic_name}
                     </option>
                   ))}
-                  <option key="No Topic" value="No Topic" data-id={"none"}>
+                  <option key="No Topic" value="No Topic">
                     No Topic
                   </option>
                 </Field>
