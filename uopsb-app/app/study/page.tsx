@@ -6,8 +6,9 @@ import { useAuth } from "@/app/AuthContext";
 import { fetchUserConfidence } from "@/lib/api";
 import ConfidenceList from "@/app/_components/ConfidenceList";
 import { useEffect, useState } from "react";
-import { Topic, TopicConfidence, UserType } from "../types";
+import { TopicConfidence, UserType } from "../types";
 import SessionSelection from "../_components/SessionSelection";
+import MatchForm from "../_components/MatchForm";
 
 type SelectedTopic = {
   name: string | null;
@@ -41,23 +42,11 @@ const Study = () => {
     }
   }, [user]);
 
-  const handleMatch = (user: UserType) => {
-    setSelectedUser(user);
-    setShowProfileCard(true);
-  };
 
   const handleStudyButtonClick = () => {
     setShowSessionSelection(!showSessionSelection);
   };
 
-  const handleTopicChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOption = event.target.options[event.target.selectedIndex];
-    const name = selectedOption.value;
-    const id = Number(selectedOption.getAttribute("data-id"));
-    id
-      ? setSelectedTopic({ id, name })
-      : setSelectedTopic({ id: null, name: null });
-  };
 
   return (
     <div className="container mx-auto py-8">
@@ -68,43 +57,9 @@ const Study = () => {
           <ConfidenceList confidence={activeUserConfidence} />
         </div>
       </section>
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">
-          Select a Topic to Study:
-        </h2>
-        <div className="m-4">
-          <select
-            className="border rounded p-2"
-            value={selectedTopic.name || "No Topic"}
-            onChange={handleTopicChange}
-          >
-            <option value="" disabled>
-              Please select
-            </option>
-            {activeUserConfidence.map((x) => (
-              <option
-                key={x.topic_name}
-                value={x.topic_name}
-                data-id={x.topic_id.toString()}
-              >
-                {x.topic_name}
-              </option>
-            ))}
-            <option key="No Topic" value="No Topic" data-id={"none"}>
-              No Topic
-            </option>
-          </select>
-        </div>
-        <h2 className="text-2xl font-semibold mb-4">Match with Study Buddy:</h2>
-        <div className="m-4">
-          <MatchButton
-            currentUser={user}
-            activeUserConfidence={activeUserConfidence}
-            onMatch={handleMatch}
-            selectedTopic={selectedTopic}
-          />
-        </div>
-      </section>
+
+      <MatchForm activeUserConfidence={activeUserConfidence} />
+      {/* TODO: Move display to /study/users */}
       {showProfileCard && selectedUser && (
         <section className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">Matched Study Buddy:</h2>

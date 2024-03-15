@@ -87,7 +87,7 @@ INSERT INTO course (course_code, name, department_id, level) VALUES
 ('P3439FTC', 'Artificial Intelligence and Machine Learning (MSc)', (SELECT id FROM department WHERE name = 'School of Computing'), 'PG'),
 ('U2365PYC', 'Computer Networks', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
 ('U0056PYC', 'Computer Science (BSc)', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
-('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
+('U2515PYC', 'Computer Science (MEng)', (SELECT id FROM department WHERE name = 'School of Computing'), 'PG'),
 ('U0580PYC', 'Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
 ('U2753PYC', 'Cyber Security and Forensic Computing', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
 ('C3559FTC', 'Data Science and Analytics', (SELECT id FROM department WHERE name = 'School of Computing'), 'UG'),
