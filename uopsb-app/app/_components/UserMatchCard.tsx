@@ -37,43 +37,43 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
   }, [user.email]);
 
   return (
-    <div className="relative max-w-xs rounded overflow-hidden shadow-lg bg-white">
+    <div className="relative max-w-60 rounded overflow-hidden shadow-lg bg-white">
       <img
-        className="w-full h-48 object-cover"
+        className="w-60 h-auto object-cover"
         src={user.picture}
         alt={`${user.given_name} ${user.family_name} - Profile`}
       />
 
-      <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2">{`${user.given_name} ${user.family_name}`}</div>
-        <p className="text-gray-700 text-base">{user.email}</p>
-        <p className="text-gray-700 text-base">Year: {user.year}</p>
-        <p className="text-gray-700 text-base">Course: {user.course_code}</p>
+      <div className="px-4 py-2">
+        <div className="font-bold text-lg mb-1">{`${user.given_name} ${user.family_name}`}</div>
+        <p className="text-gray-700 text-sm">{user.email}</p>
+        <p className="text-gray-700 text-sm">Year: {user.year}</p>
+        <p className="text-gray-700 text-sm">Course: {user.course_code}</p>
       </div>
 
-      <section className="flex">
+      <section className="flex m-1">
         <div className="flex justify-evenly w-1/2">
           <button
             type="button"
             aria-label="Show availableSlots"
             onClick={() => setShowAvailabilityOverlay(true)}
-            className="text-blue-500 flex items-center justify-center p-2"
+            className="text-blue-500 flex items-center justify-center p-1"
           >
-            <MdOutlineEventAvailable size={30} />
+            <MdOutlineEventAvailable size={24} />
           </button>
 
           <button
             type="button"
             aria-label="Show confidence"
             onClick={() => setShowConfidenceOverlay(true)}
-            className="text-blue-500 flex items-center justify-center p-2"
+            className="text-blue-500 flex items-center justify-center p-1"
           >
-            <IoBulbOutline size={30} />
+            <IoBulbOutline size={24} />
           </button>
         </div>
         <button
           onClick={() => setShowSessionSelection(true)}
-          className="text-blue-500 border bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-1/2"
+          className="text-blue-500 border bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline w-1/2"
         >
           Study
         </button>
