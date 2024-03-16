@@ -16,28 +16,31 @@ const MatchFormSchema = Yup.object().shape({
 const initialValues = {
   topic: "Please select",
   match_type: "Please select",
+  topic_id: "",
 };
 
 interface MatchFormProps {
   activeUserConfidence: TopicConfidence[];
 }
-type MatchFormValuesType = Yup.InferType<typeof MatchFormSchema>;
+type MatchFormValuesType = Yup.InferType<typeof MatchFormSchema> & {
+  topic_id: string;
+};
 
 const handleMatchClick = async (
   values: MatchFormValuesType,
   user: UserType,
   router: AppRouterInstance
 ) => {
-  const topic = values.topic;
+  const topic_id = values.topic_id;
   const match_type = values.match_type;
   const user_id = extractUpNum(user.email);
 
-  if (!user_id || !topic || !match_type) {
+  if (!user_id || !topic_id || !match_type) {
     console.log("Invalid request");
     return;
   }
   router.push(
-    `/study/users?id=${user_id}&topic=${topic}&match_type=${match_type}`
+    `/study/users?id=${user_id}&topic_id=${topic_id}&match_type=${match_type}`
   );
 };
 
@@ -71,9 +74,9 @@ const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
                     const selectedOption =
                       e.target.options[e.target.selectedIndex];
                     const topicId = selectedOption.getAttribute("data-id");
-                    topicId
-                      ? formik.setFieldValue("topic_id", topicId)
-                      : formik.setFieldValue("topic_id", null);
+                    if (topicId) {
+                      formik.setFieldValue("topic_id", topicId);
+                    }
                   }}
                   className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
                 >

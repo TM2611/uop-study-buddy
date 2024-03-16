@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const topic = req.nextUrl.searchParams.get("topic");
+    const topic_id = req.nextUrl.searchParams.get("topic_id");
     const match_type = req.nextUrl.searchParams.get("match_type");
     const user_id = req.nextUrl.searchParams.get("id");
 
-    if (!user_id || !topic || !match_type) {
+    if (!user_id || !topic_id || !match_type) {
       return new NextResponse(
         JSON.stringify({
           message: "Invalid request",
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
         );
       }
     } else if (match_type === "Confidence") {
-      const confidenceUsers = await getUsersByConfidence(user_id, topic);
+      const confidenceUsers = await getUsersByConfidence(user_id, topic_id);
       if (confidenceUsers.length) {
         console.log(confidenceUsers.length, "users with high confidence");
         return new NextResponse(
@@ -122,7 +122,7 @@ async function getUsersBySimilarity(id: string) {
     */
 }
 
-async function getUsersByConfidence(id: string, topic: string) {
+async function getUsersByConfidence(id: string, topic_id: string) {
   // TODO: return users with high confidence in the topic
   return [];
 }
