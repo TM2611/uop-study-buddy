@@ -35,6 +35,18 @@ const StudyUsers: React.FC = () => {
     useState<SelectedTopic>(defaultSelectedTopic);
   const [showSessionSelection, setShowSessionSelection] = useState(false);
 
+  const [filter, setFilter] = useState<"year" | "course" | "off">("off");
+
+  const toggleFilter = () => {
+    if (filter === "off") {
+      setFilter("year");
+    } else if (filter === "year") {
+      setFilter("course");
+    } else {
+      setFilter("off");
+    }
+  };
+
   useEffect(() => {
     const fetchMatchedUsers = async () => {
       const user_id = searchParams.get("id");
@@ -65,8 +77,7 @@ const StudyUsers: React.FC = () => {
       <div className="text-white text-3xl">Searching...</div>
     </div>
   ) : (
-    <div>
-      <h1 className="flex font-bold justify-center text-xl">Matched Users</h1>
+    <div className="p-3">
       <div className="flex justify-between items-center mb-4">
         <Link
           href="/study"
@@ -75,11 +86,18 @@ const StudyUsers: React.FC = () => {
           Back to Search
         </Link>
         <div>
-          <button className="bg-green-500 text-white px-4 py-2 rounded-lg mr-2 hover:bg-green-600 transition-colors">
-            Year
-          </button>
-          <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-            Course
+          <span className="mr-2 font-bold">Filter:</span>
+          <button
+            onClick={toggleFilter}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              filter === "off"
+                ? "bg-gray-300 text-white"
+                : filter === "year"
+                ? "bg-green-500 text-white hover:bg-green-600"
+                : "bg-yellow-500 text-white hover:bg-yellow-600"
+            }`}
+          >
+            {filter === "off" ? "Off" : filter === "year" ? "Year" : "Course"}
           </button>
         </div>
       </div>
