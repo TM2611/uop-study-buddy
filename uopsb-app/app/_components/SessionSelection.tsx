@@ -254,8 +254,9 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   return (
     <Overlay onClose={() => setShowSessionSelection(false)}>
       {/* Week selection arrows */}
-      <h3 className="flex justify-center font-bold mb-3">
-        Study Session Selection
+      <h3 className="flex justify-center mb-3">
+        <span className="font-bold">Study Session:</span>{" "}
+        {selectedUser.given_name}
       </h3>
       <div className="flex justify-between mb-2">
         <button
@@ -306,7 +307,6 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         onConfirm={null}
         onClose={() => handleSuccessPopupClose()}
       />
-      ;
     </Overlay>
   );
 };
