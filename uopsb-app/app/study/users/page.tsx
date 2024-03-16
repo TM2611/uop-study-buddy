@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { UserType } from "@/app/types";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -31,6 +31,18 @@ const StudyUsers: React.FC = () => {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [matchedUsers, setMatchedUsers] = useState<UserType[]>([]);
+  const sameYearUsers = useMemo(
+    () => (user ? matchedUsers.filter((u) => u.year === user.year) : []),
+    [matchedUsers, user]
+  );
+
+  const sameCourseUsers = useMemo(
+    () =>
+      user
+        ? matchedUsers.filter((u) => u.course_code === user.course_code)
+        : [],
+    [matchedUsers, user]
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<UserType>(defaultUser);
   const [selectedTopic, setSelectedTopic] =
@@ -106,7 +118,12 @@ const StudyUsers: React.FC = () => {
         </div>
       </div>
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-        {matchedUsers.map((user) => (
+        {(filter === "year"
+          ? sameYearUsers
+          : filter === "course"
+          ? sameCourseUsers
+          : matchedUsers
+        ).map((user) => (
           <div key={user.email}>
             <UserMatchCard
               user={user}
