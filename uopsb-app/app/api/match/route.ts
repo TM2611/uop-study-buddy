@@ -4,13 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const body = await req.text();
-    const matchCriteria = JSON.parse(body);
-    const id = req.nextUrl.searchParams.get("id");
-    const topic = matchCriteria.topic;
-    const match_type: MatchType = matchCriteria.match_type;
+    const topic = req.nextUrl.searchParams.get("topic");
+    const match_type = req.nextUrl.searchParams.get("match_type");
+    const user_id = req.nextUrl.searchParams.get("id");
 
-    if (!id || !topic || !match_type) {
+
+    if (!user_id || !topic || !match_type) {
       return new NextResponse(
         JSON.stringify({
           message: "Invalid request",
@@ -20,7 +19,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (match_type === "Department") {
-      const deptUsers = await getUsersByDepartment(id);
+      const deptUsers = await getUsersByDepartment(user_id);
       if (deptUsers.length) {
         console.log(deptUsers.length, "users in department");
         return new NextResponse(
@@ -40,7 +39,7 @@ export async function GET(req: NextRequest) {
         );
       }
     } else if (match_type === "Similarity") {
-      const similarUsers = await getUsersBySimilarity(id);
+      const similarUsers = await getUsersBySimilarity(user_id);
       if (similarUsers.length) {
         console.log(similarUsers.length, "similar users");
         return new NextResponse(
@@ -60,7 +59,7 @@ export async function GET(req: NextRequest) {
         );
       }
     } else if (match_type === "Confidence") {
-      const confidenceUsers = await getUsersByConfidence(id, topic);
+      const confidenceUsers = await getUsersByConfidence(user_id, topic);
       if (confidenceUsers.length) {
         console.log(confidenceUsers.length, "users with high confidence");
         return new NextResponse(
@@ -91,7 +90,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-async function getUsersByDepartment(id: string) {
+async function getUsersByDepartment(user_id: string) {
   const client = await pool.connect();
 
   try {
@@ -105,7 +104,7 @@ async function getUsersByDepartment(id: string) {
           FROM student
           WHERE id = $1
       );`,
-      [id]
+      [user_id]
     );
     return result.rows;
   } catch (err) {
