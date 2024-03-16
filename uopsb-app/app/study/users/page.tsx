@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import SessionSelection from "@/app/_components/SessionSelection";
 import UserMatchCard from "@/app/_components/UserMatchCard";
+import { useAuth } from "@/app/AuthContext";
 
 const defaultUser: UserType = {
   email: "",
@@ -27,6 +28,7 @@ const defaultSelectedTopic: SelectedTopic = {
 };
 
 const StudyUsers: React.FC = () => {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const [matchedUsers, setMatchedUsers] = useState<UserType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +51,7 @@ const StudyUsers: React.FC = () => {
 
   useEffect(() => {
     const fetchMatchedUsers = async () => {
-      const user_id = searchParams.get("id");
+      const user_id = user.id;
       const topic = searchParams.get("topic");
       const topic_id = searchParams.get("topic_id");
       const match_type = searchParams.get("match_type");
@@ -69,8 +71,10 @@ const StudyUsers: React.FC = () => {
       setMatchedUsers(users);
       setIsLoading(false);
     };
-    fetchMatchedUsers();
-  }, []);
+    if (user) {
+      fetchMatchedUsers();
+    }
+  }, [user]);
 
   return isLoading ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { TopicConfidence, UserType } from "../types";
+import { TopicConfidence } from "../types";
 import { matchTypes } from "@/lib/constants";
-import { extractUpNum } from "@/lib/utils";
-import { useAuth } from "@/app/AuthContext";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -28,25 +26,22 @@ type MatchFormValuesType = Yup.InferType<typeof MatchFormSchema> & {
 
 const handleMatchClick = async (
   values: MatchFormValuesType,
-  user: UserType,
   router: AppRouterInstance
 ) => {
   const topic = values.topic;
   const topic_id = values.topic_id;
   const match_type = values.match_type;
-  const user_id = extractUpNum(user.email);
 
-  if (!user_id || !topic_id || !match_type) {
+  if (!topic_id || !match_type) {
     console.log("Invalid request");
     return;
   }
   router.push(
-    `/study/users?id=${user_id}&topic=${topic}&topic_id=${topic_id}&match_type=${match_type}`
+    `/study/users?topic=${topic}&topic_id=${topic_id}&match_type=${match_type}`
   );
 };
 
 const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
-  const { user } = useAuth();
   const router = useRouter();
   return (
     <Formik
@@ -54,7 +49,7 @@ const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
       validationSchema={MatchFormSchema}
       onSubmit={(values) => {
         console.log(values);
-        handleMatchClick(values, user, router);
+        handleMatchClick(values, router);
       }}
     >
       {(formik) => {
