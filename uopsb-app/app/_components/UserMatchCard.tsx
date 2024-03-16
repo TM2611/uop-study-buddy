@@ -8,13 +8,14 @@ import { IoBulbOutline } from "react-icons/io5";
 
 interface UserProfileCardProp {
   user: UserType;
-  onStudyButtonClick: () => void;
-  showSessionSelection: boolean;
+  setSelectedUser: React.Dispatch<React.SetStateAction<UserType>>;
+  setShowSessionSelection: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UserMatchCard: React.FC<UserProfileCardProp> = ({
   user,
-  onStudyButtonClick,
+  setSelectedUser,
+  setShowSessionSelection,
 }) => {
   const [availableSlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>(
     []
@@ -23,11 +24,8 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
   const [showAvailabilityOverlay, setShowAvailabilityOverlay] = useState(false);
   const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
 
-  const handleStudyButtonClick = () => {
-    onStudyButtonClick();
-  };
-
   useEffect(() => {
+    setSelectedUser(user);
     const fetchData = async () => {
       const availableSlots = await fetchUserAvailability(user.email);
       const userConfidence = await fetchUserConfidence(user.email);
@@ -74,7 +72,7 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
           </button>
         </div>
         <button
-          onClick={() => handleStudyButtonClick()}
+          onClick={() => setShowSessionSelection(true)}
           className="text-blue-500 border bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-1/2"
         >
           Study
