@@ -1,35 +1,17 @@
 "use client";
 
-import MatchButton from "../_components/MatchButton";
-import UserMatchCard from "../_components/UserMatchCard";
 import { useAuth } from "@/app/AuthContext";
 import { fetchUserConfidence } from "@/lib/api";
 import ConfidenceList from "@/app/_components/ConfidenceList";
 import { useEffect, useState } from "react";
-import { TopicConfidence, UserType } from "../types";
-import SessionSelection from "../_components/SessionSelection";
+import { SelectedTopic, TopicConfidence, UserType } from "../types";
 import MatchForm from "../_components/MatchForm";
-
-type SelectedTopic = {
-  name: string | null;
-  id: number | null;
-};
-
-const defaultSelectedTopic: SelectedTopic = {
-  id: 0,
-  name: "",
-};
 
 const Study = () => {
   const { user } = useAuth();
   const [activeUserConfidence, setActiveUserConfidence] = useState<
     TopicConfidence[]
-  >([]); // Holds the active user's list of topics and confidence value for each
-  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
-  const [showProfileCard, setShowProfileCard] = useState(false);
-  const [selectedTopic, setSelectedTopic] =
-    useState<SelectedTopic>(defaultSelectedTopic);
-  const [showSessionSelection, setShowSessionSelection] = useState(false);
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,12 +24,6 @@ const Study = () => {
     }
   }, [user]);
 
-
-  const handleStudyButtonClick = () => {
-    setShowSessionSelection(!showSessionSelection);
-  };
-
-
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-4xl font-bold mb-6">Find a Study Buddy</h1>
@@ -59,36 +35,6 @@ const Study = () => {
       </section>
 
       <MatchForm activeUserConfidence={activeUserConfidence} />
-      {/* TODO: Move display to /study/users */}
-      {showProfileCard && selectedUser && (
-        <section className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Matched Study Buddy:</h2>
-          <div className="m-4">
-            <UserMatchCard
-              user={selectedUser}
-              onStudyButtonClick={handleStudyButtonClick}
-              showSessionSelection={showSessionSelection}
-            />
-          </div>
-        </section>
-      )}
-      {showSessionSelection && (
-        <div className="fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded shadow-lg">
-            <button
-              onClick={() => setShowSessionSelection(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-600"
-            >
-              &times;
-            </button>
-            <SessionSelection
-              setShowSessionSelection={setShowSessionSelection}
-              selectedUser={selectedUser}
-              selectedTopic={selectedTopic}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
