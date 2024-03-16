@@ -12,8 +12,8 @@ export interface Topic {
 }
 
 export type SelectedTopic = {
-  name: string | null;
-  id: number | null;
+  name: string;
+  id: string;
 };
 
 export interface FormPopulation {

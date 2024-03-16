@@ -31,6 +31,7 @@ const handleMatchClick = async (
   user: UserType,
   router: AppRouterInstance
 ) => {
+  const topic = values.topic;
   const topic_id = values.topic_id;
   const match_type = values.match_type;
   const user_id = extractUpNum(user.email);
@@ -40,7 +41,7 @@ const handleMatchClick = async (
     return;
   }
   router.push(
-    `/study/users?id=${user_id}&topic_id=${topic_id}&match_type=${match_type}`
+    `/study/users?id=${user_id}&topic=${topic}&topic_id=${topic_id}&match_type=${match_type}`
   );
 };
 
