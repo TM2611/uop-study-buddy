@@ -8,7 +8,6 @@ export async function GET(req: NextRequest) {
     const match_type = req.nextUrl.searchParams.get("match_type");
     const user_id = req.nextUrl.searchParams.get("id");
 
-
     if (!user_id || !topic || !match_type) {
       return new NextResponse(
         JSON.stringify({
@@ -19,13 +18,13 @@ export async function GET(req: NextRequest) {
     }
 
     if (match_type === "Department") {
-      const deptUsers = await getUsersByDepartment(user_id);
-      if (deptUsers.length) {
-        console.log(deptUsers.length, "users in department");
+      const users = await getUsersByDepartment(user_id);
+      if (users.length) {
+        console.log(users.length, "users in department");
         return new NextResponse(
           JSON.stringify({
-            message: `${deptUsers.length} users in department"`,
-            deptUsers,
+            message: `${users.length} users in department"`,
+            users,
           }),
           { status: 200 }
         );
@@ -39,13 +38,13 @@ export async function GET(req: NextRequest) {
         );
       }
     } else if (match_type === "Similarity") {
-      const similarUsers = await getUsersBySimilarity(user_id);
-      if (similarUsers.length) {
-        console.log(similarUsers.length, "similar users");
+      const users = await getUsersBySimilarity(user_id);
+      if (users.length) {
+        console.log(users.length, "similar users");
         return new NextResponse(
           JSON.stringify({
-            message: `${similarUsers.length} similar users"`,
-            similarUsers,
+            message: `${users.length} similar users"`,
+            users,
           }),
           { status: 200 }
         );
