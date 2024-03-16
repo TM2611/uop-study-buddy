@@ -25,7 +25,6 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
   const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
 
   useEffect(() => {
-    setSelectedUser(user);
     const fetchData = async () => {
       const availableSlots = await fetchUserAvailability(user.email);
       const userConfidence = await fetchUserConfidence(user.email);
@@ -72,7 +71,10 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
           </button>
         </div>
         <button
-          onClick={() => setShowSessionSelection(true)}
+          onClick={() => {
+            setShowSessionSelection(true);
+            setSelectedUser(user);
+          }}
           className="text-blue-500 border bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline w-1/2"
         >
           Study
