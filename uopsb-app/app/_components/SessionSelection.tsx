@@ -16,9 +16,8 @@ import {
 import {
   AvailabilitySlot,
   SelectedTopic,
-  SessionData,
   SessionSlot,
-  UserType,
+  UserAvailabilityConfidence,
   WeeklySlotStates,
 } from "../types";
 import Popup from "./Popup";
@@ -28,7 +27,7 @@ dayjs.extend(isoWeek);
 
 interface SessionSelectionProps {
   setShowSessionSelection: (value: boolean) => void;
-  selectedUser: UserType;
+  selectedUser: UserAvailabilityConfidence;
   selectedTopic: SelectedTopic;
 }
 
@@ -49,24 +48,18 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const router = useRouter();
 
   useEffect(() => {
-    const setSessionAvailability = async (userEmail: string) => {
+    const setSessionAvailability = () => {
       try {
-        const response = await fetch(`/api/availability?email=${userEmail}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch user availableSlots");
-        }
-        const availableSlots: AvailabilitySlot[] = await response.json();
+        const availableSlots = selectedUser.availability_slots;
         const availableStates = availabilitySlotsToStates(availableSlots);
-        const updatedAvailableStates = await includeOccupiedSlots(
-          availableStates
-        );
+        const updatedAvailableStates = includeOccupiedSlots(availableStates);
         setSlotStates(updatedAvailableStates);
       } catch (error) {
         console.error("Failed to fetch user availableSlots", error);
       }
     };
     if (selectedUser) {
-      setSessionAvailability(selectedUser.email);
+      setSessionAvailability();
     }
   }, [activeDate]);
 
@@ -131,20 +124,17 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     return dayDateArray;
   }
 
-  async function includeOccupiedSlots(
+  function includeOccupiedSlots(
     slotStates: WeeklySlotStates
-  ): Promise<WeeklySlotStates> {
-    const updatedStates = slotStates.map((row) => [...row]); // Create a shallow copy of the 2D array
-    const userId = extractUpNum(selectedUser.email);
-    const response = await fetch(`/api/session?id=${userId}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch booked sessions");
+  ): WeeklySlotStates {
+    if (!selectedUser.bookings?.length) {
+      // No bookings to include
+      return slotStates;
     }
-    const sessions = await response.json();
-    const bookedSessions: Omit<SessionSlot, "day">[] = sessions.filter(
-      (x: SessionData) => x.status === "ACCEPTED"
-    );
-    const weekBookedSessions = bookedSessions.filter((x) =>
+    const updatedStates = slotStates.map((row) => [...row]); // Create a shallow copy of the 2D array
+
+    const bookedSessions = selectedUser.bookings;
+    const weekBookedSessions = bookedSessions?.filter((x) =>
       isDateInRange(x.date ?? "", activeDate.toISOString())
     );
     const bookedSlotIndexes = getBookedSlotIndexes(weekBookedSessions);
@@ -254,8 +244,9 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   return (
     <Overlay onClose={() => setShowSessionSelection(false)}>
       {/* Week selection arrows */}
-      <h3 className="flex justify-center font-bold mb-3">
-        Study Session Selection
+      <h3 className="flex justify-center mb-3">
+        <span className="font-bold">Study Session:</span>{" "}
+        {selectedUser.given_name}
       </h3>
       <div className="flex justify-between mb-2">
         <button
@@ -306,7 +297,6 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
         onConfirm={null}
         onClose={() => handleSuccessPopupClose()}
       />
-      ;
     </Overlay>
   );
 };

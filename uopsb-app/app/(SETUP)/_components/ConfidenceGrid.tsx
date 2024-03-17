@@ -31,6 +31,7 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
   >(
     filteredTopics.map((topic) => ({
       topic_id: topic.id,
+      topic_name: topic.name,
       confidence_value: 0,
       buttonColor: "",
     }))

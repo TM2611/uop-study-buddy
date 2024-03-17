@@ -56,7 +56,7 @@ export function SetupForm(formPopulation: FormPopulation) {
     weekyAvailabilityStates: Array(7)
       .fill(null)
       .map(() => Array(24).fill(0)),
-    topic_confidence: [],
+    confidence: [],
   };
   const formik = useFormik({
     initialValues: initialValues,
@@ -128,7 +128,7 @@ export function SetupForm(formPopulation: FormPopulation) {
         courses={formPopulation?.courses}
         course_code={formik.values.course_code}
         onConfidenceSelect={(updatedConfidence) =>
-          formik.setFieldValue("topic_confidence", updatedConfidence)
+          formik.setFieldValue("confidence", updatedConfidence)
         }
       />
     </>

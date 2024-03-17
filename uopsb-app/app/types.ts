@@ -12,8 +12,8 @@ export interface Topic {
 }
 
 export type SelectedTopic = {
-  name: string | null;
-  id: number | null;
+  name: string;
+  id: string;
 };
 
 export interface FormPopulation {
@@ -91,5 +91,13 @@ export interface SetupFormInitValues {
   year: string;
   course_code: string;
   weekyAvailabilityStates: DailySlotStates[];
-  topic_confidence: TopicConfidence[];
+  confidence: TopicConfidence[];
 }
+
+export type MatchType = "Department" | "Confidence" | "Similarity";
+
+export type UserAvailabilityConfidence = UserType & {
+  availability_slots: AvailabilitySlot[];
+  confidence: TopicConfidence[];
+  bookings: Omit<SessionSlot, "day">[];
+};

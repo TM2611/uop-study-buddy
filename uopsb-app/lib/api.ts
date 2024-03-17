@@ -20,6 +20,7 @@ export async function fetchUserConfidence(
     throw new Error("Failed to fetch user confidence");
   }
   const data: TopicConfidence[] = await response.json();
+  console.log(userEmail);
   console.log("userConfidence", data);
   return data;
 }

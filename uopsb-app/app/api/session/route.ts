@@ -117,10 +117,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
   try {
     const sessions = await getAllUserSessions(userId);
-
-    return sessions.length
-      ? new NextResponse(JSON.stringify(sessions), { status: 200 })
-      : new NextResponse("No existing sessions found", { status: 200 });
+    return new NextResponse(JSON.stringify(sessions), { status: 200 });
   } catch (err) {
     console.error(err);
     return new NextResponse("Internal Server Error", { status: 500 });
