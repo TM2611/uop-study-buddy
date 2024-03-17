@@ -10,6 +10,9 @@ const MatchFormSchema = Yup.object().shape({
   topic: Yup.string().required("Topic is required"),
   match_type: Yup.string()
     .required("Match Type is required")
+    .test("is-please-select", "Please select a match type", function (value) {
+      return value !== "Please select";
+    })
     .test(
       "is-confidence-allowed",
       "Confidence match type is not allowed for 'No Topic'",
