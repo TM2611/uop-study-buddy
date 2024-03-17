@@ -738,3 +738,46 @@ LEFT JOIN (
     WHERE s.status = 'ACCEPTED'
     GROUP BY ss.user_id
 ) bk ON s.id = bk.user_id;
+
+--- Jaccard Similarity
+CREATE OR REPLACE FUNCTION find_similar_users(p_user_id VARCHAR, p_threshold FLOAT)
+RETURNS TABLE(user_id_1 VARCHAR, user_id_2 VARCHAR, similarity FLOAT) AS $$
+BEGIN
+  RETURN QUERY
+  WITH user_confidences AS (
+    SELECT user_id, topic_id, confidence_value
+    FROM student_confidence
+  ),
+  user_intersections AS (
+    SELECT u1.user_id AS user_id_1, u2.user_id AS user_id_2, COUNT(*) AS intersection_count
+    FROM user_confidences u1
+    JOIN user_confidences u2 ON u1.user_id <> u2.user_id AND u1.topic_id = u2.topic_id AND u1.confidence_value = u2.confidence_value
+    WHERE u1.user_id = p_user_id
+    GROUP BY u1.user_id, u2.user_id
+  ),
+  total_topics AS (
+    SELECT COUNT(DISTINCT topic_id) AS topic_count
+    FROM student_confidence
+  ),
+  similarities AS (
+    SELECT ui.user_id_1, ui.user_id_2, ui.intersection_count::float / total_topics.topic_count::float AS similarity
+    FROM user_intersections AS ui, total_topics
+  )
+  SELECT s.user_id_1, s.user_id_2, s.similarity
+  FROM similarities AS s
+  WHERE s.similarity >= p_threshold
+  ORDER BY s.similarity DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_similar_users(p_user_id VARCHAR, p_threshold FLOAT)
+RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, department_id INTEGER, availability_slots JSON[], confidence JSON[], bookings JSON[], similarity FLOAT) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT uac.id, uac.email, uac.given_name, uac.family_name, uac.picture, uac.course_code, uac.department_id, uac.availability_slots, uac.confidence, uac.bookings, fsu.similarity
+  FROM user_availability_confidence uac
+  JOIN find_similar_users(p_user_id, p_threshold) fsu ON uac.id = fsu.user_id_2
+  ORDER BY fsu.similarity DESC;
+END;
+$$ LANGUAGE plpgsql;

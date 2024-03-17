@@ -1,4 +1,4 @@
-import { MatchType } from "@/app/types";
+import { SIMILARITY_THRESHOLD } from "@/lib/constants";
 import pool from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -114,11 +114,20 @@ async function getUsersByDepartment(user_id: string) {
 }
 
 async function getUsersBySimilarity(id: string) {
-  return [];
-  /* 
-    TODO: Use jaccard similarity to find users with similar topic confidence,
-    return users with similar topic confidence (above a certain threshold, 0.75)
-    */
+  const client = await pool.connect();
+
+  try {
+    const result = await client.query(
+      `SELECT * FROM get_similar_users($1, $2);`,
+      [id, SIMILARITY_THRESHOLD]
+    );
+    return result.rows;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 async function getUsersByConfidence(id: string, topic_id: string) {

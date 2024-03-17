@@ -8,4 +8,10 @@ export const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
 export const hours = Array.from({ length: 16 }, (_, i) => i + 7);
 
-export const matchTypes: MatchType[] = ["Department", "Confidence", "Similarity"];
+export const matchTypes: MatchType[] = [
+  "Department",
+  "Confidence",
+  "Similarity",
+];
+
+export const SIMILARITY_THRESHOLD = 0.2;

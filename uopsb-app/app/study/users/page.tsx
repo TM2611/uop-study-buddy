@@ -7,6 +7,7 @@ import Link from "next/link";
 import SessionSelection from "@/app/_components/SessionSelection";
 import UserMatchCard from "@/app/_components/UserMatchCard";
 import { useAuth } from "@/app/AuthContext";
+import { SIMILARITY_THRESHOLD } from "@/lib/constants";
 
 const defaultUser: UserAvailabilityConfidence = {
   email: "",
@@ -84,6 +85,12 @@ const StudyUsers: React.FC = () => {
       );
       const data = await res.json();
       const users = data.users;
+      console.log(
+        `${users.length} users found using match type: ${match_type}`
+      );
+      if (match_type === "Similarity") {
+        console.log("Similarity Threshould: ", SIMILARITY_THRESHOLD);
+      }
       setSelectedTopic({ name: topic, id: topic_id });
       setMatchedUsers(users);
       setIsLoading(false);
