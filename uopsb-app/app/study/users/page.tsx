@@ -1,20 +1,23 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { UserType } from "@/app/types";
+import { UserAvailabilityConfidence } from "@/app/types";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import SessionSelection from "@/app/_components/SessionSelection";
 import UserMatchCard from "@/app/_components/UserMatchCard";
 import { useAuth } from "@/app/AuthContext";
 
-const defaultUser: UserType = {
+const defaultUser: UserAvailabilityConfidence = {
   email: "",
   family_name: "",
   given_name: "",
   picture: "",
   year: 0,
   course_code: "",
+  availability_slots: [],
+  confidence: [],
+  bookings: [],
 };
 
 type SelectedTopic = {
@@ -30,21 +33,24 @@ const defaultSelectedTopic: SelectedTopic = {
 const StudyUsers: React.FC = () => {
   const { user } = useAuth();
   const searchParams = useSearchParams();
-  const [matchedUsers, setMatchedUsers] = useState<UserType[]>([]);
+  const [matchedUsers, setMatchedUsers] = useState<
+    UserAvailabilityConfidence[]
+  >([]);
   const sameYearUsers = useMemo(
-    () => (user ? matchedUsers.filter((u) => u.year === user.year) : []),
+    () => (user ? matchedUsers?.filter((u) => u.year === user.year) : []),
     [matchedUsers, user]
   );
 
   const sameCourseUsers = useMemo(
     () =>
       user
-        ? matchedUsers.filter((u) => u.course_code === user.course_code)
+        ? matchedUsers?.filter((u) => u.course_code === user.course_code)
         : [],
     [matchedUsers, user]
   );
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<UserType>(defaultUser);
+  const [selectedUser, setSelectedUser] =
+    useState<UserAvailabilityConfidence>(defaultUser);
   const [selectedTopic, setSelectedTopic] =
     useState<SelectedTopic>(defaultSelectedTopic);
   const [showSessionSelection, setShowSessionSelection] = useState(false);
@@ -78,7 +84,6 @@ const StudyUsers: React.FC = () => {
       );
       const data = await res.json();
       const users = data.users;
-      console.log(users);
       setSelectedTopic({ name: topic, id: topic_id });
       setMatchedUsers(users);
       setIsLoading(false);
@@ -123,7 +128,7 @@ const StudyUsers: React.FC = () => {
           : filter === "course"
           ? sameCourseUsers
           : matchedUsers
-        ).map((user) => (
+        )?.map((user) => (
           <div key={user.email}>
             <UserMatchCard
               user={user}

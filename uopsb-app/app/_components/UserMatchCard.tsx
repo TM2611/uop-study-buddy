@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { AvailabilitySlot, TopicConfidence, UserType } from "@/app/types";
-import { fetchUserAvailability, fetchUserConfidence } from "@/lib/api";
+import React, { useState } from "react";
+import { UserAvailabilityConfidence } from "@/app/types";
 import AvailabilityOverlay from "./AvailabilityOverlay";
 import ConfidenceOverlay from "./ConfidenceOverlay";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import { IoBulbOutline } from "react-icons/io5";
 
 interface UserProfileCardProp {
-  user: UserType;
-  setSelectedUser: React.Dispatch<React.SetStateAction<UserType>>;
+  user: UserAvailabilityConfidence;
+  setSelectedUser: React.Dispatch<
+    React.SetStateAction<UserAvailabilityConfidence>
+  >;
   setShowSessionSelection: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -17,23 +18,9 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
   setSelectedUser,
   setShowSessionSelection,
 }) => {
-  const [availableSlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>(
-    []
-  );
-  const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
   const [showAvailabilityOverlay, setShowAvailabilityOverlay] = useState(false);
   const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const availableSlots = await fetchUserAvailability(user.email);
-      const userConfidence = await fetchUserConfidence(user.email);
-      setAvailabilitySlots(availableSlots);
-      setConfidence(userConfidence);
-    };
-
-    fetchData();
-  }, [user.email]);
 
   return (
     <div className="relative max-w-60 rounded overflow-hidden shadow-lg bg-white">
@@ -82,13 +69,13 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
       </section>
       {showAvailabilityOverlay && (
         <AvailabilityOverlay
-          availableSlots={availableSlots}
+          availableSlots={user.availability_slots}
           setShowAvailabilityOverlay={setShowAvailabilityOverlay}
         />
       )}
       {showConfidenceOverlay && (
         <ConfidenceOverlay
-          confidence={confidence}
+          confidence={user.confidence}
           setShowConfidenceOverlay={setShowConfidenceOverlay}
         />
       )}
