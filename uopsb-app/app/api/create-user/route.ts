@@ -44,7 +44,7 @@ async function createUser(userProfile: UserProfileType) {
   const year = Number(userProfile.year);
   const courseCode = userProfile.course_code;
   const slots = userProfile.slots;
-  const TopicConfidence = userProfile.topic_confidence;
+  const TopicConfidence = userProfile.confidence;
 
   try {
     const stmnt = await client.query(
