@@ -21,8 +21,6 @@ const UserMatchCard: React.FC<UserProfileCardProp> = ({
   const [showAvailabilityOverlay, setShowAvailabilityOverlay] = useState(false);
   const [showConfidenceOverlay, setShowConfidenceOverlay] = useState(false);
 
-  console.log(user);
-
   return (
     <div className="relative max-w-60 rounded overflow-hidden shadow-lg bg-white">
       <img
