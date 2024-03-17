@@ -707,3 +707,34 @@ INSERT INTO student_session (session_id, user_id, is_requester) VALUES
 (2, '932759', TRUE),
 (2, '932758', FALSE);
 -- End of Jenny and Zack
+
+CREATE VIEW user_availability_confidence AS
+SELECT s.*, c1.department_id,
+       av.availability AS availability_slots,
+       tp.topics AS confidence,
+       bk.bookings
+FROM student s
+JOIN course c1 ON s.course_code = c1.course_code
+LEFT JOIN (
+    SELECT user_id, array_agg(json_build_object('day', day, 'start_hour', start_hour, 'end_hour', end_hour)) as availability
+    FROM availability
+    GROUP BY user_id
+) av ON s.id = av.user_id
+LEFT JOIN (
+    SELECT sc.user_id, array_agg(json_build_object('topic_id', t.id, 'topic_name', t.name, 'confidence_value', sc.confidence_value)) as topics
+    FROM student_confidence sc
+    JOIN topic t ON sc.topic_id = t.id
+    GROUP BY sc.user_id
+) tp ON s.id = tp.user_id
+LEFT JOIN (
+    SELECT ss.user_id, array_agg(json_build_object('start_hour', s.start_hour, 'end_hour', s.end_hour, 'date', s.date, 'status', s.status, 'session_id', s.id, 'requester_id', u.id, 'email', u.email, 'given_name', u.given_name, 'family_name', u.family_name, 'picture', u.picture, 'course_code', c.course_code, 'course_name', c.name, 'topic_name', t.name, 'requester_confidence', sc.confidence_value)) as bookings
+    FROM session s
+    INNER JOIN topic t ON s.topic_id = t.id
+    INNER JOIN student_session ss ON s.id = ss.session_id
+    INNER JOIN student_session ss_other ON s.id = ss_other.session_id AND ss_other.user_id != ss.user_id
+    INNER JOIN student u ON ss_other.user_id = u.id
+    INNER JOIN course c ON u.course_code = c.course_code
+    LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.id
+    WHERE s.status = 'ACCEPTED'
+    GROUP BY ss.user_id
+) bk ON s.id = bk.user_id;
