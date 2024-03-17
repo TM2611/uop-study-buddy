@@ -92,7 +92,9 @@ const StudyUsers: React.FC = () => {
         console.log("Similarity Threshould: ", SIMILARITY_THRESHOLD);
       }
       setSelectedTopic({ name: topic, id: topic_id });
-      setMatchedUsers(users);
+      setMatchedUsers(
+        users.filter((u: UserAvailabilityConfidence) => u.email !== user.email)
+      );
       setIsLoading(false);
     };
     if (user) {
@@ -130,20 +132,32 @@ const StudyUsers: React.FC = () => {
         </div>
       </div>
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-        {(filter === "year"
-          ? sameYearUsers
-          : filter === "course"
-          ? sameCourseUsers
-          : matchedUsers
-        )?.map((user) => (
-          <div key={user.email}>
-            <UserMatchCard
-              user={user}
-              setSelectedUser={setSelectedUser}
-              setShowSessionSelection={setShowSessionSelection}
-            />
-          </div>
-        ))}
+        {(() => {
+          const filteredUsers =
+            filter === "year"
+              ? sameYearUsers
+              : filter === "course"
+              ? sameCourseUsers
+              : matchedUsers;
+
+          if (filteredUsers?.length === 0) {
+            return (
+              <div className="col-span-full text-center text-2xl font-bold text-gray-600 mt-4 mb-8">
+                No users matching this criteria.
+              </div>
+            );
+          } else {
+            return filteredUsers?.map((user) => (
+              <div key={user.email}>
+                <UserMatchCard
+                  user={user}
+                  setSelectedUser={setSelectedUser}
+                  setShowSessionSelection={setShowSessionSelection}
+                />
+              </div>
+            ));
+          }
+        })()}
       </section>
       {showSessionSelection && selectedUser && (
         <div className="fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center">
