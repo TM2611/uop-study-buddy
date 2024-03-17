@@ -781,3 +781,24 @@ BEGIN
   ORDER BY fsu.similarity DESC;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_confident_users(p_user_id VARCHAR, p_topic_id INTEGER)
+RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, year INTEGER, department_id INTEGER, availability_slots JSON[], confidence JSON[], bookings JSON[], topic_confidence_value INTEGER) AS $$
+BEGIN
+  RETURN QUERY
+  WITH user_confidence AS (
+    SELECT user_id, confidence_value
+    FROM student_confidence
+    WHERE user_id = p_user_id AND topic_id = p_topic_id
+  ),
+  confident_users AS (
+    SELECT uac.*, sc.confidence_value AS topic_confidence_value
+    FROM user_availability_confidence uac
+    JOIN student_confidence sc ON uac.id = sc.user_id AND sc.topic_id = p_topic_id
+    CROSS JOIN user_confidence uc
+    WHERE sc.confidence_value >= uc.confidence_value
+  )
+  SELECT cu.id, cu.email, cu.given_name, cu.family_name, cu.picture, cu.course_code, cu.year, cu.department_id, cu.availability_slots, cu.confidence, cu.bookings, cu.topic_confidence_value
+  FROM confident_users cu;
+END;
+$$ LANGUAGE plpgsql;
