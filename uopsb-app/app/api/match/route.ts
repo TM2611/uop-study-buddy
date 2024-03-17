@@ -58,13 +58,13 @@ export async function GET(req: NextRequest) {
         );
       }
     } else if (match_type === "Confidence") {
-      const confidenceUsers = await getUsersByConfidence(user_id, topic_id);
-      if (confidenceUsers.length) {
-        console.log(confidenceUsers.length, "users with high confidence");
+      const users = await getUsersByConfidence(user_id, topic_id);
+      if (users.length) {
+        console.log(users.length, "users with high confidence");
         return new NextResponse(
           JSON.stringify({
-            message: `${confidenceUsers.length} users with high confidence"`,
-            confidenceUsers,
+            message: `${users.length} users with high confidence"`,
+            users,
           }),
           { status: 200 }
         );
@@ -131,6 +131,18 @@ async function getUsersBySimilarity(id: string) {
 }
 
 async function getUsersByConfidence(id: string, topic_id: string) {
-  // TODO: return users with high confidence in the topic
-  return [];
+  const client = await pool.connect();
+
+  try {
+    const result = await client.query(
+      `SELECT * FROM get_confident_users($1, $2);`,
+      [id, topic_id]
+    );
+    return result.rows;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  } finally {
+    client.release();
+  }
 }
