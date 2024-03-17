@@ -772,10 +772,10 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION get_similar_users(p_user_id VARCHAR, p_threshold FLOAT)
-RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, department_id INTEGER, availability_slots JSON[], confidence JSON[], bookings JSON[], similarity FLOAT) AS $$
+RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, year INTEGER, department_id INTEGER, availability_slots JSON[], confidence JSON[], bookings JSON[], similarity FLOAT) AS $$
 BEGIN
   RETURN QUERY
-  SELECT uac.id, uac.email, uac.given_name, uac.family_name, uac.picture, uac.course_code, uac.department_id, uac.availability_slots, uac.confidence, uac.bookings, fsu.similarity
+  SELECT uac.id, uac.email, uac.given_name, uac.family_name, uac.picture, uac.course_code, uac.year, uac.department_id, uac.availability_slots, uac.confidence, uac.bookings, fsu.similarity
   FROM user_availability_confidence uac
   JOIN find_similar_users(p_user_id, p_threshold) fsu ON uac.id = fsu.user_id_2
   ORDER BY fsu.similarity DESC;
