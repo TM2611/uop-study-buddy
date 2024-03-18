@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useAuth } from "../app/AuthContext";
 import GoogleLoginCard from "./_components/GoogleLoginCard";
 
@@ -12,7 +13,11 @@ export default function Home() {
             Welcome, {user.given_name}
           </h1>
           <p className="text-lg text-center">
-            Start finding your perfect study partner by exploring our platform.
+            Start finding your perfect study partner by{" "}
+            <Link className="text-blue-600 hover:text-blue-800" href="/study">
+              here
+            </Link>
+            .
           </p>
         </div>
       ) : (
