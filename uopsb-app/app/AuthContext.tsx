@@ -97,6 +97,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoggedIn(false);
     setUser(null);
     localStorage.removeItem("userToken");
+    setToken("");
+    router.push("/");
   };
 
   return (
