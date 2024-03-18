@@ -8,7 +8,19 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 
 const MatchFormSchema = Yup.object().shape({
   topic: Yup.string().required("Topic is required"),
-  match_type: Yup.string().required("Match Type is required"),
+  match_type: Yup.string()
+    .required("Match Type is required")
+    .test("is-please-select", "Please select a match type", function (value) {
+      return value !== "Please select";
+    })
+    .test(
+      "is-confidence-allowed",
+      "Confidence match type is not allowed for 'No Topic'",
+      function (value) {
+        const topic = this.parent.topic;
+        return !(topic === "No Topic" && value === "Confidence");
+      }
+    ),
 });
 
 const initialValues = {
@@ -32,7 +44,7 @@ const handleMatchClick = async (
   const topic_id = values.topic_id;
   const match_type = values.match_type;
 
-  if (!topic_id || !match_type) {
+  if (!match_type) {
     console.log("Invalid request");
     return;
   }
@@ -43,6 +55,8 @@ const handleMatchClick = async (
 
 const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
   const router = useRouter();
+  const [isTopicSelected, setIsTopicSelected] = useState(false);
+
   return (
     <Formik
       initialValues={initialValues}
@@ -73,6 +87,7 @@ const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
                     if (topicId) {
                       formik.setFieldValue("topic_id", topicId);
                     }
+                    setIsTopicSelected(e.target.value !== "Please select");
                   }}
                   className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
                 >
@@ -100,16 +115,29 @@ const MatchForm: React.FC<MatchFormProps> = ({ activeUserConfidence }) => {
                   as="select"
                   name="match_type"
                   className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                  disabled={!isTopicSelected}
                 >
                   <option value={initialValues.match_type} disabled>
                     Please select
                   </option>
                   {matchTypes.map((matchType) => (
-                    <option key={matchType} value={matchType}>
+                    <option
+                      key={matchType}
+                      value={matchType}
+                      disabled={
+                        formik.values.topic === "No Topic" &&
+                        matchType === "Confidence"
+                      }
+                    >
                       {matchType}
                     </option>
                   ))}
                 </Field>
+                <ErrorMessage
+                  name="match_type"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
               <button

@@ -67,7 +67,7 @@ export type SessionStatus =
 
 export interface UserProfileType extends UserType {
   slots: [AvailabilitySlot];
-  topic_confidence: TopicConfidence[];
+  confidence: TopicConfidence[];
 }
 
 export interface TopicConfidence {

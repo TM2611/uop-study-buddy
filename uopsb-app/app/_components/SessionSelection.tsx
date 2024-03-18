@@ -38,6 +38,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 }) => {
   const [slotStates, setSlotStates] = useState(initSlotStates);
   const [activeDate, setActiveDate] = useState(dayjs().startOf("isoWeek"));
+  const [isCurrentWeek, setIsCurrentWeek] = useState(true);
   const [selectedDateTime, setSelectedDateTime] = useState<string[]>([]);
   const [popupContent, setPopupContent] = useState<JSX.Element | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
@@ -70,6 +71,12 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     );
     setConfirmDisabled(!containsSelection);
   }, [slotStates]);
+
+  useEffect(() => {
+    setIsCurrentWeek(
+      activeDate.startOf("isoWeek").isSame(dayjs().startOf("isoWeek"), "week")
+    );
+  }, [activeDate]);
 
   const getDateRange = (activeDate: Dayjs) => {
     return `${activeDate.format("DD/MM/YY")} - ${activeDate
@@ -145,6 +152,34 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     return updatedStates;
   }
 
+  function hasPastSession(slots: AvailabilitySlot[]) {
+    const now = dayjs();
+    const currentDayIndex = days.indexOf(now.format("ddd").toUpperCase());
+    const currentHour = now.hour();
+
+    return slots.some((slot) => {
+      const slotDayIndex = days.indexOf(slot.day);
+
+      if (!isCurrentWeek) {
+        // The session slots are from a future week
+        return false;
+      } else {
+        // The session slots are in the current week
+        if (slotDayIndex < currentDayIndex) {
+          // The session slot day is earlier than the current day
+          return true;
+        } else if (slotDayIndex === currentDayIndex) {
+          // The session slot day is the same as the current day
+          if (slot.end_hour < currentHour) {
+            // The session slot time is earlier than or equal to the current time
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+  }``
+
   const handlePreviousWeek = () => {
     setActiveDate(activeDate.subtract(1, "week"));
   };
@@ -211,16 +246,19 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const dateRange = getDateRange(activeDate);
 
   const onConfirmClick = () => {
-    setShowConfirmPopup(true);
     const selectedSlots = statesToAvailabilitySlots(slotStates);
+    if (!selectedSlots.length) {
+      alert("Please select a date and time.");
+      return;
+    }
+
+    if (hasPastSession(selectedSlots)) {
+      alert("You cannot book a session in the past.");
+      return;
+    }
     const sessionTimes = getSelectedDateTimes(selectedSlots, activeDate);
     setSelectedDateTime(sessionTimes);
 
-    if (!selectedDateTime) {
-      alert("Please select a date and time.");
-      setShowConfirmPopup(false);
-      return;
-    }
     const content = (
       <div>
         <span className="font-bold">
@@ -239,6 +277,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     );
 
     setPopupContent(content);
+    setShowConfirmPopup(true);
   };
 
   return (
@@ -251,8 +290,11 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       <div className="flex justify-between mb-2">
         <button
           type="button"
-          className="py-1 px-2 rounded-md bg-blue-500 text-white text-sm"
+          className={`py-1 px-2 rounded-md text-white text-sm ${
+            isCurrentWeek ? `bg-gray-500` : `bg-blue-500`
+          }`}
           onClick={handlePreviousWeek}
+          disabled={isCurrentWeek}
         >
           &lt; Previous
         </button>
