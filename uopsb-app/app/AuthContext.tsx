@@ -1,13 +1,22 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 interface AuthContextValue {
+  loading: boolean;
   isLoggedIn: boolean;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   user: any | null;
   token: string | null;
+  setToken: Dispatch<SetStateAction<string>>;
   googleLogin: (credentialResponse: any) => void;
   logout: () => void;
 }
@@ -17,10 +26,12 @@ interface AuthProviderProps {
 }
 
 const AuthContext = createContext<AuthContextValue>({
+  loading: true,
   isLoggedIn: false,
   setIsLoggedIn: () => {},
   user: null,
   token: "",
+  setToken: () => {},
   googleLogin: () => {},
   logout: () => {},
 });
@@ -30,16 +41,21 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState("");
   const router = useRouter();
+  const path = usePathname();
 
   useEffect(() => {
     const userToken = localStorage.getItem("userToken");
     if (userToken) {
       login(userToken);
+    } else if (path !== "/") {
+      router.push("/");
     }
+    setLoading(false);
   }, []);
 
   const googleLogin = async (credentialResponse: any) => {
@@ -85,7 +101,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, setIsLoggedIn, user, token, googleLogin, logout }}
+      value={{
+        loading,
+        isLoggedIn,
+        setIsLoggedIn,
+        user,
+        setToken,
+        token,
+        googleLogin,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
