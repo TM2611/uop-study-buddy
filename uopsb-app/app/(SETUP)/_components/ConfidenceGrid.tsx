@@ -2,9 +2,7 @@ import { Topic, TopicConfidence, Course } from "@/app/types";
 import React, { useState } from "react";
 
 interface ConfidenceGridProps {
-  topics: Topic[];
-  courses: Course[];
-  course_code: string;
+  filteredTopics: Topic[];
   onConfidenceSelect: (topicConfidence: TopicConfidence[]) => void;
 }
 
@@ -13,18 +11,10 @@ interface TopicConfidenceButton extends TopicConfidence {
 }
 
 const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
-  topics,
-  courses,
-  course_code,
   onConfidenceSelect,
+  filteredTopics
 }) => {
-  const CourseDeptId = courses?.find(
-    (x) => x.course_code === course_code
-  )?.department_id;
-
-  const filteredTopics = topics.filter(
-    (topic) => topic.department_id === CourseDeptId
-  );
+  
 
   const [topicConfidence, setTopicConfidence] = useState<
     TopicConfidenceButton[]
@@ -71,7 +61,7 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className="grid grid-cols-1 gap-4 w-full">
       <div className="mb-4">
         <p className="mb-4">
           Below is a list of topics related to your selected course. Rate your
