@@ -98,3 +98,14 @@ export default function AvailabilitySelection({
     </div>
   );
 }
+
+export function isAvailabilityChosen(slotStates: WeeklySlotStates): boolean {
+  for (let i = 0; i < slotStates.length; i++) {
+    for (let j = 0; j < slotStates[i].length; j++) {
+      if (slotStates[i][j] === 1) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
