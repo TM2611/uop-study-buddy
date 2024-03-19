@@ -56,8 +56,7 @@ INSERT INTO topic (name, department_id) VALUES
 ('Software Engineering and Design Patterns', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('Web Development and Full Stack Development', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('Mobile Application Development', (SELECT id FROM department WHERE name = 'School of Computing')),
-('Cloud Computing and Distributed Systems', (SELECT id FROM department WHERE name = 'School of Computing')),
-('Database Management Systems and Big Data', (SELECT id FROM department WHERE name = 'School of Computing'));
+('Cloud Computing and Distributed Systems', (SELECT id FROM department WHERE name = 'School of Computing'));
 
 --School of Energy and Electronic Engineering
 INSERT INTO topic (name, department_id) VALUES
