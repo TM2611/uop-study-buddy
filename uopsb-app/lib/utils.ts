@@ -1,7 +1,9 @@
 import {
   AvailabilitySlot,
+  Course,
   SessionSlot,
   SlotStatus,
+  Topic,
   WeeklySlotStates,
 } from "@/app/types";
 import { type ClassValue, clsx } from "clsx";
@@ -145,3 +147,14 @@ export function getBookedSlotIndexes(
 
   return indexes;
 }
+
+export const getFilteredTopics = (
+  courses: Course[],
+  course_code: string,
+  topics: Topic[]
+) => {
+  const CourseDeptId = courses?.find(
+    (x) => x.course_code === course_code
+  )?.department_id;
+  return topics.filter((topic) => topic.department_id === CourseDeptId);
+};
