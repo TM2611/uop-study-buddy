@@ -7,7 +7,7 @@ import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import {
   availabilitySlotsToStates,
-  createDateFromString,
+  createDateFromDMY,
   extractUpNum,
   getBookedSlotIndexes,
   isDateInRange,
@@ -118,7 +118,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     const sessionSlots = getSessionSlotData(selectedSlots, activeDate);
 
     sessionSlots.forEach((sessionSlot) => {
-      const slotDate = createDateFromString(sessionSlot.date);
+      const slotDate = createDateFromDMY(sessionSlot.date);
       const dateString = slotDate.toLocaleDateString("en-GB", dateOptions);
       const startHour = sessionSlot.start_hour % 12 || 12;
       const endHour = sessionSlot.end_hour % 12 || 12;
@@ -178,7 +178,8 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       }
       return false;
     });
-  }``
+  }
+  ``;
 
   const handlePreviousWeek = () => {
     setActiveDate(activeDate.subtract(1, "week"));
