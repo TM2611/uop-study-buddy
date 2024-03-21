@@ -1,5 +1,6 @@
 import { MatchType } from "@/app/types";
 
+// 07:00 - 23:00, 1 hour slots
 export const initSlotStates = Array(7)
   .fill(null)
   .map(() => Array(16).fill(0));

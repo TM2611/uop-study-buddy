@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { SessionSlot } from "@/app/types";
-import { convertDateToYMD } from "@/lib/utils";
+import { convertDMYToYMD } from "@/lib/utils";
 
 interface SessionData {
   requester_id: string;
@@ -82,7 +82,7 @@ async function insertSession(
         topic,
         slot.start_hour,
         slot.end_hour,
-        convertDateToYMD(slot.date),
+        convertDMYToYMD(slot.date),
         "PENDING",
       ]
     );

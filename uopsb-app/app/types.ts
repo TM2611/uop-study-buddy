@@ -99,5 +99,5 @@ export type MatchType = "Department" | "Confidence" | "Similarity";
 export type UserAvailabilityConfidence = UserType & {
   availability_slots: AvailabilitySlot[];
   confidence: TopicConfidence[];
-  bookings: Omit<SessionSlot, "day">[];
+  bookings: SessionData[]
 };

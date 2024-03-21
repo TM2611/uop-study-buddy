@@ -7,15 +7,16 @@ import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import {
   availabilitySlotsToStates,
-  createDateFromString,
+  createDateFromDMY,
   extractUpNum,
   getBookedSlotIndexes,
   isDateInRange,
-  statesToAvailabilitySlots,
+  weeklyStatesToSelectedSlots,
 } from "@/lib/utils";
 import {
   AvailabilitySlot,
   SelectedTopic,
+  SessionData,
   SessionSlot,
   UserAvailabilityConfidence,
   WeeklySlotStates,
@@ -118,8 +119,8 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     const sessionSlots = getSessionSlotData(selectedSlots, activeDate);
 
     sessionSlots.forEach((sessionSlot) => {
-      const slotDate = createDateFromString(sessionSlot.date);
-      const dateString = slotDate.toLocaleDateString("en-GB", dateOptions);
+      const slotDate = createDateFromDMY(sessionSlot.date);
+      const dateString = slotDate.toLocaleString("en-GB", dateOptions);
       const startHour = sessionSlot.start_hour % 12 || 12;
       const endHour = sessionSlot.end_hour % 12 || 12;
       const startAmPm = sessionSlot.start_hour >= 12 ? "PM" : "AM";
@@ -145,6 +146,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       isDateInRange(x.date ?? "", activeDate.toISOString())
     );
     const bookedSlotIndexes = getBookedSlotIndexes(weekBookedSessions);
+
     bookedSlotIndexes.forEach((slotIndex) => {
       const [dayIndex, hourIndex] = slotIndex;
       updatedStates[dayIndex][hourIndex] = 2;
@@ -178,7 +180,8 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       }
       return false;
     });
-  }``
+  }
+  ``;
 
   const handlePreviousWeek = () => {
     setActiveDate(activeDate.subtract(1, "week"));
@@ -190,7 +193,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
   const handleSessionConfirm = async () => {
     try {
-      const requestedSessions = statesToAvailabilitySlots(slotStates);
+      const requestedSessions = weeklyStatesToSelectedSlots(slotStates);
       const sessionData = getSessionSlotData(requestedSessions, activeDate);
       const jsonString = JSON.stringify(sessionData);
       const encodedSessions = encodeURIComponent(jsonString);
@@ -246,7 +249,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const dateRange = getDateRange(activeDate);
 
   const onConfirmClick = () => {
-    const selectedSlots = statesToAvailabilitySlots(slotStates);
+    const selectedSlots = weeklyStatesToSelectedSlots(slotStates);
     if (!selectedSlots.length) {
       alert("Please select a date and time.");
       return;

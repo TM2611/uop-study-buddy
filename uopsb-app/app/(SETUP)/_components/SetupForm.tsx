@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import FormNavigation from "./FormNavigation";
 import ConfidenceGrid from "./ConfidenceGrid";
-import { getFilteredTopics, statesToAvailabilitySlots } from "@/lib/utils";
+import { getFilteredTopics, weeklyStatesToSelectedSlots } from "@/lib/utils";
 import AvailabilitySelection, {
   isAvailabilityChosen,
 } from "./AvailabilitySelection";
@@ -92,7 +92,7 @@ export default function SetupForm(formPopulation: FormPopulation) {
       initialValues={initialValues}
       validationSchema={validationSchemas[activeStep - 1]}
       onSubmit={async (values) => {
-        const availableSlots = statesToAvailabilitySlots(
+        const availableSlots = weeklyStatesToSelectedSlots(
           values.weekyAvailabilityStates
         );
         const { weekyAvailabilityStates, ...tempValues } = values;
