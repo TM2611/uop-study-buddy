@@ -16,6 +16,7 @@ import {
 import {
   AvailabilitySlot,
   SelectedTopic,
+  SessionData,
   SessionSlot,
   UserAvailabilityConfidence,
   WeeklySlotStates,
@@ -145,6 +146,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       isDateInRange(x.date ?? "", activeDate.toISOString())
     );
     const bookedSlotIndexes = getBookedSlotIndexes(weekBookedSessions);
+
     bookedSlotIndexes.forEach((slotIndex) => {
       const [dayIndex, hourIndex] = slotIndex;
       updatedStates[dayIndex][hourIndex] = 2;
