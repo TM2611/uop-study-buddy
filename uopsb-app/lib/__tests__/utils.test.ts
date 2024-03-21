@@ -142,10 +142,10 @@ describe("extractUpNum", () => {
     });
   });
 });
-describe("statesToAvailabilitySlots", () => {
+describe("weeklyStatesToSelectedSlots", () => {
   it("should convert WeeklySlotStates to AvailabilitySlot[]", () => {
-    mocks.statesToAvailabilitySlots.forEach(({ input, expected }) => {
-      const result = utils.statesToAvailabilitySlots(input);
+    mocks.weeklyStatesToSelectedSlots.forEach(({ input, expected }) => {
+      const result = utils.weeklyStatesToSelectedSlots(input);
       expect(result).toEqual(expected);
     });
   });

@@ -97,7 +97,7 @@ export const availabilitySlotsToStates = [
   },
 ];
 
-export const statesToAvailabilitySlots = [
+export const weeklyStatesToSelectedSlots = [
   {
     input: mockWeeklySlotStates2,
     expected: expectedAvailabilitySlots2,

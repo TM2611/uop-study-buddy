@@ -11,7 +11,7 @@ import {
   extractUpNum,
   getBookedSlotIndexes,
   isDateInRange,
-  statesToAvailabilitySlots,
+  weeklyStatesToSelectedSlots,
 } from "@/lib/utils";
 import {
   AvailabilitySlot,
@@ -193,7 +193,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
   const handleSessionConfirm = async () => {
     try {
-      const requestedSessions = statesToAvailabilitySlots(slotStates);
+      const requestedSessions = weeklyStatesToSelectedSlots(slotStates);
       const sessionData = getSessionSlotData(requestedSessions, activeDate);
       const jsonString = JSON.stringify(sessionData);
       const encodedSessions = encodeURIComponent(jsonString);
@@ -249,7 +249,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
   const dateRange = getDateRange(activeDate);
 
   const onConfirmClick = () => {
-    const selectedSlots = statesToAvailabilitySlots(slotStates);
+    const selectedSlots = weeklyStatesToSelectedSlots(slotStates);
     if (!selectedSlots.length) {
       alert("Please select a date and time.");
       return;

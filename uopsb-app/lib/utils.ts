@@ -1,7 +1,7 @@
 import {
   AvailabilitySlot,
   Course,
-  SessionSlot,
+  SessionData,
   SlotStatus,
   Topic,
   WeeklySlotStates,
@@ -14,27 +14,47 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// needed for db insertion
-export function convertDateToYMD(dateString: string): string {
-  const [day, month, year] = dateString.split("/");
+export function convertDMYToYMD(dateString: string): string {
+  const [day, month, year] = dateString.split(/[-/]/); // Use a regular expression to split on both '-' and '/'
+  if (day === undefined || month === undefined || year === undefined) {
+    throw new Error("Incorrect date format (not DMY)");
+  }
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 }
 
-function convertDateToDMY(dateString: string): string {
-  const [year, month, day] = dateString.split("-");
-  return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
-}
-
-export function createDateFromString(dateString: string): Date {
-  const [day, month, year] = dateString.split("/").map(Number);
+export function createDateFromDMY(dateString: string): Date | string {
+  const separator = dateString.includes("/") ? "/" : "-";
+  const [day, month, year] = dateString.split(separator).map(Number);
   const adjustedMonth = month - 1;
+
+  if (
+    isNaN(day) ||
+    isNaN(month) ||
+    isNaN(year) ||
+    year < 0 ||
+    adjustedMonth < 0 ||
+    adjustedMonth > 11 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return "Invalid date";
+  }
+
   return new Date(year, adjustedMonth, day);
 }
 
-export function isDateInRange(dateStr: string, startOfWeek: string): boolean {
+export function isDateInRange(
+  dateStr: string,
+  startOfWeek: string
+): boolean | string {
   // Convert date strings to Date objects
   const date = new Date(dateStr);
   const startDate = new Date(startOfWeek);
+
+  // Check if the input date strings are valid
+  if (isNaN(date.getTime()) || isNaN(startDate.getTime())) {
+    return "Invalid date";
+  }
 
   // Calculate the end date of the week
   const endDate = new Date(startDate);
@@ -46,7 +66,8 @@ export function isDateInRange(dateStr: string, startOfWeek: string): boolean {
 
 export function getDayFromDateStr(dateString: string): string {
   const date = new Date(dateString);
-  const dayIndex = date.getDay();
+  if (isNaN(date.getTime())) return "Invalid Date";
+  const dayIndex = (date.getDay() + 6) % 7; // Adjust the dayIndex calculation (MON..)
   return days[dayIndex];
 }
 
@@ -56,7 +77,7 @@ export function extractUpNum(email: string) {
   return match[0];
 }
 
-export function statesToAvailabilitySlots(
+export function weeklyStatesToSelectedSlots(
   slotStates: WeeklySlotStates
 ): AvailabilitySlot[] {
   try {
@@ -127,7 +148,7 @@ export function availabilitySlotsToStates(
 }
 
 export function getBookedSlotIndexes(
-  weekBookedSessions: Omit<SessionSlot, "day">[]
+  weekBookedSessions: SessionData[]
 ): [number, number][] {
   const indexes: [number, number][] = [];
 
@@ -144,7 +165,6 @@ export function getBookedSlotIndexes(
       }
     }
   });
-
   return indexes;
 }
 
