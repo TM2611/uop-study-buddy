@@ -120,7 +120,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
 
     sessionSlots.forEach((sessionSlot) => {
       const slotDate = createDateFromDMY(sessionSlot.date);
-      const dateString = slotDate.toLocaleDateString("en-GB", dateOptions);
+      const dateString = slotDate.toLocaleString("en-GB", dateOptions);
       const startHour = sessionSlot.start_hour % 12 || 12;
       const endHour = sessionSlot.end_hour % 12 || 12;
       const startAmPm = sessionSlot.start_hour >= 12 ? "PM" : "AM";
