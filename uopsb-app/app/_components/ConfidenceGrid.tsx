@@ -1,31 +1,54 @@
-import { Topic, TopicConfidence, Course } from "@/app/types";
-import React, { useState } from "react";
+import {
+  Topic,
+  TopicConfidence,
+  Course,
+  UserAvailabilityConfidence,
+} from "@/app/types";
+import React, { useEffect, useState } from "react";
 
 interface ConfidenceGridProps {
-  filteredTopics: Topic[];
-  onConfidenceSelect: (topicConfidence: TopicConfidence[]) => void;
+  userAvailabilityConfidence?: UserAvailabilityConfidence;
+  filteredTopics: Omit<Topic, "department_id">[];
+  onConfidenceSelect: (topicConfidence: TopicConfidenceButton[]) => void;
 }
 
-interface TopicConfidenceButton extends TopicConfidence {
+export interface TopicConfidenceButton extends TopicConfidence {
   buttonColor: string;
 }
 
+const buttonConfig: { [key: number]: string } = {
+  1: "bg-red-500",
+  2: "bg-orange-400",
+  3: "bg-yellow-300",
+  4: "bg-green-300",
+  5: "bg-green-500",
+};
+
 const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
+  userAvailabilityConfidence,
   onConfidenceSelect,
-  filteredTopics
+  filteredTopics,
 }) => {
-  
+  if (!userAvailabilityConfidence?.confidence) {
+    debugger;
+  }
+  const initalTopicConfidence = !userAvailabilityConfidence
+    ? filteredTopics.map((topic) => ({
+        topic_id: topic.topic_id,
+        topic_name: topic.topic_name,
+        confidence_value: 0,
+        buttonColor: "",
+      }))
+    : userAvailabilityConfidence.confidence.map((topic) => ({
+        topic_id: topic.topic_id,
+        topic_name: topic.topic_name,
+        confidence_value: topic.confidence_value,
+        buttonColor: buttonConfig[topic.confidence_value] || "",
+      }));
 
   const [topicConfidence, setTopicConfidence] = useState<
     TopicConfidenceButton[]
-  >(
-    filteredTopics.map((topic) => ({
-      topic_id: topic.id,
-      topic_name: topic.name,
-      confidence_value: 0,
-      buttonColor: "",
-    }))
-  );
+  >(initalTopicConfidence);
 
   const handleConfidenceClick = (topicId: number, confidenceValue: number) => {
     const newTopicConfidence = [...topicConfidence];
@@ -35,25 +58,8 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
     if (topicIndex !== -1) {
       newTopicConfidence[topicIndex].confidence_value = confidenceValue;
 
-      switch (confidenceValue) {
-        case 1:
-          newTopicConfidence[topicIndex].buttonColor = "bg-red-500";
-          break;
-        case 2:
-          newTopicConfidence[topicIndex].buttonColor = "bg-orange-400";
-          break;
-        case 3:
-          newTopicConfidence[topicIndex].buttonColor = "bg-yellow-300";
-          break;
-        case 4:
-          newTopicConfidence[topicIndex].buttonColor = "bg-green-300";
-          break;
-        case 5:
-          newTopicConfidence[topicIndex].buttonColor = "bg-green-500";
-          break;
-        default:
-          newTopicConfidence[topicIndex].buttonColor = "";
-      }
+      newTopicConfidence[topicIndex].buttonColor =
+        buttonConfig[confidenceValue] || "";
     }
 
     setTopicConfidence(newTopicConfidence);
@@ -85,19 +91,21 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
           </div>
         </div>
       </div>
-      {filteredTopics.map((topic, topicIndex) => (
-        <div key={topic.id} className="flex flex-col items-start gap-2">
-          <span className="text-lg font-semibold">{topic.name}</span>
+
+      {topicConfidence.map((topic, topicIndex) => (
+        <div key={topic.topic_id} className="flex flex-col items-start gap-2">
+          <span className="text-lg font-semibold">{topic.topic_name}</span>
           <div className="grid grid-cols-5 gap-2 text-sm">
             {[1, 2, 3, 4, 5].map((confidenceValue) => (
               <button
                 key={confidenceValue}
                 type="button"
-                onClick={() => handleConfidenceClick(topic.id, confidenceValue)}
+                onClick={() =>
+                  handleConfidenceClick(topic.topic_id, confidenceValue)
+                }
                 className={`w-full p-2 font-semibold border border-gray-300 rounded-md focus:outline-none ${
-                  topicConfidence[topicIndex].confidence_value ===
-                  confidenceValue
-                    ? topicConfidence[topicIndex].buttonColor
+                  topic.confidence_value === confidenceValue
+                    ? topic.buttonColor
                     : ""
                 }`}
               >

@@ -9,7 +9,7 @@ import { Formik, Form, Field, ErrorMessage, FormikTouched } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
 import FormNavigation from "./FormNavigation";
-import ConfidenceGrid from "./ConfidenceGrid";
+import ConfidenceGrid from "../../_components/ConfidenceGrid";
 import { getFilteredTopics, weeklyStatesToSelectedSlots } from "@/lib/utils";
 import AvailabilitySelection, {
   isAvailabilityChosen,
