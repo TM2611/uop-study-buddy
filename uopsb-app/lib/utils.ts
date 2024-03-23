@@ -176,5 +176,9 @@ export const getFilteredTopics = (
   const CourseDeptId = courses?.find(
     (x) => x.course_code === course_code
   )?.department_id;
-  return topics.filter((topic) => topic.department_id === CourseDeptId);
+  let filteredTopics: Omit<Topic, "department_id">[] = [];
+  filteredTopics = topics
+    .filter((topic) => topic.department_id === CourseDeptId)
+    .map(({ department_id, ...rest }) => rest);
+  return filteredTopics;
 };
