@@ -39,9 +39,10 @@ async function getUserByEmail(email: string) {
   const client = await pool.connect();
 
   try {
-    const result = await client.query("SELECT * FROM student WHERE email = $1", [
-      email,
-    ]);
+    const result = await client.query(
+      "SELECT * FROM user_availability_confidence WHERE email = $1",
+      [email]
+    );
     return result.rows[0];
   } catch (err) {
     console.error(err);
