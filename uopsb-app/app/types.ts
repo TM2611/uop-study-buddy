@@ -6,8 +6,8 @@ export interface Course {
 }
 
 export interface Topic {
-  name: string;
-  id: number;
+  topic_name: string;
+  topic_id: number;
   department_id: String;
 }
 
