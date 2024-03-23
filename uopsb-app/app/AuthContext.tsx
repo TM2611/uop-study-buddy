@@ -17,6 +17,7 @@ interface AuthContextValue {
   user: any | null;
   token: string | null;
   setToken: Dispatch<SetStateAction<string>>;
+  setUser: Dispatch<SetStateAction<any | null>>;
   googleLogin: (credentialResponse: any) => void;
   logout: () => void;
 }
@@ -32,6 +33,7 @@ const AuthContext = createContext<AuthContextValue>({
   user: null,
   token: "",
   setToken: () => {},
+  setUser: () => {},
   googleLogin: () => {},
   logout: () => {},
 });
@@ -109,6 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoggedIn,
         user,
         setToken,
+        setUser,
         token,
         googleLogin,
         logout,
