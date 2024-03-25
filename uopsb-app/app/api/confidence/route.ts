@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     if (!email) throw new Error("Email parameter required");
 
     const userId = extractUpNum(email);
-    const query = `SELECT t.topic_id as topic_id, t.name as topic_name, sc.confidence_value
+    const query = `SELECT t.topic_id as topic_id, t.topic_name as topic_name, sc.confidence_value
     FROM student_confidence sc
     JOIN topic t ON sc.topic_id = t.topic_id
     WHERE sc.user_id = $1;`;

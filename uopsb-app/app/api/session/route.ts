@@ -144,7 +144,7 @@ async function getAllUserSessions(userId: string) {
     u.picture,
     c.course_code,
     c.name as course_name,
-    t.name as topic_name,
+    t.topic_name as topic_name,
     sc.confidence_value as requester_confidence
   FROM
     session s
