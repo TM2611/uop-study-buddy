@@ -1,14 +1,21 @@
 import TimeSlotGrid from "@/app/_components/TimeSlotGrid";
 import { useEffect, useState } from "react";
 import { hours, days, initSlotStates } from "@/lib/constants";
-import { WeeklySlotStates } from "@/app/types";
+import { AvailabilitySlot, WeeklySlotStates } from "@/app/types";
+import { slotsToSelectedStates } from "@/lib/utils";
 
 export default function AvailabilitySelection({
+  userAvailabilitySlots,
   onChange,
 }: {
   onChange: (slotStates: WeeklySlotStates) => void;
+  userAvailabilitySlots?: AvailabilitySlot[];
 }) {
-  const [slotStates, setSlotStates] = useState(initSlotStates);
+  const [slotStates, setSlotStates] = useState<WeeklySlotStates>(
+    userAvailabilitySlots
+      ? slotsToSelectedStates(userAvailabilitySlots)
+      : initSlotStates
+  );
 
   useEffect(() => {
     onChange(slotStates);
