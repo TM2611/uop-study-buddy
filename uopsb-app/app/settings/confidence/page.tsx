@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ConfidenceGrid, {
   TopicConfidenceButton,
 } from "@/app/_components/ConfidenceGrid";
@@ -8,12 +8,17 @@ import { TopicConfidence } from "@/app/types";
 import SettingsPopup from "../_components/SettingsPopup";
 
 const SettingsConfidence = () => {
-  const { user, setUser } = useAuth();
-  if (!user) return;
-
-  const currentConfidence = user.confidence;
-  const [confidence, setConfidence] = useState(currentConfidence);
+  const [confidence, setConfidence] = useState<TopicConfidence[]>([]);
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
+  const { user, setUser } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      setConfidence(user.confidence);
+    }
+  }, [user]);
+
+  if (!user) return null;
 
   const handleConfidenceSelect = (
     selectedConfidence: TopicConfidenceButton[]
@@ -27,10 +32,10 @@ const SettingsConfidence = () => {
 
   const handleUpdateButtonClick = async () => {
     const changedConfidence = confidence.filter(
-      (confidence: TopicConfidence, index: number) => {
+      (topicConfidence: TopicConfidence, index: number) => {
         return (
-          confidence.confidence_value !==
-          currentConfidence[index].confidence_value
+          topicConfidence.confidence_value !==
+          confidence[index].confidence_value
         );
       }
     );
@@ -54,7 +59,7 @@ const SettingsConfidence = () => {
           <ConfidenceGrid
             onConfidenceSelect={handleConfidenceSelect}
             userAvailabilityConfidence={user}
-            filteredTopics={currentConfidence}
+            filteredTopics={confidence}
           />
         )}
       </section>
