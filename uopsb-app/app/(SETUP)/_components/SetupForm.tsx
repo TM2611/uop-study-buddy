@@ -13,7 +13,7 @@ import ConfidenceGrid from "../../_components/ConfidenceGrid";
 import { getFilteredTopics, weeklyStatesToSelectedSlots } from "@/lib/utils";
 import AvailabilitySelection, {
   isAvailabilityChosen,
-} from "./AvailabilitySelection";
+} from "@/app/_components/AvailabilitySelection";
 import { useAuth } from "@/app/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";

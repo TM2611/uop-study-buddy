@@ -6,7 +6,7 @@ import Overlay from "./Overlay";
 import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import {
-  availabilitySlotsToStates,
+  slotsToAvailableStates,
   createDateFromDMY,
   extractUpNum,
   getBookedSlotIndexes,
@@ -53,7 +53,7 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
     const setSessionAvailability = () => {
       try {
         const availableSlots = selectedUser.availability_slots;
-        const availableStates = availabilitySlotsToStates(availableSlots);
+        const availableStates = slotsToAvailableStates(availableSlots);
         const updatedAvailableStates = includeOccupiedSlots(availableStates);
         setSlotStates(updatedAvailableStates);
       } catch (error) {
