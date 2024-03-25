@@ -29,9 +29,6 @@ const ConfidenceGrid: React.FC<ConfidenceGridProps> = ({
   onConfidenceSelect,
   filteredTopics,
 }) => {
-  if (!userAvailabilityConfidence?.confidence) {
-    debugger;
-  }
   const initalTopicConfidence = !userAvailabilityConfidence
     ? filteredTopics.map((topic) => ({
         topic_id: topic.topic_id,
