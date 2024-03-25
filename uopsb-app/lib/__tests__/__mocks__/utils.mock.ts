@@ -90,7 +90,7 @@ const expectedSlotIndexes: [number, number][] = [
   [2, 7],
 ];
 
-export const availabilitySlotsToStates = [
+export const slotsToAvailableStates = [
   {
     input: expectedAvailabilitySlots1,
     expected: mockWeeklySlotStates1,

@@ -112,11 +112,10 @@ export function weeklyStatesToSelectedSlots(
   }
 }
 
-export function availabilitySlotsToStates(
+export function slotsToAvailableStates(
   availableSlots: AvailabilitySlot[]
 ): WeeklySlotStates {
   try {
-    // Initialize a 2D array with all values set to 0 (SlotStatus)
     const slotStates: WeeklySlotStates = days.map(
       () => hours.map(() => -1 as SlotStatus) // Grey out all slots
     );
@@ -133,6 +132,40 @@ export function availabilitySlotsToStates(
           hourIndex++
         ) {
           slotStates[dayIndex][hourIndex] = 0; // Set the SlotStatus to 0
+        }
+      }
+    });
+
+    return slotStates;
+  } catch (error) {
+    console.error(
+      "Error converting JSON slots to Availability States array:",
+      error
+    );
+    return [];
+  }
+}
+
+export function slotsToSelectedStates(
+  availableSlots: AvailabilitySlot[]
+): WeeklySlotStates {
+  try {
+    const slotStates: WeeklySlotStates = days.map(
+      () => hours.map(() => -0 as SlotStatus) // Grey out all slots
+    );
+
+    availableSlots.forEach((slot) => {
+      const dayIndex = days.indexOf(slot.day);
+      const startHourIndex = hours.indexOf(slot.start_hour);
+      const endHourIndex = hours.indexOf(slot.end_hour);
+
+      if (dayIndex !== -1 && startHourIndex !== -1 && endHourIndex !== -1) {
+        for (
+          let hourIndex = startHourIndex;
+          hourIndex < endHourIndex;
+          hourIndex++
+        ) {
+          slotStates[dayIndex][hourIndex] = 1; // Set the SlotStatus to 0
         }
       }
     });
