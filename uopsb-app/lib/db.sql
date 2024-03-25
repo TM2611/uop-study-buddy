@@ -39,14 +39,14 @@ INSERT INTO department (name) VALUES
 
 
 CREATE TABLE topic (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    topic_id SERIAL PRIMARY KEY,
+    topic_name VARCHAR(50) NOT NULL,
     department_id INT NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
 --School of Computing
-INSERT INTO topic (name, department_id) VALUES
+INSERT INTO topic (topic_name, department_id) VALUES
 ('Data Structures and Algorithms', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('Architecture and Operating Systems', (SELECT id FROM department WHERE name = 'School of Computing')),
 ('Artificial Intelligence', (SELECT id FROM department WHERE name = 'School of Computing')),
@@ -59,7 +59,7 @@ INSERT INTO topic (name, department_id) VALUES
 ('Cloud Computing and Distributed Systems', (SELECT id FROM department WHERE name = 'School of Computing'));
 
 --School of Energy and Electronic Engineering
-INSERT INTO topic (name, department_id) VALUES
+INSERT INTO topic (topic_name, department_id) VALUES
 ('Smart Grids and Renewable Energy', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
 ('Electrical Power Systems and Distribution', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
 ('Control Systems and Automation', (SELECT id FROM department WHERE name = 'School of Energy and Electronic Engineering')),
@@ -160,7 +160,7 @@ CREATE TABLE student_confidence (
   confidence_value INTEGER NOT NULL CHECK (confidence_value BETWEEN 1 AND 5),
   PRIMARY KEY (user_id, topic_id),
   FOREIGN KEY (user_id) REFERENCES student(id),
-  FOREIGN KEY (topic_id) REFERENCES topic(id)
+  FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
 );
 
 INSERT INTO student_confidence VALUES
@@ -671,7 +671,7 @@ CREATE TABLE session (
   status session_status NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (topic_id) REFERENCES topic(id)
+  FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
 );
 
 -- For demo/test purposes
@@ -720,20 +720,20 @@ LEFT JOIN (
     GROUP BY user_id
 ) av ON s.id = av.user_id
 LEFT JOIN (
-    SELECT sc.user_id, array_agg(json_build_object('topic_id', t.id, 'topic_name', t.name, 'confidence_value', sc.confidence_value)) as topics
+    SELECT sc.user_id, array_agg(json_build_object('topic_id', t.topic_id, 'topic_name', t.topic_name, 'confidence_value', sc.confidence_value)) as topics
     FROM student_confidence sc
-    JOIN topic t ON sc.topic_id = t.id
+    JOIN topic t ON sc.topic_id = t.topic_id
     GROUP BY sc.user_id
 ) tp ON s.id = tp.user_id
 LEFT JOIN (
-    SELECT ss.user_id, array_agg(json_build_object('start_hour', s.start_hour, 'end_hour', s.end_hour, 'date', s.date, 'status', s.status, 'session_id', s.id, 'requester_id', u.id, 'email', u.email, 'given_name', u.given_name, 'family_name', u.family_name, 'picture', u.picture, 'course_code', c.course_code, 'course_name', c.name, 'topic_name', t.name, 'requester_confidence', sc.confidence_value)) as bookings
+    SELECT ss.user_id, array_agg(json_build_object('start_hour', s.start_hour, 'end_hour', s.end_hour, 'date', s.date, 'status', s.status, 'session_id', s.id, 'requester_id', u.id, 'email', u.email, 'given_name', u.given_name, 'family_name', u.family_name, 'picture', u.picture, 'course_code', c.course_code, 'course_name', c.name, 'topic_name', t.topic_name, 'requester_confidence', sc.confidence_value)) as bookings
     FROM session s
-    INNER JOIN topic t ON s.topic_id = t.id
+    INNER JOIN topic t ON s.topic_id = t.topic_id
     INNER JOIN student_session ss ON s.id = ss.session_id
     INNER JOIN student_session ss_other ON s.id = ss_other.session_id AND ss_other.user_id != ss.user_id
     INNER JOIN student u ON ss_other.user_id = u.id
     INNER JOIN course c ON u.course_code = c.course_code
-    LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.id
+    LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.topic_id
     WHERE s.status = 'ACCEPTED'
     GROUP BY ss.user_id
 ) bk ON s.id = bk.user_id;
