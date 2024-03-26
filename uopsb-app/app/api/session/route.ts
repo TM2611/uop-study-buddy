@@ -144,16 +144,16 @@ async function getAllUserSessions(userId: string) {
     u.picture,
     c.course_code,
     c.name as course_name,
-    t.name as topic_name,
+    t.topic_name as topic_name,
     sc.confidence_value as requester_confidence
   FROM
     session s
-    INNER JOIN topic t ON s.topic_id = t.id
+    INNER JOIN topic t ON s.topic_id = t.topic_id
     INNER JOIN student_session ss ON s.id = ss.session_id
     INNER JOIN student_session ss_other ON s.id = ss_other.session_id AND ss_other.user_id != ss.user_id
     INNER JOIN student u ON ss_other.user_id = u.id
     INNER JOIN course c ON u.course_code = c.course_code
-    LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.id
+    LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.topic_id
   WHERE
     ss.user_id = $1;
         `;

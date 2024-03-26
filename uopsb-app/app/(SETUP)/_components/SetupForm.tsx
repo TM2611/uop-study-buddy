@@ -9,11 +9,11 @@ import { Formik, Form, Field, ErrorMessage, FormikTouched } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
 import FormNavigation from "./FormNavigation";
-import ConfidenceGrid from "./ConfidenceGrid";
+import ConfidenceGrid from "../../_components/ConfidenceGrid";
 import { getFilteredTopics, weeklyStatesToSelectedSlots } from "@/lib/utils";
 import AvailabilitySelection, {
   isAvailabilityChosen,
-} from "./AvailabilitySelection";
+} from "@/app/_components/AvailabilitySelection";
 import { useAuth } from "@/app/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";

@@ -160,14 +160,14 @@ describe("getBookedSlotIndexes", () => {
   });
 });
 
-describe("availabilitySlotsToStates", () => {
+describe("slotsToAvailableStates", () => {
   it("should convert AvailabilitySlot[] to WeeklySlotStates", () => {
-    mocks.availabilitySlotsToStates.forEach(({ input, expected }) => {
-      const result = utils.availabilitySlotsToStates(input);
+    mocks.slotsToAvailableStates.forEach(({ input, expected }) => {
+      const result = utils.slotsToAvailableStates(input);
       expect(result).toEqual(expected);
     });
   });
 });
 
-//describe("availabilitySlotsToStates")
+//describe("slotsToAvailableStates")
 //describe("getBookedSlotIndexes")

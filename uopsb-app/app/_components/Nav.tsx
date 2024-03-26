@@ -66,8 +66,8 @@ export default function Nav() {
             />
             {dropdownVisible && (
               <div className="bg-white text-black shadow-md mt-2 py-2 absolute right-0 w-48 rounded">
-                <a href="#" className="block px-4 py-2 hover:bg-gray-200">
-                  Account Settings
+                <a href="/settings" className="block px-4 py-2 hover:bg-gray-200">
+                  Settings
                 </a>
                 <button
                   onClick={logout}
