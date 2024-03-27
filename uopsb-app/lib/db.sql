@@ -29,7 +29,7 @@ SELECT drop_all();
 SET datestyle = 'ISO, DMY';
 
 CREATE TABLE department (
-    id SERIAL PRIMARY KEY,
+    id SMALLSERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
 
@@ -39,7 +39,7 @@ INSERT INTO department (name) VALUES
 
 
 CREATE TABLE topic (
-    topic_id SERIAL PRIMARY KEY,
+    topic_id SMALLSERIAL PRIMARY KEY,
     topic_name VARCHAR(50) NOT NULL,
     department_id INT NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id)
@@ -99,12 +99,12 @@ INSERT INTO course (course_code, name, department_id, level) VALUES
 
 CREATE TABLE student (
   id VARCHAR(36) PRIMARY KEY,
-  email VARCHAR(255) NOT NULL,
-  given_name VARCHAR(255) NOT NULL,
-  family_name VARCHAR(255) NOT NULL,
+  email VARCHAR(64) NOT NULL,
+  given_name VARCHAR(50) NOT NULL,
+  family_name VARCHAR(50) NOT NULL,
   picture VARCHAR(255),
   course_code VARCHAR(12) NOT NULL,
-  year INTEGER NOT NULL,
+  year SMALLINT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (course_code) REFERENCES course(course_code)
@@ -156,8 +156,8 @@ VALUES
 
 CREATE TABLE student_confidence (
   user_id VARCHAR(36) NOT NULL,
-  topic_id INTEGER NOT NULL,
-  confidence_value INTEGER NOT NULL CHECK (confidence_value BETWEEN 1 AND 5),
+  topic_id SMALLINT NOT NULL,
+  confidence_value SMALLINT NOT NULL CHECK (confidence_value BETWEEN 1 AND 5),
   PRIMARY KEY (user_id, topic_id),
   FOREIGN KEY (user_id) REFERENCES student(id),
   FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
@@ -569,11 +569,11 @@ INSERT INTO student_confidence VALUES
 
 
 CREATE TABLE availability (
-  id SERIAL PRIMARY KEY,
+  id SMALLSERIAL PRIMARY KEY,
   user_id VARCHAR(36) NOT NULL,
   day VARCHAR(3) NOT NULL CHECK (day IN ('MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN')),
-  start_hour INTEGER NOT NULL CHECK (start_hour BETWEEN 0 AND 22),
-  end_hour INTEGER NOT NULL CHECK (end_hour BETWEEN 0 AND 23),
+  start_hour SMALLINT NOT NULL CHECK (start_hour BETWEEN 0 AND 22),
+  end_hour SMALLINT NOT NULL CHECK (end_hour BETWEEN 0 AND 23),
   FOREIGN KEY (user_id) REFERENCES student(id)
 );
 
@@ -663,10 +663,10 @@ INSERT INTO availability (user_id, day, start_hour, end_hour) VALUES
 
 CREATE TYPE session_status AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED', 'CANCELLED');
 CREATE TABLE session (
-  id SERIAL PRIMARY KEY,
-  topic_id INTEGER,
-  start_hour INTEGER NOT NULL,
-  end_hour INTEGER NOT NULL,
+  id SMALLSERIAL PRIMARY KEY,
+  topic_id SMALLINT,
+  start_hour SMALLINT NOT NULL,
+  end_hour SMALLINT NOT NULL,
   date DATE NOT NULL,
   status session_status NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -677,7 +677,7 @@ CREATE TABLE session (
 -- For demo/test purposes
 CREATE OR REPLACE FUNCTION next_wednesday() RETURNS DATE AS $$
 BEGIN
-  RETURN CURRENT_DATE + INTERVAL '1 day' * ((10 - EXTRACT(DOW FROM CURRENT_DATE)::INTEGER) % 7);
+  RETURN CURRENT_DATE + INTERVAL '1 day' * ((10 - EXTRACT(DOW FROM CURRENT_DATE)::SMALLINT) % 7);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -689,9 +689,9 @@ INSERT INTO session (topic_id, start_hour, end_hour, date, status) VALUES
 -- End of Jenny and Zack
 
 CREATE TABLE student_session (
-  session_id INTEGER NOT NULL,
+  session_id SMALLINT NOT NULL,
   user_id VARCHAR(36) NOT NULL,
-  rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+  rating SMALLINT CHECK (rating BETWEEN 1 AND 5),
   feedback TEXT,
   is_requester BOOLEAN NOT NULL,
   PRIMARY KEY (user_id, session_id),
@@ -771,7 +771,7 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION get_similar_users(p_user_id VARCHAR, p_threshold FLOAT)
-RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, year INTEGER, department_id INTEGER, availability_slots JSON[], confidence JSON[], bookings JSON[], similarity FLOAT) AS $$
+RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, year SMALLINT, department_id SMALLINT, availability_slots JSON[], confidence JSON[], bookings JSON[], similarity FLOAT) AS $$
 BEGIN
   RETURN QUERY
   SELECT uac.id, uac.email, uac.given_name, uac.family_name, uac.picture, uac.course_code, uac.year, uac.department_id, uac.availability_slots, uac.confidence, uac.bookings, fsu.similarity
@@ -781,8 +781,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_confident_users(p_user_id VARCHAR, p_topic_id INTEGER)
-RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, year INTEGER, department_id INTEGER, availability_slots JSON[], confidence JSON[], bookings JSON[], topic_confidence_value INTEGER) AS $$
+CREATE OR REPLACE FUNCTION get_confident_users(p_user_id VARCHAR, p_topic_id SMALLINT)
+RETURNS TABLE(id VARCHAR, email VARCHAR, given_name VARCHAR, family_name VARCHAR, picture VARCHAR, course_code VARCHAR, year SMALLINT, department_id SMALLINT, availability_slots JSON[], confidence JSON[], bookings JSON[], topic_confidence_value SMALLINT) AS $$
 BEGIN
   RETURN QUERY
   WITH user_confidence AS (
