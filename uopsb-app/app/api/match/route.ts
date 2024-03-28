@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const match_type = req.nextUrl.searchParams.get("match_type");
     const user_id = req.nextUrl.searchParams.get("id");
 
-    if (!user_id || !topic_id || !match_type) {
+    if (!user_id || !match_type) {
       return new NextResponse(
         JSON.stringify({
           message: "Invalid request",
@@ -58,6 +58,14 @@ export async function GET(req: NextRequest) {
         );
       }
     } else if (match_type === "Confidence") {
+      if (!topic_id) {
+        return new NextResponse(
+          JSON.stringify({
+            message: "Invalid request - topic_id missing for Confidence match",
+          }),
+          { status: 400 }
+        );
+      }
       const users = await getUsersByConfidence(user_id, topic_id);
       if (users.length) {
         console.log(users.length, "users with high confidence");
