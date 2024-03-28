@@ -27,7 +27,6 @@ const Dashboard = () => {
       const bookings = sessions.filter(
         (x: SessionData) => x.status === "ACCEPTED"
       );
-      console.log(sessions);
       setSessionRequests(requests);
       setSessionBookings(bookings);
     };

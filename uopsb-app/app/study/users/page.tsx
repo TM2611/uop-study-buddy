@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { UserAvailabilityConfidence } from "@/app/types";
+import { SelectedTopic, UserAvailabilityConfidence } from "@/app/types";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import SessionSelection from "@/app/_components/SessionSelection";
@@ -19,11 +19,6 @@ const defaultUser: UserAvailabilityConfidence = {
   availability_slots: [],
   confidence: [],
   bookings: [],
-};
-
-type SelectedTopic = {
-  name: string;
-  id: string;
 };
 
 const defaultSelectedTopic: SelectedTopic = {
@@ -74,15 +69,22 @@ const StudyUsers: React.FC = () => {
       const topic = searchParams.get("topic");
       const topic_id = searchParams.get("topic_id");
       const match_type = searchParams.get("match_type");
-      if (!user_id || !topic || !topic_id || !match_type) {
+      if (!user_id || !topic || !match_type) {
         console.log("Invalid request");
         throw new Error(
           "Invalid request - topic, topic_id, or match_type missing"
         );
       }
-      const res = await fetch(
-        `/api/match?id=${user_id}&topic_id=${topic_id}&match_type=${match_type}`
-      );
+      let res;
+      if (!topic_id) {
+        setSelectedTopic({ name: "No Topic", id: null });
+        res = await fetch(`/api/match?id=${user_id}&match_type=${match_type}`);
+      } else {
+        setSelectedTopic({ name: topic, id: topic_id });
+        res = await fetch(
+          `/api/match?id=${user_id}&topic_id=${topic_id}&match_type=${match_type}`
+        );
+      }
       const data = await res.json();
       const users = data.users;
       console.log(
@@ -91,7 +93,6 @@ const StudyUsers: React.FC = () => {
       if (match_type === "Similarity") {
         console.log("Similarity Threshould: ", SIMILARITY_THRESHOLD);
       }
-      setSelectedTopic({ name: topic, id: topic_id });
       setMatchedUsers(
         users.filter((u: UserAvailabilityConfidence) => u.email !== user.email)
       );

@@ -6,7 +6,7 @@ import { convertDMYToYMD } from "@/lib/utils";
 interface SessionData {
   requester_id: string;
   receiver_id: string;
-  topic: number;
+  topic: number | null;
   sessionSlots: SessionSlot[];
 }
 
@@ -65,14 +65,9 @@ async function insertSession(
   slot: SessionSlot,
   requester_id: string,
   receiver_id: string,
-  topic: number
+  topic: number | null
 ) {
   const client = await pool.connect();
-
-  console.log("slot", slot);
-  console.log("requester_id", requester_id);
-  console.log("receiver_id", receiver_id);
-  console.log("topic", topic);
 
   try {
     // Insert the session into the session table
@@ -148,15 +143,14 @@ async function getAllUserSessions(userId: string) {
     sc.confidence_value as requester_confidence
   FROM
     session s
-    INNER JOIN topic t ON s.topic_id = t.topic_id
+    LEFT JOIN topic t ON s.topic_id = t.topic_id
     INNER JOIN student_session ss ON s.id = ss.session_id
     INNER JOIN student_session ss_other ON s.id = ss_other.session_id AND ss_other.user_id != ss.user_id
     INNER JOIN student u ON ss_other.user_id = u.id
     INNER JOIN course c ON u.course_code = c.course_code
     LEFT JOIN student_confidence sc ON sc.user_id = u.id AND sc.topic_id = t.topic_id
   WHERE
-    ss.user_id = $1;
-        `;
+    ss.user_id = $1;`;
     const result = await client.query(query, [userId]);
     return result.rows;
   } catch (err) {
