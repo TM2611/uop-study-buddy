@@ -13,9 +13,8 @@ export interface Topic {
 
 export type SelectedTopic = {
   name: string;
-  id: string;
+  id: string | null;
 };
-
 export interface FormPopulation {
   courses: Course[];
   topics: Topic[];
@@ -99,5 +98,5 @@ export type MatchType = "Department" | "Confidence" | "Similarity";
 export type UserAvailabilityConfidence = UserType & {
   availability_slots: AvailabilitySlot[];
   confidence: TopicConfidence[];
-  bookings: SessionData[]
+  bookings: SessionData[];
 };

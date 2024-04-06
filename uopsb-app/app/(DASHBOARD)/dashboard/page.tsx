@@ -22,12 +22,11 @@ const Dashboard = () => {
       const response = await fetch(`/api/session?id=${user.id}&type=all`);
       const sessions = await response.json();
       const requests = sessions.filter(
-        (x: SessionData) => x.status === "PENDING"
+        (x: SessionData) => x.status === "PENDING" && x.requester_id === user.id
       );
       const bookings = sessions.filter(
         (x: SessionData) => x.status === "ACCEPTED"
       );
-      console.log(sessions);
       setSessionRequests(requests);
       setSessionBookings(bookings);
     };
