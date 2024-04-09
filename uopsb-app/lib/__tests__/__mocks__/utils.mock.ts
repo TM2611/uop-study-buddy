@@ -1,7 +1,7 @@
 import {
   AvailabilitySlot,
   Course,
-  SessionData,
+  UserSessionData,
   SessionSlot,
   SlotStatus,
   Topic,
@@ -50,45 +50,27 @@ const expectedAvailabilitySlots2: AvailabilitySlot[] = [
   },
 ];
 
-const mockBookedSessions: SessionData[] = [
+const mockBookedSessions: UserSessionData[] = [
   {
-    start_hour: 10,
-    end_hour: 11,
-    date: "2024-03-20",
+    start_hour: 17,
+    end_hour: 18,
+    date: "2024-04-10T23:00:00.000Z",
     status: "ACCEPTED",
-    session_id: 1,
-    requester_id: "932759",
+    session_id: 8,
+    partner_id: "932759",
+    is_user_request: false,
     email: "up932759@myport.ac.uk",
     given_name: "Jenny",
     family_name: "Smith",
     picture: "https://randomuser.me/api/portraits/women/2.jpg",
     course_code: "U0968PYC",
     course_name: "Software Engineering",
-    topic_name: "Software Engineering and Design Patterns",
-    requester_confidence: 4,
-  },
-  {
-    start_hour: 14,
-    end_hour: 15,
-    date: "2024-03-20",
-    status: "ACCEPTED",
-    session_id: 2,
-    requester_id: "932759",
-    email: "up932759@myport.ac.uk",
-    given_name: "Jenny",
-    family_name: "Smith",
-    picture: "https://randomuser.me/api/portraits/women/2.jpg",
-    course_code: "U0968PYC",
-    course_name: "Software Engineering",
-    topic_name: "Architecture and Operating Systems",
-    requester_confidence: 4,
+    topic_name: "Data Structures and Algorithms",
+    partner_confidence: 5,
   },
 ];
 
-const expectedSlotIndexes: [number, number][] = [
-  [2, 3],
-  [2, 7],
-];
+const expectedSlotIndexes: [number, number][] = [[3, 10]];
 
 export const slotsToAvailableStates = [
   {
