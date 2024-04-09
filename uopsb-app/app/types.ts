@@ -39,13 +39,21 @@ export interface SessionSlot extends AvailabilitySlot {
   date: string;
 }
 
-export interface SessionData {
+export interface SessionCreation {
+    partner_id: string;
+    requester_id: string;
+    topic: number | null;
+    sessionSlots: SessionSlot[];
+  }
+
+export interface UserSessionData {
   start_hour: number;
   end_hour: number;
   date: string;
   status: string;
   session_id: number;
-  requester_id: string;
+  partner_id: string;
+  is_user_request: boolean;
   email: string;
   given_name: string;
   family_name: string;
@@ -53,7 +61,7 @@ export interface SessionData {
   course_code: string;
   course_name: string;
   topic_name: string;
-  requester_confidence: number;
+  partner_confidence: number;
 }
 export type SessionTableType = "Requests" | "Bookings";
 
@@ -98,5 +106,5 @@ export type MatchType = "Department" | "Confidence" | "Similarity";
 export type UserAvailabilityConfidence = UserType & {
   availability_slots: AvailabilitySlot[];
   confidence: TopicConfidence[];
-  bookings: SessionData[];
+  bookings: UserSessionData[];
 };

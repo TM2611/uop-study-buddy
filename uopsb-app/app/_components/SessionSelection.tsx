@@ -16,10 +16,11 @@ import {
 import {
   AvailabilitySlot,
   SelectedTopic,
-  SessionData,
+  UserSessionData,
   SessionSlot,
   UserAvailabilityConfidence,
   WeeklySlotStates,
+  SessionCreation,
 } from "../types";
 import Popup from "./Popup";
 import { useAuth } from "../AuthContext";
@@ -197,18 +198,19 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       const sessionData = getSessionSlotData(requestedSessions, activeDate);
       const jsonString = JSON.stringify(sessionData);
       const encodedSessions = encodeURIComponent(jsonString);
+      const userID = extractUpNum(user.email);
+      const sessionCreation = {
+        partner_id: extractUpNum(selectedUser.email),
+        requester_id: userID,
+        topic: Number(selectedTopic.id) || null,
+        sessions: encodedSessions,
+      };
       const res = await fetch("/api/session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: selectedUser?.email,
-          requester_id: extractUpNum(user.email),
-          receiver_id: extractUpNum(selectedUser.email),
-          topic: selectedTopic.id,
-          sessions: encodedSessions,
-        }),
+        body: JSON.stringify(sessionCreation),
       });
       if (!res.ok) {
         throw new Error("Failed to request session");

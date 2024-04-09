@@ -1,8 +1,8 @@
-import { SessionData } from "@/app/types";
+import { UserSessionData } from "@/app/types";
 import React from "react";
 
 interface SessionUserProps {
-  session: SessionData;
+  session: UserSessionData;
 }
 
 const SessionUser: React.FC<SessionUserProps> = ({ session }) => {

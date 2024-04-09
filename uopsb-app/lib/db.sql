@@ -726,7 +726,7 @@ LEFT JOIN (
     GROUP BY sc.user_id
 ) tp ON s.id = tp.user_id
 LEFT JOIN (
-    SELECT ss.user_id, array_agg(json_build_object('start_hour', s.start_hour, 'end_hour', s.end_hour, 'date', s.date, 'status', s.status, 'session_id', s.id, 'requester_id', u.id, 'email', u.email, 'given_name', u.given_name, 'family_name', u.family_name, 'picture', u.picture, 'course_code', c.course_code, 'course_name', c.name, 'topic_name', t.topic_name, 'requester_confidence', sc.confidence_value)) as bookings
+    SELECT ss.user_id, array_agg(json_build_object('start_hour', s.start_hour, 'end_hour', s.end_hour, 'date', s.date, 'status', s.status, 'session_id', s.id, 'requester_id', u.id, 'email', u.email, 'given_name', u.given_name, 'family_name', u.family_name, 'picture', u.picture, 'course_code', c.course_code, 'course_name', c.name, 'topic_name', t.topic_name, 'partner_confidence', sc.confidence_value)) as bookings
     FROM session s
     INNER JOIN topic t ON s.topic_id = t.topic_id
     INNER JOIN student_session ss ON s.id = ss.session_id

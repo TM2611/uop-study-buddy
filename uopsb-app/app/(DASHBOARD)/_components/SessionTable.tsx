@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  SessionData,
+  UserSessionData,
   SessionStatus,
   SessionTableType,
   UserType,
@@ -11,16 +11,16 @@ import SessionUser from "./SessionUser";
 import SessionDate from "./SessionDate";
 
 type SessionTableActionType = (
-  session: SessionData,
-  handleAction: (session: SessionData, status: SessionStatus) => void
+  session: UserSessionData,
+  handleAction: (session: UserSessionData, status: SessionStatus) => void
 ) => React.ReactNode;
 
 interface SessionTableProps {
-  sessionRequests: SessionData[];
-  sessionBookings: SessionData[];
-  setSessionRequests: (sessionRequests: SessionData[]) => void;
+  receivedRequests: UserSessionData[];
+  sessionBookings: UserSessionData[];
+  setReceivedRequests: (receivedRequests: UserSessionData[]) => void;
   setShowRequestsTable: (showRequestsTable: boolean) => void;
-  setSessionBookings: (sessionBookings: SessionData[]) => void;
+  setSessionBookings: (sessionBookings: UserSessionData[]) => void;
   setShowBookingsTable: (showBookingsTable: boolean) => void;
   currentUser: UserType;
   type: SessionTableType;
@@ -28,8 +28,8 @@ interface SessionTableProps {
 }
 
 const SessionTable: React.FC<SessionTableProps> = ({
-  sessionRequests,
-  setSessionRequests,
+  receivedRequests,
+  setReceivedRequests,
   setShowRequestsTable,
   sessionBookings,
   setSessionBookings,
@@ -38,20 +38,22 @@ const SessionTable: React.FC<SessionTableProps> = ({
   type,
   action,
 }) => {
-  const sessions = type === "Requests" ? sessionRequests : sessionBookings;
+  const sessions = type === "Requests" ? receivedRequests : sessionBookings;
 
-  const handleAction = async (session: SessionData, status: SessionStatus) => {
-    const receiverID = extractUpNum(currentUser.email);
-    const requesterID = session.requester_id;
+  const handleAction = async (
+    session: UserSessionData,
+    status: SessionStatus
+  ) => {
+    const userID = extractUpNum(currentUser.email);
     const sessionID = session.session_id;
+
     const res = await fetch(`/api/session?session=${sessionID}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        receiver: receiverID,
-        requester: requesterID,
+        user: userID,
         status: status,
       }),
     });
@@ -67,10 +69,10 @@ const SessionTable: React.FC<SessionTableProps> = ({
         setSessionBookings(newSessionBookings);
       } else {
         // SessionRequestTable Action - remove accepted/rejected session from requests
-        const newSessionRequests = sessionRequests.filter(
+        const newSessionRequests = receivedRequests.filter(
           (s) => s.session_id !== sessionID
         );
-        setSessionRequests(newSessionRequests);
+        setReceivedRequests(newSessionRequests);
 
         if (status === "ACCEPTED") {
           // SessionRequestTable Action - add accepted session to bookings
@@ -140,7 +142,7 @@ const SessionTable: React.FC<SessionTableProps> = ({
               <td className="px-6 py-4 whitespace-nowrap">
                 <span>
                   {session.topic_name
-                    ? `${session.topic_name} - ${session.requester_confidence}`
+                    ? `${session.topic_name} - ${session.partner_confidence}`
                     : "None"}
                 </span>
               </td>
