@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { SessionCreation, SessionSlot } from "@/app/types";
 import { convertDMYToYMD } from "@/lib/utils";
-
+import sendEmail from "@/lib/mailer";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
@@ -22,6 +22,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const isCreatedSession = await sessionCreation(sessionData);
     if (isCreatedSession) {
+        await sendEmail({
+          to: `${partner_id}@myport.ac.uk`,
+          topic,
+          status: "PENDING",
+          sessions: sessionSlots,
+        });
       return new NextResponse(
         JSON.stringify({
           message: "Session created successfully",
