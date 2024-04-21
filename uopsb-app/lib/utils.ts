@@ -1,7 +1,7 @@
 import {
   AvailabilitySlot,
   Course,
-  SessionData,
+  UserSessionData,
   SlotStatus,
   Topic,
   WeeklySlotStates,
@@ -181,7 +181,7 @@ export function slotsToSelectedStates(
 }
 
 export function getBookedSlotIndexes(
-  weekBookedSessions: SessionData[]
+  weekBookedSessions: UserSessionData[]
 ): [number, number][] {
   const indexes: [number, number][] = [];
 
@@ -198,6 +198,7 @@ export function getBookedSlotIndexes(
       }
     }
   });
+  console.log(indexes);
   return indexes;
 }
 

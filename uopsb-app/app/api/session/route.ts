@@ -1,27 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { SessionSlot } from "@/app/types";
+import { SessionCreation, SessionSlot } from "@/app/types";
 import { convertDMYToYMD } from "@/lib/utils";
 
-interface SessionData {
-  requester_id: string;
-  receiver_id: string;
-  topic: number | null;
-  sessionSlots: SessionSlot[];
-}
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const requestBody = await req.text();
     const request = JSON.parse(requestBody);
+    const partner_id = request.partner_id;
     const requester_id = request.requester_id;
-    const receiver_id = request.receiver_id;
     const topic = request.topic;
     const encodedSessions = request.sessions;
     const sessionSlots = JSON.parse(decodeURIComponent(encodedSessions ?? ""));
-    const sessionData: SessionData = {
+    const sessionData: SessionCreation = {
+      partner_id,
       requester_id,
-      receiver_id,
       topic,
       sessionSlots,
     };
@@ -48,11 +42,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 }
 
-async function sessionCreation(sessionData: SessionData) {
-  const { requester_id, receiver_id, topic, sessionSlots } = sessionData;
+async function sessionCreation(sessionData: SessionCreation) {
+  const { partner_id, requester_id, topic, sessionSlots } = sessionData;
   try {
     for (const slot of sessionSlots) {
-      await insertSession(slot, requester_id, receiver_id, topic);
+      await insertSession(partner_id, requester_id, topic, slot);
     }
     return true;
   } catch (err) {
@@ -62,10 +56,10 @@ async function sessionCreation(sessionData: SessionData) {
 }
 
 async function insertSession(
-  slot: SessionSlot,
+  partner_id: string,
   requester_id: string,
-  receiver_id: string,
-  topic: number | null
+  topic: number | null,
+  slot: SessionSlot
 ) {
   const client = await pool.connect();
 
@@ -92,7 +86,7 @@ async function insertSession(
 
     await client.query(
       `INSERT INTO student_session (session_id, user_id, is_requester) VALUES ($1, $2, $3)`,
-      [sessionId, receiver_id, false]
+      [sessionId, partner_id, false]
     );
   } catch (err) {
     console.error("insertSession", err);
@@ -132,7 +126,8 @@ async function getAllUserSessions(userId: string) {
     s.date,
     s.status,
     s.id as session_id,
-    u.id as requester_id,
+    ss_other.user_id as partner_id,
+    ss.is_requester as is_user_request,
     u.email,
     u.given_name,
     u.family_name,
@@ -140,7 +135,7 @@ async function getAllUserSessions(userId: string) {
     c.course_code,
     c.name as course_name,
     t.topic_name as topic_name,
-    sc.confidence_value as requester_confidence
+    sc.confidence_value as partner_confidence
   FROM
     session s
     LEFT JOIN topic t ON s.topic_id = t.topic_id
@@ -165,8 +160,6 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
   const client = await pool.connect();
   const sessionId = req.nextUrl.searchParams.get("session");
   const body = await req.json();
-  //const receiverId = req.nextUrl.searchParams.get("receiver");
-  //const requesterId = req.nextUrl.searchParams.get("requester");
   const status = body.status;
   if (!sessionId || !status) {
     return new NextResponse("Session ID or status missing or invalid", {

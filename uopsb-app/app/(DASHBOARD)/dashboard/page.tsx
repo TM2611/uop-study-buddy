@@ -3,15 +3,17 @@
 import React, { useState, useEffect } from "react";
 import StudyStatsOverview from "../_components/StudyStatsOverview";
 import { useAuth } from "@/app/AuthContext";
-import { SessionData } from "@/app/types";
+import { UserSessionData } from "@/app/types";
 import SessionTable from "../_components/SessionTable";
 import SessionAction from "../_components/SessionAction";
 
 const Dashboard = () => {
   const { isLoggedIn, user } = useAuth();
 
-  const [sessionRequests, setSessionRequests] = useState<SessionData[]>([]);
-  const [sessionBookings, setSessionBookings] = useState<SessionData[]>([]);
+  const [receivedRequests, setReceivedRequests] = useState<UserSessionData[]>(
+    []
+  );
+  const [sessionBookings, setSessionBookings] = useState<UserSessionData[]>([]);
   const [showRequestsTable, setShowRequestsTable] = useState(false);
   const [showBookingsTable, setShowBookingsTable] = useState(true);
 
@@ -22,12 +24,13 @@ const Dashboard = () => {
       const response = await fetch(`/api/session?id=${user.id}&type=all`);
       const sessions = await response.json();
       const requests = sessions.filter(
-        (x: SessionData) => x.status === "PENDING" && x.requester_id === user.id
+        (x: UserSessionData) =>
+          x.status === "PENDING" && x.is_user_request === false
       );
       const bookings = sessions.filter(
-        (x: SessionData) => x.status === "ACCEPTED"
+        (x: UserSessionData) => x.status === "ACCEPTED"
       );
-      setSessionRequests(requests);
+      setReceivedRequests(requests);
       setSessionBookings(bookings);
     };
     fetchSessionRequests();
@@ -45,10 +48,10 @@ const Dashboard = () => {
           <SessionTable
             sessionBookings={sessionBookings}
             setShowBookingsTable={setShowBookingsTable}
-            sessionRequests={sessionRequests}
+            receivedRequests={receivedRequests}
             setShowRequestsTable={setShowRequestsTable}
             setSessionBookings={setSessionBookings}
-            setSessionRequests={setSessionRequests}
+            setReceivedRequests={setReceivedRequests}
             currentUser={user}
             type="Requests"
             action={(session, handleAction) => (
@@ -64,10 +67,10 @@ const Dashboard = () => {
           <SessionTable
             sessionBookings={sessionBookings}
             setShowBookingsTable={setShowBookingsTable}
-            sessionRequests={sessionRequests}
+            receivedRequests={receivedRequests}
             setShowRequestsTable={setShowRequestsTable}
             setSessionBookings={setSessionBookings}
-            setSessionRequests={setSessionRequests}
+            setReceivedRequests={setReceivedRequests}
             currentUser={user}
             type="Bookings"
             action={(session, handleAction) => (

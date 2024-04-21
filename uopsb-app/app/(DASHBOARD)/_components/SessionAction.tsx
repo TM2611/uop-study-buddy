@@ -1,9 +1,9 @@
 import React from "react";
-import { SessionData, SessionStatus, SessionTableType } from "@/app/types";
+import { UserSessionData, SessionStatus, SessionTableType } from "@/app/types";
 
 interface SessionActionProps {
-  session: SessionData;
-  handleAction: (session: SessionData, status: SessionStatus) => void;
+  session: UserSessionData;
+  handleAction: (session: UserSessionData, status: SessionStatus) => void;
   type: SessionTableType;
 }
 
@@ -39,7 +39,7 @@ const SessionAction: React.FC<SessionActionProps> = ({
       </button>
     </>
   );
-  
+
   return type === "Requests" ? requestAction : bookingAction;
 };
 
