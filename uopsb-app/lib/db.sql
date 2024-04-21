@@ -10,6 +10,7 @@ CREATE OR REPLACE FUNCTION drop_all() RETURNS VOID AS $$
 DECLARE
     table_name RECORD;
     type_name RECORD;
+    function_name RECORD;
 BEGIN
     -- Drop tables
     FOR table_name IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
@@ -21,6 +22,15 @@ BEGIN
         EXECUTE 'DROP TYPE IF EXISTS "' || type_name.typname || '" CASCADE';
     END LOOP;
 
+    -- Drop functions
+    FOR function_name IN (
+        SELECT p.oid::regprocedure
+        FROM pg_proc p
+        JOIN pg_namespace n ON p.pronamespace = n.oid
+        WHERE n.nspname = 'public'
+    ) LOOP
+        EXECUTE 'DROP FUNCTION IF EXISTS ' || function_name.oid || ' CASCADE';
+    END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -797,7 +807,7 @@ BEGIN
     CROSS JOIN user_confidence uc
     WHERE sc.confidence_value >= uc.confidence_value
   )
-  SELECT cu.id, cu.email, cu.given_name, cu.family_name, cu.picture, cu.course_code, cu.year, cu.department_id, cu.availability_slots, cu.confidence, cu.bookings, cu.topic_confidence_value
+  SELECT cu.id, cu.email, cu.given_name, cu.family_name, cu.picture, cu.course_code, cu.year, cu.department_id::SMALLINT, cu.availability_slots, cu.confidence, cu.bookings, cu.topic_confidence_value
   FROM confident_users cu;
 END;
 $$ LANGUAGE plpgsql;
