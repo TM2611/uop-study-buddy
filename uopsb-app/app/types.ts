@@ -40,11 +40,11 @@ export interface SessionSlot extends AvailabilitySlot {
 }
 
 export interface SessionCreation {
-    partner_id: string;
-    user_id: string;
-    topic: number | null;
-    sessionSlots: SessionSlot[];
-  }
+  partner_id: string;
+  user_id: string;
+  topic: number | null;
+  sessionSlots: SessionSlot[];
+}
 
 export interface UserSessionData {
   start_hour: number;
@@ -71,6 +71,8 @@ export type SessionStatus =
   | "REJECTED"
   | "COMPLETED"
   | "CANCELLED";
+
+export type ActionSessionStatus = "ACCEPTED" | "REJECTED" | "CANCELLED";
 
 export interface UserProfileType extends UserType {
   slots: [AvailabilitySlot];
