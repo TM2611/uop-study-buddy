@@ -198,10 +198,9 @@ const SessionSelection: React.FC<SessionSelectionProps> = ({
       const sessionData = getSessionSlotData(requestedSessions, activeDate);
       const jsonString = JSON.stringify(sessionData);
       const encodedSessions = encodeURIComponent(jsonString);
-      const userID = extractUpNum(user.email);
       const sessionCreation = {
-        partner_id: extractUpNum(selectedUser.email),
-        requester_id: userID,
+        partner: selectedUser,
+        user,
         topic: Number(selectedTopic.id) || null,
         sessions: encodedSessions,
       };

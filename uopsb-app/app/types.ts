@@ -41,7 +41,7 @@ export interface SessionSlot extends AvailabilitySlot {
 
 export interface SessionCreation {
     partner_id: string;
-    requester_id: string;
+    user_id: string;
     topic: number | null;
     sessionSlots: SessionSlot[];
   }

@@ -1,33 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { SessionCreation, SessionSlot } from "@/app/types";
-import { convertDMYToYMD } from "@/lib/utils";
-import sendEmail from "@/lib/mailer";
+import {
+  SessionCreation,
+  SessionSlot,
+  SessionStatus,
+  UserSessionData,
+} from "@/app/types";
+import { convertDMYToYMD, extractUpNum } from "@/lib/utils";
+import * as mail from "@/lib/mail/mailer";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const requestBody = await req.text();
-    const request = JSON.parse(requestBody);
-    const partner_id = request.partner_id;
-    const requester_id = request.requester_id;
-    const topic = request.topic;
-    const encodedSessions = request.sessions;
+    const body = JSON.parse(requestBody);
+    const partner = body.partner;
+    const partner_id = extractUpNum(partner.email);
+    const user = body.user;
+    const user_id = extractUpNum(user.email);
+    const topic = body.topic;
+    const encodedSessions = body.sessions;
     const sessionSlots = JSON.parse(decodeURIComponent(encodedSessions ?? ""));
     const sessionData: SessionCreation = {
       partner_id,
-      requester_id,
+      user_id,
       topic,
       sessionSlots,
     };
 
     const isCreatedSession = await sessionCreation(sessionData);
     if (isCreatedSession) {
-        await sendEmail({
-          to: `${partner_id}@myport.ac.uk`,
-          topic,
-          status: "PENDING",
-          sessions: sessionSlots,
-        });
+      await mail.sendRequestEmail({
+        to: partner,
+        from: user,
+        topic,
+        status: "PENDING",
+        sessions: sessionSlots,
+      });
+      console.log(`Email sent to: UP${partner_id}@myport.ac.uk`);
       return new NextResponse(
         JSON.stringify({
           message: "Session created successfully",
@@ -49,10 +58,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 async function sessionCreation(sessionData: SessionCreation) {
-  const { partner_id, requester_id, topic, sessionSlots } = sessionData;
+  const { partner_id, user_id, topic, sessionSlots } = sessionData;
   try {
     for (const slot of sessionSlots) {
-      await insertSession(partner_id, requester_id, topic, slot);
+      await insertSession(partner_id, user_id, topic, slot);
     }
     return true;
   } catch (err) {
@@ -63,7 +72,7 @@ async function sessionCreation(sessionData: SessionCreation) {
 
 async function insertSession(
   partner_id: string,
-  requester_id: string,
+  user_id: string,
   topic: number | null,
   slot: SessionSlot
 ) {
@@ -87,7 +96,7 @@ async function insertSession(
     // Insert the requester and receiver into the student_session table
     await client.query(
       `INSERT INTO student_session (session_id, user_id, is_requester) VALUES ($1, $2, $3)`,
-      [sessionId, requester_id, true]
+      [sessionId, user_id, true]
     );
 
     await client.query(
