@@ -129,11 +129,11 @@ describe("getDayFromDateStr", () => {
 describe("extractUpNum", () => {
   it("should extract the upNum from an email", () => {
     const testCases = [
-      { input: "up938751@myport.ac.uk", expected: "938751" },
-      { input: "up932481@myport.ac.uk", expected: "932481" },
-      { input: "up932481@myport.ac.uk", expected: "932481" },
-      { input: "up923876@myport.ac.uk", expected: "923876" },
-      { input: "up984245@myport.ac.uk", expected: "984245" },
+      { input: "up038751@myport.ac.uk", expected: "038751" },
+      { input: "up032481@myport.ac.uk", expected: "032481" },
+      { input: "up032481@myport.ac.uk", expected: "032481" },
+      { input: "up023876@myport.ac.uk", expected: "923876" },
+      { input: "up084245@myport.ac.uk", expected: "984245" },
     ];
 
     testCases.forEach(({ input, expected }) => {
