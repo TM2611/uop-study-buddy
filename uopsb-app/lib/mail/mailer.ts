@@ -1,5 +1,11 @@
 import nodemailer from "nodemailer";
-import { SessionSlot, SessionStatus, UserType } from "@/app/types";
+import {
+  ActionSessionStatus,
+  SessionSlot,
+  SessionStatus,
+  UserSessionData,
+  UserType,
+} from "@/app/types";
 import * as templates from "@/lib/mail/templates";
 
 const email = "uopstudy.notification@gmail.com";
@@ -10,6 +16,13 @@ interface RequestEmailOptions {
   status: SessionStatus;
   sessions: SessionSlot[];
 }
+interface ActionEmailOptions {
+  partner: UserType;
+  newStatus: ActionSessionStatus;
+  session: UserSessionData;
+}
+
+
 const getEmailSubject = (status: SessionStatus) => {
   switch (status) {
     case "ACCEPTED":
@@ -35,13 +48,33 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendRequestEmail = async (options: RequestEmailOptions) => {
-  const emailFunction = templates.requestReceivedEmail;
-  const html = emailFunction(options.from, options.topic, options.sessions);
+  const html = templates.reqReceived(
+    options.from,
+    options.topic,
+    options.sessions
+  );
 
   const mailOptions = {
     from: email,
     to: options.to.email,
     subject: `UOPSB Notification: ${getEmailSubject(options.status)}`,
+    html: html,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+export const sendActionEmail = async (options: ActionEmailOptions) => {
+  const html = templates.reqAction(
+    options.partner,
+    options.session,
+    options.newStatus
+  );
+
+  const mailOptions = {
+    from: email,
+    to: options.session.email,
+    subject: `UOPSB Notification: Session Request ${options.newStatus}`,
     html: html,
   };
 
