@@ -2,7 +2,8 @@ import { SessionSlot, UserSessionData, UserType } from "@/app/types";
 
 const appLink = process.env.URL;
 
-const formatSession = (session: UserSessionData) => `
+type SessionData = UserSessionData | SessionSlot;
+const formatSession = (session: SessionData) => `
   Date: ${new Date(session.date).toLocaleDateString()}<br>
   Time: ${session.start_hour}:00 - ${session.end_hour}:00
 `;
