@@ -1,18 +1,17 @@
 import React from "react";
 import {
   UserSessionData,
-  SessionStatus,
   SessionTableType,
   UserType,
+  ActionSessionStatus,
 } from "@/app/types";
-import { extractUpNum } from "@/lib/utils";
 import CircularNumberIcon from "@/app/_components/CircularNumberIcon";
 import SessionUser from "./SessionUser";
 import SessionDate from "./SessionDate";
 
 type SessionTableActionType = (
   session: UserSessionData,
-  handleAction: (session: UserSessionData, status: SessionStatus) => void
+  handleAction: (session: UserSessionData, newStatus: ActionSessionStatus) => void
 ) => React.ReactNode;
 
 interface SessionTableProps {
@@ -42,19 +41,19 @@ const SessionTable: React.FC<SessionTableProps> = ({
 
   const handleAction = async (
     session: UserSessionData,
-    status: SessionStatus
+    newStatus: ActionSessionStatus
   ) => {
-    const userID = extractUpNum(currentUser.email);
     const sessionID = session.session_id;
 
-    const res = await fetch(`/api/session?session=${sessionID}`, {
+    const res = await fetch(`/api/session`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user: userID,
-        status: status,
+        partner: currentUser,
+        session,
+        newStatus: newStatus,
       }),
     });
     if (res.ok) {
