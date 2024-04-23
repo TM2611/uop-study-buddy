@@ -1,27 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
-import { SessionCreation, SessionSlot } from "@/app/types";
-import { convertDMYToYMD } from "@/lib/utils";
-
+import {
+  ActionSessionStatus,
+  SessionCreation,
+  SessionSlot,
+  SessionStatus,
+  UserSessionData,
+  UserType,
+} from "@/app/types";
+import { convertDMYToYMD, extractUpNum } from "@/lib/utils";
+import * as mail from "@/lib/mail/mailer";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const requestBody = await req.text();
-    const request = JSON.parse(requestBody);
-    const partner_id = request.partner_id;
-    const requester_id = request.requester_id;
-    const topic = request.topic;
-    const encodedSessions = request.sessions;
+    const body = JSON.parse(requestBody);
+    const partner = body.partner;
+    const partner_id = extractUpNum(partner.email);
+    const user = body.user;
+    const user_id = extractUpNum(user.email);
+    const topic = body.topic;
+    const encodedSessions = body.sessions;
     const sessionSlots = JSON.parse(decodeURIComponent(encodedSessions ?? ""));
     const sessionData: SessionCreation = {
       partner_id,
-      requester_id,
+      user_id,
       topic,
       sessionSlots,
     };
 
     const isCreatedSession = await sessionCreation(sessionData);
     if (isCreatedSession) {
+      await mail.sendRequestEmail({
+        to: partner,
+        from: user,
+        topic,
+        status: "PENDING",
+        sessions: sessionSlots,
+      });
       return new NextResponse(
         JSON.stringify({
           message: "Session created successfully",
@@ -43,10 +59,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 async function sessionCreation(sessionData: SessionCreation) {
-  const { partner_id, requester_id, topic, sessionSlots } = sessionData;
+  const { partner_id, user_id, topic, sessionSlots } = sessionData;
   try {
     for (const slot of sessionSlots) {
-      await insertSession(partner_id, requester_id, topic, slot);
+      await insertSession(partner_id, user_id, topic, slot);
     }
     return true;
   } catch (err) {
@@ -57,7 +73,7 @@ async function sessionCreation(sessionData: SessionCreation) {
 
 async function insertSession(
   partner_id: string,
-  requester_id: string,
+  user_id: string,
   topic: number | null,
   slot: SessionSlot
 ) {
@@ -81,7 +97,7 @@ async function insertSession(
     // Insert the requester and receiver into the student_session table
     await client.query(
       `INSERT INTO student_session (session_id, user_id, is_requester) VALUES ($1, $2, $3)`,
-      [sessionId, requester_id, true]
+      [sessionId, user_id, true]
     );
 
     await client.query(
@@ -158,10 +174,12 @@ async function getAllUserSessions(userId: string) {
 
 export async function PATCH(req: NextRequest, res: NextResponse) {
   const client = await pool.connect();
-  const sessionId = req.nextUrl.searchParams.get("session");
   const body = await req.json();
-  const status = body.status;
-  if (!sessionId || !status) {
+  const partner: UserType = body.partner;
+  const session: UserSessionData = body.session;
+  const sessionId = session.session_id;
+  const newStatus: ActionSessionStatus = body.newStatus;
+  if (!sessionId || !newStatus) {
     return new NextResponse("Session ID or status missing or invalid", {
       status: 400,
     });
@@ -173,7 +191,12 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
         SET status = $1
         WHERE id = $2;
         `;
-    await client.query(query, [status, sessionId]);
+    await client.query(query, [newStatus, sessionId]);
+    await mail.sendActionEmail({
+      partner,
+      newStatus,
+      session,
+    });
     return new NextResponse("Session status updated successfully", {
       status: 200,
     });
