@@ -63,7 +63,7 @@ export interface UserSessionData {
   topic_name: string;
   partner_confidence: number;
 }
-export type SessionTableType = "Requests" | "Bookings";
+export type SessionTableType = "Requests" | "Bookings" | "Completed";
 
 export type SessionStatus =
   | "PENDING"
