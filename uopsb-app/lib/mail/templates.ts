@@ -47,6 +47,6 @@ export const reqAction = (
   <p>${formatSession(session)}</li>
   <p>Please contact ${user.given_name} at ${
   user.email
-} to finalize the format and location of the study session.</p>
+} to discuss the format and location of the study session.</p>
   <p>Click <a href="${appLink}">here</a> to visit the app</p>
   `;
