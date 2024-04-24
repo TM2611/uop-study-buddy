@@ -684,6 +684,21 @@ CREATE TABLE session (
   FOREIGN KEY (topic_id) REFERENCES topic(topic_id)
 );
 
+CREATE OR REPLACE FUNCTION update_session_status_to_completed()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF (NEW.date < CURRENT_DATE OR (NEW.date = CURRENT_DATE AND NEW.end_hour < EXTRACT(HOUR FROM CURRENT_TIME))) THEN
+    NEW.status := 'COMPLETED';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql; 
+
+CREATE TRIGGER check_session_status
+BEFORE INSERT OR UPDATE ON session
+FOR EACH ROW
+EXECUTE FUNCTION update_session_status_to_completed();
+
 -- For demo/test purposes
 CREATE OR REPLACE FUNCTION next_wednesday() RETURNS DATE AS $$
 BEGIN
