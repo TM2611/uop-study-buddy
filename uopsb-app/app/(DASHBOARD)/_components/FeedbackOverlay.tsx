@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState } from "react";
 import Overlay from "@/app/_components/Overlay";
 import { UserSessionData } from "@/app/types";
 import { useAuth } from "@/app/AuthContext";
@@ -6,15 +6,18 @@ import { extractUpNum } from "@/lib/utils";
 
 interface FeedbackOverlayProps {
   session: UserSessionData;
+  completedSessions: UserSessionData[];
+  setCompletedSessions: (completedSessions: UserSessionData[]) => void;
   setShowFeedbackOverlay: (arg0: boolean) => void;
 }
 
 const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({
   session,
   setShowFeedbackOverlay,
+  setCompletedSessions,
 }) => {
-  const [rating, setRating] = useState(0);
-  const [feedback, setFeedback] = useState("");
+  const [rating, setRating] = useState(session.rating);
+  const [feedback, setFeedback] = useState(session.feedback);
   const { user } = useAuth();
 
   const handleStarClick = (star: number) => {
@@ -40,7 +43,15 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({
         },
       }
     );
-    console.log(await response.json());
+    const res: { data: UserSessionData[]; message: string } =
+      await response.json();
+
+    const updatedUserSessions = res.data;
+    const updatedCompletedSessions = updatedUserSessions.filter(
+      (x: UserSessionData) => x.status === "COMPLETED"
+    );
+    setCompletedSessions(updatedCompletedSessions);
+    setShowFeedbackOverlay(false);
   };
 
   return (
@@ -62,7 +73,9 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({
         </div>
         <textarea
           className="w-full h-32 mb-4 p-2 border rounded"
-          placeholder="Enter your feedback here... (optional)"
+          placeholder={`${
+            session.feedback || "Enter your feedback here... (optional)"
+          }`}
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
         ></textarea>

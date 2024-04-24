@@ -57,6 +57,7 @@ const Dashboard = () => {
           setSessionBookings={setSessionBookings}
           setReceivedRequests={setReceivedRequests}
           completedSessions={completedSessions}
+          setCompletedSessions={setCompletedSessions}
           setShowCompletedTable={setShowCompletedTable}
           currentUser={user}
           type="Requests"
@@ -69,6 +70,7 @@ const Dashboard = () => {
             setSessionBookings={setSessionBookings}
             setReceivedRequests={setReceivedRequests}
             completedSessions={completedSessions}
+            setCompletedSessions={setCompletedSessions}
             setShowCompletedTable={setShowCompletedTable}
             currentUser={user}
             type="Bookings"
@@ -82,6 +84,7 @@ const Dashboard = () => {
             setSessionBookings={setSessionBookings}
             setReceivedRequests={setReceivedRequests}
             completedSessions={completedSessions}
+            setCompletedSessions={setCompletedSessions}
             setShowCompletedTable={setShowCompletedTable}
             currentUser={user}
             type="Completed"         

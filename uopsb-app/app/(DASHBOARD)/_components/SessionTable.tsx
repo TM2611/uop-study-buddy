@@ -11,22 +11,11 @@ import SessionDate from "./SessionDate";
 import SessionAction from "./SessionAction";
 import FeedbackOverlay from "./FeedbackOverlay";
 
-type StatusActionType = (
-  session: UserSessionData,
-  handleStatusChange: (
-    session: UserSessionData,
-    newStatus: ActionSessionStatus
-  ) => void
-) => React.ReactNode;
-
-type CompletedActionType = (
-  session: UserSessionData,
-  setShowFeedbackOverlay: (arg0: boolean) => void
-) => JSX.Element | boolean;
 interface SessionTableProps {
   receivedRequests: UserSessionData[];
   sessionBookings: UserSessionData[];
   completedSessions: UserSessionData[];
+  setCompletedSessions: (completedSessions: UserSessionData[]) => void;
   setReceivedRequests: (receivedRequests: UserSessionData[]) => void;
   setSessionBookings: (sessionBookings: UserSessionData[]) => void;
   setShowBookingsTable: (showBookingsTable: boolean) => void;
@@ -42,6 +31,7 @@ const SessionTable: React.FC<SessionTableProps> = ({
   setSessionBookings,
   setShowBookingsTable,
   completedSessions,
+  setCompletedSessions,
   setShowCompletedTable,
   currentUser,
   type,
@@ -215,6 +205,8 @@ const SessionTable: React.FC<SessionTableProps> = ({
       {showFeedbackOverlay && (
         <FeedbackOverlay
           session={activeCompletedSesssion!}
+          completedSessions={completedSessions}
+          setCompletedSessions={setCompletedSessions}
           setShowFeedbackOverlay={setShowFeedbackOverlay}
         />
       )}
