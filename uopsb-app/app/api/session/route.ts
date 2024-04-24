@@ -4,7 +4,6 @@ import {
   ActionSessionStatus,
   SessionCreation,
   SessionSlot,
-  SessionStatus,
   UserSessionData,
   UserType,
 } from "@/app/types";
@@ -121,7 +120,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   }
 
   try {
-    const sessions = await getAllUserSessions(userId);
+    const sessions = await getAllUserSessions(userId, client);
     return new NextResponse(JSON.stringify(sessions), { status: 200 });
   } catch (err) {
     console.error(err);
@@ -131,9 +130,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   }
 }
 
-async function getAllUserSessions(userId: string) {
-  const client = await pool.connect();
-
+export async function getAllUserSessions(userId: string, client: any) {
   try {
     const query = `
     SELECT
@@ -142,8 +139,12 @@ async function getAllUserSessions(userId: string) {
     s.date,
     s.status,
     s.id as session_id,
-    ss_other.user_id as partner_id,
     ss.is_requester as is_user_request,
+    ss.rating as rating,
+    ss.feedback as feedback,
+    ss_other.user_id as partner_id,
+    ss_other.rating as partner_rating,
+    ss_other.feedback as partner_feedback,
     u.email,
     u.given_name,
     u.family_name,
@@ -167,8 +168,6 @@ async function getAllUserSessions(userId: string) {
   } catch (err) {
     console.error(err);
     throw err;
-  } finally {
-    client.release();
   }
 }
 

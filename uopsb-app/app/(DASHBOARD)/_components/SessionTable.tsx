@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   UserSessionData,
   SessionTableType,
@@ -8,38 +8,46 @@ import {
 import CircularNumberIcon from "@/app/_components/CircularNumberIcon";
 import SessionUser from "./SessionUser";
 import SessionDate from "./SessionDate";
-
-type SessionTableActionType = (
-  session: UserSessionData,
-  handleAction: (session: UserSessionData, newStatus: ActionSessionStatus) => void
-) => React.ReactNode;
+import SessionAction from "./SessionAction";
+import FeedbackOverlay from "./FeedbackOverlay";
 
 interface SessionTableProps {
   receivedRequests: UserSessionData[];
   sessionBookings: UserSessionData[];
+  completedSessions: UserSessionData[];
+  setCompletedSessions: (completedSessions: UserSessionData[]) => void;
   setReceivedRequests: (receivedRequests: UserSessionData[]) => void;
-  setShowRequestsTable: (showRequestsTable: boolean) => void;
   setSessionBookings: (sessionBookings: UserSessionData[]) => void;
   setShowBookingsTable: (showBookingsTable: boolean) => void;
+  setShowCompletedTable: (showCompletedTable: boolean) => void;
   currentUser: UserType;
   type: SessionTableType;
-  action: SessionTableActionType;
 }
 
 const SessionTable: React.FC<SessionTableProps> = ({
   receivedRequests,
   setReceivedRequests,
-  setShowRequestsTable,
   sessionBookings,
   setSessionBookings,
   setShowBookingsTable,
+  completedSessions,
+  setCompletedSessions,
+  setShowCompletedTable,
   currentUser,
   type,
-  action,
 }) => {
-  const sessions = type === "Requests" ? receivedRequests : sessionBookings;
+  const [showFeedbackOverlay, setShowFeedbackOverlay] = useState(false);
+  const sessions =
+    type === "Requests"
+      ? receivedRequests
+      : type === "Bookings"
+      ? sessionBookings
+      : completedSessions;
 
-  const handleAction = async (
+  const [activeCompletedSesssion, setActiveCompletedSession] =
+    useState<UserSessionData | null>(null);
+
+  const handleStatusChange = async (
     session: UserSessionData,
     newStatus: ActionSessionStatus
   ) => {
@@ -60,7 +68,7 @@ const SessionTable: React.FC<SessionTableProps> = ({
       const data = await res.text();
       console.log(data);
 
-      if (status === "CANCELLED") {
+      if (newStatus === "CANCELLED") {
         // SessionBookingTable Action - remove cancelled session from bookings
         const newSessionBookings = sessionBookings.filter(
           (s) => s.session_id !== sessionID
@@ -73,7 +81,7 @@ const SessionTable: React.FC<SessionTableProps> = ({
         );
         setReceivedRequests(newSessionRequests);
 
-        if (status === "ACCEPTED") {
+        if (newStatus === "ACCEPTED") {
           // SessionRequestTable Action - add accepted session to bookings
           const newSessionBookings = [...sessionBookings, session];
           setSessionBookings(newSessionBookings);
@@ -82,77 +90,127 @@ const SessionTable: React.FC<SessionTableProps> = ({
     }
   };
 
+  const handleCompletedAction = (session: UserSessionData) => {
+    setShowFeedbackOverlay(true);
+    setActiveCompletedSession(session);
+  };
+
+  const completedAction = (session: UserSessionData) => {
+    return (
+      <SessionAction
+        session={session}
+        handleCompletedAction={handleCompletedAction}
+        type={type}
+      />
+    );
+  };
+
+  const statusAction = (
+    session: UserSessionData,
+    handleStatusChange: (
+      session: UserSessionData,
+      newStatus: ActionSessionStatus
+    ) => void
+  ) => {
+    return (
+      <SessionAction
+        session={session}
+        handleStatusChange={handleStatusChange}
+        type={type}
+      />
+    );
+  };
+
   const handleViewTable = (type: SessionTableType) => {
-    if (type === "Requests") {
-      setShowRequestsTable(true);
+    if (type === "Completed") {
+      setShowCompletedTable(true);
       setShowBookingsTable(false);
-    } else {
+    } else if (type === "Bookings") {
       setShowBookingsTable(true);
-      setShowRequestsTable(false);
+      setShowCompletedTable(false);
     }
   };
 
   return (
-    <section>
-      <div className="flex  justify-between">
-        <h2 className="text-xl font-semibold my-4">
-          <span className=" mx-1 my-2">{`Session ${type}`}</span>
-          <CircularNumberIcon number={sessions.length} />
-        </h2>
-        <button
-          className="h-10 bg-blue-600 text-white px-4 py-2 m-3 rounded hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
-          onClick={() =>
-            handleViewTable(type === "Requests" ? "Bookings" : "Requests")
-          }
+    <div>
+      <section className={`${type === "Requests" ? "mb-20" : ""}`}>
+        <div className="flex  justify-between">
+          <h2 className="text-xl font-semibold my-4">
+            <span className=" mx-1 my-2">{`Session ${type}`}</span>
+            <CircularNumberIcon number={sessions.length} />
+          </h2>
+          {type !== "Requests" && (
+            <button
+              className="h-10 bg-blue-600 text-white px-4 py-2 m-3 rounded hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+              onClick={() =>
+                handleViewTable(type === "Completed" ? "Bookings" : "Completed")
+              }
+            >
+              {`View ${type === "Completed" ? "Bookings" : "Completed"}`}
+            </button>
+          )}
+        </div>
+        <div
+          className="table-container"
+          style={{ maxHeight: "400px", overflowY: "auto" }}
         >
-          {`View ${type === "Requests" ? "Bookings" : "Requests"}`}
-        </button>
-      </div>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
-              User
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
-              Session date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
-              Topic
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200 text-xs">
-          {sessions.map((session, i: number) => (
-            <tr key={i}>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <SessionUser session={session} />
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <SessionDate
-                  startHour={session.start_hour}
-                  endHour={session.end_hour}
-                  date={session.date}
-                ></SessionDate>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span>
-                  {session.topic_name
-                    ? `${session.topic_name} - ${session.partner_confidence}`
-                    : "None"}
-                </span>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {action(session, handleAction)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                  User
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                  Session date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                  Topic
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200 text-xs">
+              {sessions.map((session, i: number) => (
+                <tr key={i}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <SessionUser session={session} />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <SessionDate
+                      startHour={session.start_hour}
+                      endHour={session.end_hour}
+                      date={session.date}
+                    ></SessionDate>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span>
+                      {session.topic_name
+                        ? `${session.topic_name} - ${session.partner_confidence}`
+                        : "None"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {type === "Completed"
+                      ? completedAction(session)
+                      : statusAction(session, handleStatusChange)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      {showFeedbackOverlay && (
+        <FeedbackOverlay
+          session={activeCompletedSesssion!}
+          completedSessions={completedSessions}
+          setCompletedSessions={setCompletedSessions}
+          setShowFeedbackOverlay={setShowFeedbackOverlay}
+        />
+      )}
+    </div>
   );
 };
 
