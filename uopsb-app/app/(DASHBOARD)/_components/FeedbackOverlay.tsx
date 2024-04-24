@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Overlay from "@/app/_components/Overlay";
 import { UserSessionData } from "@/app/types";
+import { useAuth } from "@/app/AuthContext";
+import { extractUpNum } from "@/lib/utils";
 
 interface FeedbackOverlayProps {
   session: UserSessionData;
@@ -13,15 +15,32 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({
 }) => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
+  const { user } = useAuth();
 
   const handleStarClick = (star: number) => {
     setRating(star);
   };
 
-  const handleSubmit = () => {
-    // Submit feedback to the server
+  const handleSubmit = async () => {
+    if (!rating) {
+      alert("Please select a rating");
+      return;
+    }
+
+    const user_id = extractUpNum(user.email);
     console.log("Session ID: ", session.session_id);
     console.log({ rating, feedback });
+    const response = await fetch(
+      `/api/feedback?sessionID=${session.session_id}&userID=${user_id}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ rating, feedback }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(await response.json());
   };
 
   return (
@@ -43,7 +62,7 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({
         </div>
         <textarea
           className="w-full h-32 mb-4 p-2 border rounded"
-          placeholder="Write your feedback here..."
+          placeholder="Enter your feedback here... (optional)"
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
         ></textarea>
