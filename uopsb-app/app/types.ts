@@ -54,6 +54,10 @@ export interface UserSessionData {
   session_id: number;
   partner_id: string;
   is_user_request: boolean;
+  rating: number;
+  feedback: string;
+  partner_rating: number;
+  partner_feedback: string;
   email: string;
   given_name: string;
   family_name: string;
