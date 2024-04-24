@@ -4,7 +4,7 @@ const appLink = process.env.URL;
 
 type SessionData = UserSessionData | SessionSlot;
 const formatSession = (session: SessionData) => `
-  Date: ${new Date(session.date).toLocaleDateString()}<br>
+  Date: ${new Date(session.date).toLocaleDateString() || session.date}<br>
   Time: ${session.start_hour}:00 - ${session.end_hour}:00
 `;
 
@@ -19,8 +19,7 @@ export const reqReceived = (
 }'s picture" style="width: 100px; height: auto; border-radius: 50%;" />
     <p>You have received a new session request from ${user.given_name} ${
   user.family_name || ""
-}
-}). Here are the details:</p>
+}. Here are the details:</p>
     <p>Topic: ${topic}</p>
     <ul>${sessions
       .map((session) => `<li>${formatSession(session)}</li>`)
