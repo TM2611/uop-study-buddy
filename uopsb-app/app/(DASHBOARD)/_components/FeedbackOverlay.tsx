@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import Overlay from "@/app/_components/Overlay";
 import { UserSessionData } from "@/app/types";
 import { useAuth } from "@/app/AuthContext";
@@ -76,7 +76,7 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({
           placeholder={`${
             session.feedback || "Enter your feedback here... (optional)"
           }`}
-          value={feedback}
+          value={feedback || ""}
           onChange={(e) => setFeedback(e.target.value)}
         ></textarea>
         <button
