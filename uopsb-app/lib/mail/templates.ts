@@ -3,8 +3,17 @@ import { SessionSlot, UserSessionData, UserType } from "@/app/types";
 const appLink = process.env.URL;
 
 type SessionData = UserSessionData | SessionSlot;
+
+const getFormattedDate = (date: Date | String) => {
+  if (date instanceof Date && !isNaN(date.getTime())) {
+    // Get the date in the format "DD-MM-YYYY"
+    return date.toLocaleDateString();
+  }
+  return date;
+};
+
 const formatSession = (session: SessionData) => `
-  Date: ${new Date(session.date).toLocaleDateString() || session.date}<br>
+  Date: ${getFormattedDate(session.date)}<br>
   Time: ${session.start_hour}:00 - ${session.end_hour}:00
 `;
 
