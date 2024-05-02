@@ -132,8 +132,8 @@ describe("extractUpNum", () => {
       { input: "up038751@myport.ac.uk", expected: "038751" },
       { input: "up032481@myport.ac.uk", expected: "032481" },
       { input: "up032481@myport.ac.uk", expected: "032481" },
-      { input: "up023876@myport.ac.uk", expected: "923876" },
-      { input: "up084245@myport.ac.uk", expected: "984245" },
+      { input: "up023876@myport.ac.uk", expected: "023876" },
+      { input: "up084245@myport.ac.uk", expected: "084245" },
     ];
 
     testCases.forEach(({ input, expected }) => {
