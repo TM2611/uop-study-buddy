@@ -1,4 +1,3 @@
-````markdown
 # UOP Study Buddy 🎓
 
 UOP Study Buddy is a web application designed to help University of Portsmouth students find and connect with suitable study partners. The platform aims to solve the challenge of finding like-minded peers, promoting collaborative learning, and fostering a more interconnected and supportive university environment.
@@ -108,4 +107,3 @@ To get a local copy up and running, follow these simple steps.
 * **Taylor Aaron McFarlane** - [UP938751](https://dev.azure.com/UP938751)
 
 This project was submitted in partial fulfilment of the requirements for the degree of Bachelor of Science in Software Engineering at the University of Portsmouth, supervised by Claudia Iacob.
-````
